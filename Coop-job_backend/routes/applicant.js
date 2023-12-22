@@ -114,6 +114,17 @@ const resumeSchema = Joi.object({
   resume: Joi.string().required()
 });
 
+//สำหรับตรวจสอบไฟล์ ที่รับมา
+const transcriptSchema = Joi.object({
+  transcript: Joi.string().required()
+});
+
+//สำหรับตรวจสอบไฟล์ ที่รับมา
+const portfolioSchema = Joi.object({
+  portfolio: Joi.string().required()
+});
+
+
 // ตั้งค่า multer upload
 const upload = multer({
   storage: multer.diskStorage({
@@ -136,6 +147,52 @@ const upload = multer({
   }
 });
 
+// ตั้งค่า multer upload
+const uploadTranscript = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'static/transcript/'); // กำหนดโฟลเดอร์ที่จะเก็บไฟล์ให้เป็น static/resume/
+    },
+    filename: function (req, file, cb) {
+      const uniqueFileName = `${uuidv4().slice(0, 4)}-${file.originalname}`;
+      cb(null, uniqueFileName); // กำหนดชื่อไฟล์เก็บในโฟลเดอร์เป็นชื่อที่ไม่ซ้ำกัน
+    }
+  }),
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype !== 'application/pdf') { //ตัวกรองไฟล์ที่อนุญาตให้อัปโหลดเฉพาะไฟล์ PDF
+      return cb(new Error('Only PDF files are allowed'));
+    }
+    cb(null, true);
+  },
+  limits: {
+    fileSize: 15 * 1024 * 1024  // กำหนดขนาดสูงสุดของไฟล์เป็น 15MB
+  }
+});
+
+// ตั้งค่า multer upload portfolio
+const uploadPortfolio = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'static/portfolio/'); // กำหนดโฟลเดอร์ที่จะเก็บไฟล์ให้เป็น static/portfolio/
+    },
+    filename: function (req, file, cb) {
+      const uniqueFileName = `${uuidv4().slice(0, 4)}-${file.originalname}`;
+      cb(null, uniqueFileName); // กำหนดชื่อไฟล์เก็บในโฟลเดอร์เป็นชื่อที่ไม่ซ้ำกัน
+    }
+  }),
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype !== 'application/pdf') { //ตัวกรองไฟล์ที่อนุญาตให้อัปโหลดเฉพาะไฟล์ PDF
+      return cb(new Error('Only PDF files are allowed'));
+    }
+    cb(null, true);
+  },
+  limits: {
+    fileSize: 15 * 1024 * 1024  // กำหนดขนาดสูงสุดของไฟล์เป็น 15MB
+  }
+});
+
+
+//อัพโหลด resume
 router.post('/uploadResume',isLoggedIn, upload.single('resume'), async (req, res) => {
   try {
     const { error, value } = resumeSchema.validate({ resume: req.file.path });
@@ -149,6 +206,50 @@ router.post('/uploadResume',isLoggedIn, upload.single('resume'), async (req, res
     // บันทึกชื่อไฟล์เข้าฐานข้อมูล และ ใช้ฟังก์ชัน UUID() เพื่อสร้างชื่อไฟล์ที่ไม่ซ้ำกัน
     await pool.query('UPDATE students SET resume =(?) WHERE user_id = ?', [filePath, userId]);
     console.log("File uploaded successfully")
+    return res.json({ message: 'File uploaded successfully', filePath:filePath });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+//อัพโหลด transcript
+router.post('/uploadTranscript',isLoggedIn, uploadTranscript.single('transcript'), async (req, res) => {
+  try {
+    const { error, value } = transcriptSchema.validate({ transcript: req.file.path });
+    if (error) {
+      console.log(error);
+      return res.status(400).json({ error: 'Invalid file' });
+    }
+    const filePath = req.file.path;
+    console.log("TranscriptPath", filePath)
+    const userId = req.user.user_id;
+    // บันทึกชื่อไฟล์เข้าฐานข้อมูล และ ใช้ฟังก์ชัน UUID() เพื่อสร้างชื่อไฟล์ที่ไม่ซ้ำกัน
+    await pool.query('UPDATE students SET transcript =(?) WHERE user_id = ?', [filePath, userId]);
+    console.log("Transcript uploaded successfully")
+    return res.json({ message: 'File uploaded successfully', filePath:filePath });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+module.exports = router;
+
+//อัพโหลด portfolio
+router.post('/uploadPortfolio',isLoggedIn, uploadPortfolio.single('portfolio'), async (req, res) => {
+  try {
+    const { error, value } = portfolioSchema.validate({ portfolio: req.file.path });
+    if (error) {
+      console.log(error);
+      return res.status(400).json({ error: 'Invalid file' });
+    }
+    const filePath = req.file.path;
+    console.log("PortfolioPath", filePath)
+    const userId = req.user.user_id;
+    // บันทึกชื่อไฟล์เข้าฐานข้อมูล และ ใช้ฟังก์ชัน UUID() เพื่อสร้างชื่อไฟล์ที่ไม่ซ้ำกัน
+    await pool.query('UPDATE students SET portfolio =(?) WHERE user_id = ?', [filePath, userId]);
+    console.log("Portfolio uploaded successfully")
     return res.json({ message: 'File uploaded successfully', filePath:filePath });
   } catch (err) {
     console.log(err);
