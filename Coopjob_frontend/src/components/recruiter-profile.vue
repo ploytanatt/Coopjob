@@ -25,7 +25,8 @@
       </div>
     </figure>
   </div>
-  <font-awesome-icon :icon="['fal', 'camera']" />
+  <i class="fa-light fa-camera"></i>
+  <font-awesome-icon :icon="['fas', 'camera']" />
         <figure class="image">
           <img :src="imagePath(profile_image)" alt="Profile Image" class="image-preview profile_image" v-if="profile_image && !modify_profile"/>
           <img :src="imagePath(profile_image)" alt="Profile Image" class="image-preview profile_image"  v-if="profile_image && modify_profile && !profile_image_preview"/>
@@ -35,7 +36,7 @@
           <label class="file-label">
             <input class="file-input" type="file" @change="handleProfileImageUpload" accept="image/*" />
             <span class="file-cta">
-              <span class="file-label">เลือกไฟล์</span>
+              <span class="file-label">เลือกไฟล์ </span>
             </span>
             
           </label>
