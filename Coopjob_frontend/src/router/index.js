@@ -53,12 +53,12 @@ const routes = [
     meta: { login: true },
     component: () => import('../views/recruiter/RcruiterAddJob.vue')
   },
-  //{
-  //  path: '/recruiterAddJobByUpload',
-  //  name: 'recruiterAddJobByUpload',
-  //  meta: { login: true },
-  //  component: () => import('../views/recruiter/RecruiterAddJobByUpload.vue')
-  //},
+  {
+    path: '/recruiterAddJobByUpload',
+    name: 'recruiterAddJobByUpload',
+    meta: { login: true },
+    component: () => import('../views/recruiter/RecruiterAddJobByUpload.vue')
+  },
   {
     path: '/edit-job/:jobId',
     name: 'RecruiterJobEdit',
