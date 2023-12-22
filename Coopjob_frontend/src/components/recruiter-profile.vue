@@ -1,6 +1,7 @@
 <template>
   
   <div class="p-6 card">
+    
     <fieldset :disabled="!modify_profile">
 
   <div class="card-image">
@@ -25,6 +26,8 @@
       </div>
     </figure>
   </div>
+
+
   <i class="fa-light fa-camera"></i>
   <font-awesome-icon :icon="['fas', 'camera']" />
         <figure class="image">
@@ -36,7 +39,7 @@
           <label class="file-label">
             <input class="file-input" type="file" @change="handleProfileImageUpload" accept="image/*" />
             <span class="file-cta">
-              <span class="file-label">เลือกไฟล์ </span>
+              <span class="file-label">เลือกไฟล์</span>
             </span>
             
           </label>
