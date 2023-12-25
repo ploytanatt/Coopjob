@@ -139,19 +139,19 @@
       this.getUser();
     },
     methods: {
-      getUser() {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      axios.get("http://localhost:3000/user/me", config).then((res) => {
-        
-        this.user = res.data;
-        console.log("App.vue", this.user)
-      });
-    },
+ //     getUser() {
+ //     const token = localStorage.getItem("token");
+ //     const config = {
+ //       headers: {
+ //         Authorization: `Bearer ${token}`,
+ //       },
+ //     };
+ //     axios.get("http://localhost:3000/user/me", config).then((res) => {
+ //       
+ //       this.user = res.data;
+ //       console.log("App.vue", this.user)
+ //     });
+ //   },
       getCompanyJobs(jobId) {
         axios
           .get(`http://localhost:3000/recruiter/getJobDetail/${jobId}` )

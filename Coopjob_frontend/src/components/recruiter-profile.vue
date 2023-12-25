@@ -4,52 +4,45 @@
     
     <fieldset :disabled="!modify_profile">
 
-  <div class="card-image">
-    <figure class="image is-4by3">
-      <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image">
+      <div class="card-content">
+    <div class="media">
+      <div class="media-left">
+    <figure class="image ">
+      <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image" class="image-preview cover_image">
+
+
+      
+      
     </figure>
+    
   </div>
+</div>
+      </div>
   <div class="card-content">
     <div class="media">
       <div class="media-left">
 
-
 <div class="container overlay-container">
-    <figure class="image is-4by3">
-      <img src="https://placekitten.com/800/600" alt="Placeholder image">
-      <div class="overlay-icon">
-        <button class="button is-info is-large">
-          <span class="icon is-large">
-            <i class="fa-light fa-camera"></i>
-          </span>
-        </button>
+    <figure class="image">
+      <img  :src="imagePath(profile_image)" alt="Profile Image" class="image-preview profile_image" v-if="profile_image && !modify_profile"  >
+      <img :src="imagePath(profile_image)" alt="Profile Image" class="image-preview profile_image"  v-if="profile_image && modify_profile && !profile_image_preview"/>
+      <img :src="profile_image_preview" alt="Profile Image" class="image-preview profile_image" v-if="profile_image_preview && modify_profile"/>
+      <div class="overlay-icon" v-if="modify_profile">
+        <label class="file-label">
+         
+          <button class="button is-dark">
+           
+            <span class="icon is-large">
+              <font-awesome-icon :icon="['fas', 'camera']" />
+            </span>
+          </button>
+          
+        </label>
+        <input class="file-input" type="file" @change="handleProfileImageUpload" accept="image/*" />
       </div>
     </figure>
-  </div>
+</div>
 
-
-  <i class="fa-light fa-camera"></i>
-  <font-awesome-icon :icon="['fas', 'camera']" />
-        <figure class="image">
-          <img :src="imagePath(profile_image)" alt="Profile Image" class="image-preview profile_image" v-if="profile_image && !modify_profile"/>
-          <img :src="imagePath(profile_image)" alt="Profile Image" class="image-preview profile_image"  v-if="profile_image && modify_profile && !profile_image_preview"/>
-          <img :src="profile_image_preview" alt="Profile Image" class="image-preview profile_image" v-if="profile_image_preview && modify_profile"/>
-
-          <div class="file has-name" v-if="modify_profile">
-          <label class="file-label">
-            <input class="file-input" type="file" @change="handleProfileImageUpload" accept="image/*" />
-            <span class="file-cta">
-              <span class="file-label">เลือกไฟล์</span>
-            </span>
-            
-          </label>
-          </div>
-
-        <template v-if="$v.profile_image.$error">
-          <p class="help is-danger" v-if="!$v.profile_image.required">โปรดอัปโหลดรูปภาพ</p>
-        </template>
-
-        </figure>
       </div>
 
       <div class="media-content">
@@ -182,8 +175,9 @@ export default {
       const token = localStorage.getItem('token');
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data', // เพิ่ม content type เป็น multipart/form-data
+      },
       };
       axios.get('http://localhost:3000/recruiter/getData', config).then((res) => {
         const user = res.data;
@@ -258,6 +252,7 @@ export default {
       };
       reader.readAsDataURL(file);
     },
+
     resetProfile() {
       this.getUserProfile();
       this.modify_profile = false;
@@ -301,6 +296,12 @@ export default {
   height: 150px;
   border: 2px solid gray;
   border-radius: 25px;
+}
+.cover_image {
+  width: 900px;
+  height: 200px;
+  
+
 }
 .field.is-horizontals {
   display: flex;
