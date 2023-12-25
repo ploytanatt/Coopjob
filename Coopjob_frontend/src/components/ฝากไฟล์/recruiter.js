@@ -108,9 +108,7 @@ const upload = multer({
   }
 });
 
-router.post("/editProfile", isLoggedIn, upload.fields([{
-  name: 'profile_image', maxCount: 1
-}]), async (req, res) => {
+router.post("/editProfile", isLoggedIn, upload.single('profile_image'), async (req, res) => {
   try {
     // ตรวจสอบความถูกต้องของข้อมูลที่รับเข้ามา
     const { error } = profileEditSchema.validate(req.body);
@@ -126,7 +124,7 @@ router.post("/editProfile", isLoggedIn, upload.fields([{
       company_video,
     } = req.body;
     const companyId = req.user.user_id;
-    const filePath = req.files['profile_image'];
+    const filePath = req.file.path;
     const status = 'open'
     // ตรวจสอบว่าอีเมลใหม่ซ้ำกับที่มีอยู่ในตาราง companies หรือไม่
     const [existingRecruiter] = await pool.query('SELECT * FROM companies WHERE email = ?', [email]);
@@ -143,40 +141,6 @@ router.post("/editProfile", isLoggedIn, upload.fields([{
     res.status(500).json({ message: "Server error" });
   }
 });
-//router.post("/editProfile", isLoggedIn, upload.single('profile_image'), async (req, res) => {
-//  try {
-//    // ตรวจสอบความถูกต้องของข้อมูลที่รับเข้ามา
-//    const { error } = profileEditSchema.validate(req.body);
-//    if (error) {
-//      return res.status(400).json({ message: error.details[0].message });
-//    }
-//
-//    // ดึงข้อมูลบริษัทที่ต้องการแก้ไขจากฐานข้อมูล
-//    const {
-//      company_name,
-//      email,
-//      description,
-//      company_video,
-//    } = req.body;
-//    const companyId = req.user.user_id;
-//    const profileImageFile = req.files.path;
-//   // const coverImageFile = req.files['cover_image']
-//    const status = 'open'
-//    // ตรวจสอบว่าอีเมลใหม่ซ้ำกับที่มีอยู่ในตาราง companies หรือไม่
-//    const [existingRecruiter] = await pool.query('SELECT * FROM companies WHERE email = ?', [email]);
-//    if (existingRecruiter.length > 0 && existingRecruiter[0].user_id !== companyId) {
-//      return res.status(400).json({ message: 'Email already exists' });
-//    }
-//      await pool.query('UPDATE companies SET company_name = ?, email = ?, description = ?, profile_image = ?, company_video = ?, status = ? WHERE user_id = ?',[company_name, email, description, profileImageFile, company_video, status, companyId]);
-//      await pool.query('UPDATE users SET status = ? WHERE user_id = ?', [status, companyId])
-//      console.log("Recruiter edit Successfuly")
-//
-//       res.json({ message: 'File uploaded successfully',  });
-//  } catch (error) {
-//    console.log(error);
-//    res.status(500).json({ message: "Server error" });
-//  }
-//});
 
 const addJobSchema = Joi.object({
   title: Joi.string().required(),

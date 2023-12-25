@@ -21,7 +21,7 @@
     </div>
 </template>
 <script lang="ts">
-import recruiterProfile from '@/components/recruiter-profile.vue';
+import recruiterProfile from '@/components/company/recruiter-profile.vue';
 export default ({
     components: {
      recruiterProfile,

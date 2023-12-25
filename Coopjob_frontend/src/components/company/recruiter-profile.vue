@@ -1,23 +1,36 @@
 <template>
   
   <div class="p-6 card">
-    
     <fieldset :disabled="!modify_profile">
 
       <div class="card-content">
     <div class="media">
       <div class="media-left">
-    <figure class="image ">
-      <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image" class="image-preview cover_image">
-
-
-      
-      
-    </figure>
+        <div class="container overlay-container">
+        <figure class="image">
+          <img :src="CoverimagePath(cover_image)" alt="Cover Image" class="image-preview cover_image" v-if="cover_image && !modify_profile">
+          <img :src="CoverimagePath(cover_image)" alt="Cover Image" class="image-preview cover_image"  v-if="cover_image && modify_profile && !cover_image_preview"/>
+          <img :src="cover_image_preview" alt="Cover Image" class="image-preview cover_image" v-if="cover_image_preview && modify_profile"/>  
+          <div class="overlay-icon" v-if="modify_profile">
+            <label class="file-label">
+              <button class="button is-dark">
+                <span class="icon is-large">
+                  <font-awesome-icon :icon="['fas', 'camera']" />
+                </span>
+              </button>
+            </label>
+            <input class="file-input" type="file" @change="handleCoverImageUpload" accept="image/*" />
+          </div>
+        </figure>
+        </div>
+       
     
   </div>
-</div>
+  </div>
       </div>
+
+
+      
   <div class="card-content">
     <div class="media">
       <div class="media-left">
@@ -29,16 +42,13 @@
       <img :src="profile_image_preview" alt="Profile Image" class="image-preview profile_image" v-if="profile_image_preview && modify_profile"/>
       <div class="overlay-icon" v-if="modify_profile">
         <label class="file-label">
-         
           <button class="button is-dark">
-           
             <span class="icon is-large">
               <font-awesome-icon :icon="['fas', 'camera']" />
             </span>
           </button>
-          
         </label>
-        <input class="file-input" type="file" @change="handleProfileImageUpload" accept="image/*" />
+        <input class="file-input" name="profile_image" type="file" @change="handleProfileImageUpload" accept="image/*" />
       </div>
     </figure>
 </div>
@@ -146,6 +156,9 @@ export default {
       profile_image: '',
       profile_image_name: '',
       profile_image_preview: '',
+      cover_image: '',
+      cover_image_name: '',
+      cover_image_preview: '',
       company_video: '',
       modify_profile: false,
       selectedBusinessType: [],
@@ -165,12 +178,9 @@ export default {
   },
   mounted() {
     this.getUserProfile();
-
-    
-    // เรียกใช้งาน Selectize.js เมื่อ Vue component ถูก mount เสร็จ
-    
   },
   methods: {
+
     getUserProfile() {
       const token = localStorage.getItem('token');
       const config = {
@@ -181,10 +191,14 @@ export default {
       };
       axios.get('http://localhost:3000/recruiter/getData', config).then((res) => {
         const user = res.data;
+       
         if (user[0].profile_image) {
           this.profile_image = user[0].profile_image.replace(/\\/g, '/').replace('static', '');
         }
-
+        if (user[0].cover_image) {
+          this.cover_image = user[0].cover_image.replace(/\\/g, '/').replace('static', '');
+        }
+        
         this.company_name = user[0].company_name;
         this.description = user[0].description;
         this.email = user[0].email;
@@ -200,6 +214,14 @@ export default {
       }
     },
 
+    CoverimagePath(previewCoverImage) {
+      if (previewCoverImage) {
+        return 'http://localhost:3000' + previewCoverImage;
+      } else {
+        return 'https://bulma.io/images/placeholders/640x360.png';
+      }
+    },
+   
     saveProfile() {
       const token = localStorage.getItem('token');
       const config = {
@@ -207,15 +229,16 @@ export default {
           Authorization: `Bearer ${token}`,
         },
       };
+
       const formData = new FormData();
       formData.append('company_name', this.company_name);
       formData.append('email', this.email);
       formData.append('description', this.description);
-      if (this.profile_image) {
-        formData.append('profile_image', this.profile_image);
+       if (this.profile_image) {
+        formData.append('profile_image', this.profile_image, this.profile_image.name);
       }
-      formData.append('company_video', this.company_video);
 
+      formData.append('company_video', this.company_video);
       axios
         .post('http://localhost:3000/recruiter/editProfile', formData, config)
         .then((response) => {
@@ -252,7 +275,18 @@ export default {
       };
       reader.readAsDataURL(file);
     },
+    handleCoverImageUpload(event) {
+      const file = event.target.files[0];
+      this.cover_image = file;
+      this.cover_image_name = file.name;
 
+      // แสดงตัวอย่างรูปภาพที่อัปโหลด
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.cover_image_preview = reader.result;
+      };
+      reader.readAsDataURL(file);
+  },
     resetProfile() {
       this.getUserProfile();
       this.modify_profile = false;
@@ -277,9 +311,7 @@ export default {
     description: {
       required,
     },
-    profile_image: {
-      required,
-    },
+    
     company_video: {},
   },
 };
