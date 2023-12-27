@@ -164,6 +164,7 @@ export default {
 },
 
 
+
     showReportPopup() {
       Swal.fire({
         title: 'Report',
