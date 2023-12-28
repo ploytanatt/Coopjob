@@ -24,10 +24,35 @@
             </div>
             <div class="p-6 card">
         <h1 class="title">งานที่ประกาศ</h1><div>
-    <button class="button is-primary add" @click="addJobs()">เพิ่มงาน</button>
+
+          <div class="twitter-pop-out-container">
+
+
+
+          <button class="button is-primary add" @click="openAddJobModal">เพิ่มงาน</button>
+          <div class="modal" :class="{ 'is-active': addJob }">
+            <div class="modal-background" @click="closeAddJobModal"></div>
+            <div class="modal-card">
+              <header class="modal-card-head">
+                <p class="modal-card-title">เลือกวิธีเพิ่มงาน</p>
+                <button class="delete" aria-label="close" @click="closeAddJobModal"></button>
+              </header>
+              <section class="modal-card-body">
+                <button class="button is-primary" @click="goToAddForm">เพิ่มงานแบบกรอกฟอร์ม</button>
+                <button class="button is-info" @click="goToAddFile">เพิ่มงานโดยอัพโหลดไฟล์</button>
+              </section>
+            </div>
+          </div>
+        
+
+
+    
     <noInformationVue v-if="!(jobs.length > 0)"></noInformationVue>
         <div class="detail" v-for="job in jobs" :key="job.job_id">
-            
+          <button class="button is-warning is-pulled-right" @click="toggleJobStatus">
+  {{ isJobOpen ? 'ปิดรับสมัคร' : 'เปิดรับสมัคร' }}
+</button>
+
                   <div class="job-detail">
                     <div class="columns is-multiline is-mobile">
                       <div class="column is-one-quarter">
@@ -62,6 +87,7 @@
         </div>
     </div>
     </div>
+    </div>
 </template>
 <script>
 import axios from "axios";
@@ -76,12 +102,35 @@ export default {
       jobs: [],
       addJob: false,
       select_option : 'myjob',
+      isJobOpen: true,
+
     };
   },
   mounted() {
     this.getJobs();
   },
   methods: {
+    toggleJobStatus() {
+    // เปลี่ยนสถานะการรับสมัครเมื่อกดปุ่ม toggle
+    this.isJobOpen = !this.isJobOpen;
+    // สามารถทำการส่งคำขอ API ไปยังเซิร์ฟเวอร์เพื่ออัปเดตสถานะการรับสมัครที่นี่
+  },
+    openAddJobModal() {
+      this.addJob = true;
+    },
+    closeAddJobModal() {
+      this.addJob = false;
+    },
+    goToAddForm() {
+      // Navigate to the form add job page
+      this.$router.push("/recruiterAddJob");
+      this.closeAddJobModal();
+    },
+    goToAddFile() {
+      // Navigate to the file upload add job page
+      this.$router.push("/recruiterAddJobByUpload");
+      this.closeAddJobModal();
+    },
     getJobs() {
         const token = localStorage.getItem("token");
     const config = {
@@ -108,9 +157,9 @@ export default {
       // นำ jobId ไปยังหน้าแก้ไขงาน
       this.$router.push(`/edit-job/${jobId}`);
     },
-    addJobs() {
-      this.$router.push("/recruiterAddJob");
-    },
+  //  addJobs() {
+  //    this.$router.push("/recruiterAddJob");
+  //  },
     confirmDeleteJob(job_id) {
       Swal.fire({
         title: "ยืนยันการลบงาน",

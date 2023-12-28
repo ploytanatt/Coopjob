@@ -1,7 +1,29 @@
 <template>
   <div class="p-6 card">
     <h1 class="title">เพิ่มงาน</h1>
+
     <div class="field">
+      <label class="label">ประเภทงาน</label>
+      <div class="control">
+        <label class="radio">
+          <input type="radio" v-model="jobType" value="internship" />
+          ฝึกงาน
+        </label>
+        <label class="radio">
+          <input type="radio" v-model="jobType" value="cooperative" />
+          สหกิจศึกษา
+        </label>
+      </div>
+    </div>
+
+    <div class="field" >
+      <label class="label">หัวข้อโครงงาน</label>
+      <div class="control">
+        <input class="input" type="text" v-model="project_name" />
+      </div>
+    </div>
+
+    <div class="field" >
       <label class="label">ชื่องาน</label>
       <div class="control">
         <input class="input" type="text" v-model="$v.title.$model" />
@@ -24,27 +46,82 @@
       </div>
       <p v-if="$v.location.$error" class="help is-danger">โปรดกรอกสถานที่ปฏิบัติงาน</p>
     </div>
-    <div class="field">
-      <label class="label">ค่าตอบแทน</label>
-      <div class="control">
-        <input class="input" type="number" v-model="$v.salary.$model" />
+
+
+
+
+    <div class="columns">
+      <div class="column is-6">
+        <div class="field">
+          <label class="label">ตำแหน่ง</label>
+          <div class="control">
+            <input class="input" type="text" v-model="job_position" />
+          </div>
+          
+        </div>
       </div>
-      <p v-if="$v.salary.$error" class="help is-danger">โปรดกรอกเงินเดือน</p>
-    </div>
-    <div class="field">
-      <label class="label">สถานะ</label>
-      <div class="control">
-        <div class="select">
-          <select v-model="status">
-            <option value="open">เปิดรับสมัคร</option>
-            <option value="close">ปิดรับสมัคร</option>
-          </select>
+      <div class="column is-3">
+        <div class="field">
+          <label class="label">จำนวนที่รับ</label>
+          <div class="control">
+        <div class="field has-addons">
+          <div class="control">
+            <input class="input" type="number" v-model="$v.salary.$model" />
+          </div>
+          <div class="control">
+            <a class="button is-static">
+              คน
+            </a>
+          </div>
+        </div>
+      </div>
+        </div>
+      </div>
+
+      <div class="column is-3">
+        <div class="field">
+          <label class="label">GPA</label>
+          <div class="control">
+            <input class="input" type="text" v-model="gpa" />
+          </div>
+          
         </div>
       </div>
     </div>
 
+    <div class="columns">
+  <div class="column is-3">
     <div class="field">
-      <label class="label">คุณสมบัติ</label>
+      <label class="label">ค่าตอบแทน</label>
+      <div class="control">
+        <div class="field has-addons">
+          <div class="control">
+            <input class="input" type="number" v-model="$v.salary.$model" />
+          </div>
+          <div class="control">
+            <a class="button is-static">
+              บาท/วัน
+            </a>
+          </div>
+        </div>
+      </div>
+      <p v-if="$v.salary.$error" class="help is-danger">โปรดกรอกเงินเดือน</p>
+    </div>
+  </div>
+  <div class="column is-9">
+    <div class="field">
+      <label class="label">สวัสดิการ</label>
+      <div class="control">
+        <input class="input" type="text" v-model="benefit" />
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    <div class="field">
+      <label class="label">คุณสมบัติผู้สมัคร</label>
       <div class="control">
         <textarea class="textarea" v-model="$v.qualifications.$model"></textarea>
       </div>
@@ -57,6 +134,26 @@
       </div>
       <p v-if="$v.internship_duration.$error" class="help is-danger">โปรดกรอกระยะเวลา</p>
     </div>
+
+    <div class="field" >
+      <label class="label">วิธีการเดินทาง</label>
+      <div class="control">
+        <input class="input" type="text" v-model="expedition" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">สถานะ</label>
+      <div class="control">
+        <div class="select">
+          <select v-model="status">
+            <option value="open">เปิดรับสมัคร</option>
+            <option value="close">ปิดรับสมัคร</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
     <div class="field is-grouped">
       <div class="control">
         <button class="button is-primary" @click="addJob">บันทึก</button>
@@ -66,6 +163,7 @@
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -75,13 +173,19 @@ import Swal from "sweetalert2";
 export default {
   data() {
     return {
+      jobType: 'internship',
+      project_name:'',
       title: '',
       location: '',
+      job_position:'',
       quantity: 0,
+      gpa:'',
       salary: 0,
       status: 'open',
       description: '',
+      benefit:'',
       qualifications: '',
+      expedition:'',
       internship_duration: 0,
     };
   },
@@ -129,6 +233,7 @@ export default {
     cancel() {
       this.$router.push('/recruiterJob');
     },
+    
   },
   validations: {
     title: {
@@ -161,4 +266,5 @@ export default {
   width: 60%;
   margin: 0 auto;
 }
+
 </style>

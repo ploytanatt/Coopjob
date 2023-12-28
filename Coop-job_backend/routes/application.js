@@ -98,7 +98,7 @@ router.get('/getApplications', isLoggedIn, async (req, res) => {
   const recruiterId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-        SELECT ja.*, j.job_title as job_title
+        SELECT ja.*, j.title as job_title
         FROM student_jobs ja
         INNER JOIN jobs j ON ja.job_id = j.job_id
         WHERE j.user_id = ?
