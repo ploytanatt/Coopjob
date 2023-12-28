@@ -1,0 +1,4 @@
+แก้ database 
+ตาราง companies
+cover_image :defult: 'static\\uploads\\sorry.png'
+

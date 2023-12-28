@@ -10,7 +10,15 @@
     </div>
 
     <div class="field">
-      <label class="label">สถานที่ปฏิบัติงาน</label>
+      <label class="label">คำอธิบาย</label>
+      <div class="control">
+        <textarea class="textarea" v-model="$v.description.$model"></textarea>
+      </div>
+      <p v-if="$v.description.$error" class="help is-danger">โปรดกรอกคำอธิบาย</p>
+    </div>
+
+    <div class="field">
+      <label class="label">สถานที่ทำงาน</label>
       <div class="control">
         <input class="input" type="text" v-model="$v.location.$model" />
       </div>
@@ -34,13 +42,7 @@
         </div>
       </div>
     </div>
-    <div class="field">
-      <label class="label">คำอธิบาย</label>
-      <div class="control">
-        <textarea class="textarea" v-model="$v.description.$model"></textarea>
-      </div>
-      <p v-if="$v.description.$error" class="help is-danger">โปรดกรอกคำอธิบาย</p>
-    </div>
+
     <div class="field">
       <label class="label">คุณสมบัติ</label>
       <div class="control">
@@ -75,6 +77,7 @@ export default {
     return {
       title: '',
       location: '',
+      quantity: 0,
       salary: 0,
       status: 'open',
       description: '',

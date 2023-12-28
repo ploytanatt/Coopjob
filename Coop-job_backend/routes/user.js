@@ -42,7 +42,7 @@ router.post("/signin", async (req, res, next) => {
         if (user.role === 'applicant') {
           await pool.query('INSERT INTO applicants (user_id, email) VALUES (?, ?)',[user.user_id, email]);
         }else if (user.role === 'recruiter') {
-          await pool.query('INSERT INTO recruiters (user_id, email) VALUES (?, ?)', [user.user_id, email]);
+          await pool.query('INSERT INTO companies (user_id, email) VALUES (?, ?)', [user.user_id, email]);
         
       }
     }
