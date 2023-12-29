@@ -13,10 +13,8 @@
         <!--ช่องว่าง-->
       </div>
       <div class="column is-3 has-text-right">
-        <button class="button mr-2" v-show="user.role === 'applicant'">
-          <span class="icon is-small">
-            <i class="fas fa-city"></i>
-          </span>
+        <button class="button mr-2" v-show="user.role === 'applicant'" @click="likeJob(jobs.job_id)">
+          <font-awesome-icon icon="heart" />
         </button>
         <button class="button is-success mr-2" v-show="user.role === 'applicant'" @click="applyToJob(jobs.job_id)">
           ยื่นสมัคร
@@ -76,7 +74,11 @@
 <script>
 import axios from "axios";
 import Swal from "sweetalert2";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 export default {
+  components: {
+    FontAwesomeIcon
+  },
   data() {
     return {
       company: null,
@@ -114,54 +116,53 @@ export default {
         });
     },
     applyToJob(jobId) {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const data = {
+        user_id: this.user.user_id,
+        job_id: jobId,
+      };
+      //console.log(`Applying to job ${jobId}`);
+      try {
+        axios
+          .post(`http://localhost:3000/application/sendApplicationJob`, data, config)
+          .then(res => {
+            console.log(res.data.message)
+
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "ดำเนินการสำเร็จ",
+              showConfirmButton: false,
+            });
+          })
+          .catch(error => {
+            console.error(error);
+
+            // ถ้ามีข้อผิดพลาดที่เกิดจากการสมัครงานที่ซ้ำกัน
+            if (error.response && error.response.status === 400 && error.response.data.error) {
+              Swal.fire({
+                icon: 'error',
+                title: 'สมัครงานซ้ำ',
+                text: error.response.data.error,
+              });
+            } else {
+              // ถ้าเป็นข้อผิดพลาดอื่น ๆ
+              Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: 'กรุณาลองใหม่ภายหลัง',
+              });
+            }
+          });
+      } catch (error) {
+        console.log(error);
+      }
     },
-  };
-  const data = {
-    user_id: this.user.user_id,
-    job_id: jobId,
-  };
-  //console.log(`Applying to job ${jobId}`);
-  try {
-    axios
-      .post(`http://localhost:3000/application/sendApplicationJob`, data, config)
-      .then(res => {
-        console.log(res.data.message)
-
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "ดำเนินการสำเร็จ",
-          showConfirmButton: false,
-        });
-      })
-      .catch(error => {
-        console.error(error);
-
-        // ถ้ามีข้อผิดพลาดที่เกิดจากการสมัครงานที่ซ้ำกัน
-        if (error.response && error.response.status === 400 && error.response.data.error) {
-          Swal.fire({
-            icon: 'error',
-            title: 'สมัครงานซ้ำ',
-            text: error.response.data.error,
-          });
-        } else {
-          // ถ้าเป็นข้อผิดพลาดอื่น ๆ
-          Swal.fire({
-            icon: 'error',
-            title: 'เกิดข้อผิดพลาด',
-            text: 'กรุณาลองใหม่ภายหลัง',
-          });
-        }
-      });
-  } catch (error) {
-    console.log(error);
-    //ใส่pop up
-  }
-},
 
 
 
@@ -197,6 +198,33 @@ export default {
           });
         },
       });
+    },
+
+    likeJob(jobId) {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      axios
+        .post(`http://localhost:3000/application/sendFavoriteJob/${jobId}`, {}, config)
+        .then(res => {
+          console.log(res.data.message);
+
+          // ทำอย่างอื่น ๆ ที่คุณต้องการหลังจากกดถูกใจสำเร็จ
+        })
+        .catch(error => {
+          console.error(error);
+
+          // ถ้ามีข้อผิดพลาด
+          Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'กรุณาลองใหม่ภายหลัง',
+          });
+        });
     },
   },
 };
