@@ -174,7 +174,7 @@ router.post('/sendFavoriteJob/:jobId', isLoggedIn, async (req, res) => {
   }
 });
 
-router.get('/getLikedJobs', isLoggedIn, async (req, res) => {
+router.get('/getFavoriteJobs', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   try {
     const [results] = await pool.query(`
@@ -183,7 +183,7 @@ router.get('/getLikedJobs', isLoggedIn, async (req, res) => {
         INNER JOIN jobs j ON fj.job_id = j.job_id
         WHERE fj.user_id = ?
       `, [userId]);
-    const likedJobs = results.map((row) => {
+    const FavoriteJobs = results.map((row) => {
       return {
         favorite_job_id: row.favorite_job_id,
         job_id: row.job_id,  // เพิ่มค่า job_id ที่ตรงกับ user_id
@@ -191,12 +191,44 @@ router.get('/getLikedJobs', isLoggedIn, async (req, res) => {
         likedDate: row.liked_date,
       };
     });
-    res.json(likedJobs);
+    res.json(FavoriteJobs);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+
+// ยกเลิกการถูกใจงาน
+router.delete('/cancelFavoriteJob/:jobId', isLoggedIn, async (req, res) => {
+  const jobId = req.params.jobId;
+  const userId = req.user.user_id;
+
+  try {
+    // ตรวจสอบว่าผู้ใช้ได้กดถูกใจงานนี้ไปแล้วหรือไม่
+    const [existingFavorite] = await pool.query(
+      'SELECT * FROM favorite_jobs WHERE job_id = ? AND user_id = ?',
+      [jobId, userId]
+    );
+
+    if (existingFavorite.length === 0) {
+      // ถ้ายังไม่ได้กดถูกใจ
+      return res.status(400).json({ error: 'You have not liked this job.' });
+    }
+
+    // ถ้าได้กดถูกใจไปแล้ว
+    await pool.query(
+      'DELETE FROM favorite_jobs WHERE user_id = ? AND job_id = ?',
+      [userId, jobId]
+    );
+
+    res.json({ message: 'Job unliked successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 
 

@@ -26,7 +26,6 @@
 
 <script>
 import axios from "axios";
-
 export default {
   data() {
     return {
@@ -34,10 +33,10 @@ export default {
     };
   },
   mounted() {
-    this.getLikedJobs();
+    this.getFavoriteJobs();
   },
   methods: {
-    async getLikedJobs() {
+    async getFavoriteJobs() {
       try {
         const token = localStorage.getItem("token");
         const config = {
@@ -46,7 +45,7 @@ export default {
           },
         };
 
-        const response = await axios.get("http://localhost:3000/application/getLikedJobs", config);
+        const response = await axios.get("http://localhost:3000/application/getFavoriteJobs", config);
         
         // ใช้ JSON.parse(JSON.stringify()) เพื่อ deep clone และลบ Observer ทิ้ง
         this.likedJobs = JSON.parse(JSON.stringify(response.data));
