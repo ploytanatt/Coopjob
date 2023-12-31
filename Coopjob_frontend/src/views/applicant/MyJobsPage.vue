@@ -11,22 +11,31 @@
                     :class="['select_option', select_option === 'history' ? ['has-background-primary', 'has-text-white'] : '']">
                     <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'history'">งานที่เคยยื่น</p>
                 </div>
+                <div
+                    :class="['select_option', select_option === 'favorite' ? ['has-background-primary', 'has-text-white'] : '']">
+                    <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'favorite'">งานถูกใจ</p>
+                </div>
             </div>
             <applicantApplication v-if="select_option === 'application'">
             </applicantApplication>
             <applicantHistory
                 v-if="select_option === 'history'">
-            </applicantHistory> 
+            </applicantHistory>
+            <applicantFavoritejob
+                v-if="select_option === 'favorite'">
+            </applicantFavoritejob> 
         </div>
     </div>
 </template>
 <script lang="ts">
 import applicantApplication from '@/components/applicant-application.vue';
 import applicantHistory from '@/components/applicant-history.vue';
+import applicantFavoritejob from '@/components/applicant-favorite.vue';
 export default ({
     components: {
      applicantHistory,
-     applicantApplication
+     applicantApplication,
+     applicantFavoritejob,
     },
     data() {
   return {

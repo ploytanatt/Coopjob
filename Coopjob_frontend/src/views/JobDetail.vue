@@ -13,10 +13,19 @@
         <!--ช่องว่าง-->
       </div>
       <div class="column is-3 has-text-right">
-        <button class="button mr-2" v-show="user.role === 'applicant'">
-          <span class="icon is-small">
-            <i class="fas fa-city"></i>
-          </span>
+        <!--<button class="button mr-2" v-show="user.role === 'applicant'" @click="favoriteJob(jobs.job_id)">
+          <font-awesome-icon icon="heart" />
+        </button>-->
+        <!-- ปุ่ม Like เปลี่ยนสีที่ไอค่อน 
+        <button class="button mr-2" @click="favoriteJob(jobs.job_id)" v-show="user.role === 'applicant'">
+          <font-awesome-icon :icon="isJobLiked ? 'heart' : ['far', 'heart']"
+            :style="{ color: isJobLiked ? 'red' : 'black' }" />
+        </button>-->
+
+        <!-- ปุ่ม Like  เปี่ลยนสีที่ปุ่ม-->
+        <button class="button mr-2" @click="favoriteJob(jobs.job_id)"
+          :class="{ 'is-danger': isJobLiked, 'is-dark': !isJobLiked }" v-show="user.role === 'applicant'">
+          <font-awesome-icon icon="heart" />
         </button>
         <button class="button is-success mr-2" v-show="user.role === 'applicant'" @click="applyToJob(jobs.job_id)">
           ยื่นสมัคร
@@ -76,18 +85,26 @@
 <script>
 import axios from "axios";
 import Swal from "sweetalert2";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 export default {
+  components: {
+    FontAwesomeIcon
+  },
   data() {
     return {
       company: null,
       jobs: [],
-      user: []
+      user: [],
+      isJobLiked: false, // เพิ่มตัวแปรเพื่อเก็บสถานะการถูกใจ
     };
   },
   mounted() {
     const jobId = this.$route.params.jobId;
     this.getCompanyJobs(jobId);
     this.getUser();
+    this.checkJobLikedStatus(jobId); // เรียกใช้เมื่อโหลดหน้าเสร็จ
+    const storedLikedStatus = localStorage.getItem(`jobLikedStatus_${jobId}`);
+    this.isJobLiked = storedLikedStatus === 'true'; // หรือทำเงื่อนไขตามความเหมาะสม
   },
   methods: {
     getUser() {
@@ -114,54 +131,53 @@ export default {
         });
     },
     applyToJob(jobId) {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const data = {
+        user_id: this.user.user_id,
+        job_id: jobId,
+      };
+      //console.log(`Applying to job ${jobId}`);
+      try {
+        axios
+          .post(`http://localhost:3000/application/sendApplicationJob`, data, config)
+          .then(res => {
+            console.log(res.data.message)
+
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "ดำเนินการสำเร็จ",
+              showConfirmButton: false,
+            });
+          })
+          .catch(error => {
+            console.error(error);
+
+            // ถ้ามีข้อผิดพลาดที่เกิดจากการสมัครงานที่ซ้ำกัน
+            if (error.response && error.response.status === 400 && error.response.data.error) {
+              Swal.fire({
+                icon: 'error',
+                title: 'สมัครงานซ้ำ',
+                text: error.response.data.error,
+              });
+            } else {
+              // ถ้าเป็นข้อผิดพลาดอื่น ๆ
+              Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: 'กรุณาลองใหม่ภายหลัง',
+              });
+            }
+          });
+      } catch (error) {
+        console.log(error);
+      }
     },
-  };
-  const data = {
-    user_id: this.user.user_id,
-    job_id: jobId,
-  };
-  //console.log(`Applying to job ${jobId}`);
-  try {
-    axios
-      .post(`http://localhost:3000/application/sendApplicationJob`, data, config)
-      .then(res => {
-        console.log(res.data.message)
-
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "ดำเนินการสำเร็จ",
-          showConfirmButton: false,
-        });
-      })
-      .catch(error => {
-        console.error(error);
-
-        // ถ้ามีข้อผิดพลาดที่เกิดจากการสมัครงานที่ซ้ำกัน
-        if (error.response && error.response.status === 400 && error.response.data.error) {
-          Swal.fire({
-            icon: 'error',
-            title: 'สมัครงานซ้ำ',
-            text: error.response.data.error,
-          });
-        } else {
-          // ถ้าเป็นข้อผิดพลาดอื่น ๆ
-          Swal.fire({
-            icon: 'error',
-            title: 'เกิดข้อผิดพลาด',
-            text: 'กรุณาลองใหม่ภายหลัง',
-          });
-        }
-      });
-  } catch (error) {
-    console.log(error);
-    //ใส่pop up
-  }
-},
 
 
 
@@ -198,7 +214,80 @@ export default {
         },
       });
     },
+
+    favoriteJob(jobId) {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      axios
+        .post(`http://localhost:3000/application/sendFavoriteJob/${jobId}`, {}, config)
+        .then(res => {
+          console.log(res.data.message);
+          // ทำอย่างอื่น ๆ ที่คุณต้องการหลังจากกดถูกใจสำเร็จ
+          this.isJobLiked = !this.isJobLiked; // สลับค่า isJobLiked เมื่อกดถูกใจ
+          localStorage.setItem(`jobLikedStatus_${jobId}`, this.isJobLiked); // บันทึกสถานะลงใน LocalStorage
+        })
+        .catch(error => {
+          console.error(error);
+          // ถ้ามีข้อผิดพลาด
+          if (error.response && error.response.status === 400 && error.response.data.error === 'You have already liked this job.') {
+            // ถ้าผู้ใช้กดถูกใจแล้ว
+            // ให้ทำการยกเลิกการถูกใจ
+            axios.delete(`http://localhost:3000/application/cancelFavoriteJob/${jobId}`, config)
+              .then(cancelRes => {
+                console.log(cancelRes.data.message);
+                console.log('Unlike successful');
+                this.isJobLiked = !this.isJobLiked; // สลับค่า isJobLiked เมื่อกดถูกใจ
+                localStorage.setItem(`jobLikedStatus_${jobId}`, this.isJobLiked); // บันทึกสถานะลงใน LocalStorage
+              })
+              .catch(cancelError => {
+                console.error(cancelError);
+                // ถ้ามีข้อผิดพลาดในการยกเลิกถูกใจ
+                Swal.fire({
+                  icon: 'error',
+                  title: 'เกิดข้อผิดพลาดในการยกเลิกถูกใจ',
+                  text: 'กรุณาลองใหม่ภายหลัง',
+                });
+              });
+          } else {
+            // ถ้าเป็นข้อผิดพลาดอื่น ๆ
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'กรุณาลองใหม่ภายหลัง',
+            });
+          }
+        });
+    },
+
+
+    checkJobLikedStatus(jobId) {
+      // ตรวจสอบสถานะการถูกใจแล้วอัปเดตค่า isJobLiked ตามความเหมาะสม
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      axios
+        .get(`http://localhost:3000/application/checkFavoriteJob/${jobId}`, config)
+        .then((res) => {
+          this.isJobLiked = res.data.isLiked; // อัปเดตค่า isJobLiked
+        })
+        .catch((error) => {
+          console.error(error);
+          // โค้ดในกรณีเกิดข้อผิดพลาด
+        });
+    },
+
+
   },
+
 };
 </script>
   
