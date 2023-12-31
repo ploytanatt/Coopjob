@@ -16,7 +16,13 @@
         <!--<button class="button mr-2" v-show="user.role === 'applicant'" @click="favoriteJob(jobs.job_id)">
           <font-awesome-icon icon="heart" />
         </button>-->
-        <!-- ปุ่ม Like -->
+        <!-- ปุ่ม Like เปลี่ยนสีที่ไอค่อน 
+        <button class="button mr-2" @click="favoriteJob(jobs.job_id)" v-show="user.role === 'applicant'">
+          <font-awesome-icon :icon="isJobLiked ? 'heart' : ['far', 'heart']"
+            :style="{ color: isJobLiked ? 'red' : 'black' }" />
+        </button>-->
+
+        <!-- ปุ่ม Like  เปี่ลยนสีที่ปุ่ม-->
         <button class="button mr-2" @click="favoriteJob(jobs.job_id)"
           :class="{ 'is-danger': isJobLiked, 'is-dark': !isJobLiked }" v-show="user.role === 'applicant'">
           <font-awesome-icon icon="heart" />
@@ -97,6 +103,8 @@ export default {
     this.getCompanyJobs(jobId);
     this.getUser();
     this.checkJobLikedStatus(jobId); // เรียกใช้เมื่อโหลดหน้าเสร็จ
+    const storedLikedStatus = localStorage.getItem(`jobLikedStatus_${jobId}`);
+    this.isJobLiked = storedLikedStatus === 'true'; // หรือทำเงื่อนไขตามความเหมาะสม
   },
   methods: {
     getUser() {
@@ -221,6 +229,7 @@ export default {
           console.log(res.data.message);
           // ทำอย่างอื่น ๆ ที่คุณต้องการหลังจากกดถูกใจสำเร็จ
           this.isJobLiked = !this.isJobLiked; // สลับค่า isJobLiked เมื่อกดถูกใจ
+          localStorage.setItem(`jobLikedStatus_${jobId}`, this.isJobLiked); // บันทึกสถานะลงใน LocalStorage
         })
         .catch(error => {
           console.error(error);
@@ -233,6 +242,7 @@ export default {
                 console.log(cancelRes.data.message);
                 console.log('Unlike successful');
                 this.isJobLiked = !this.isJobLiked; // สลับค่า isJobLiked เมื่อกดถูกใจ
+                localStorage.setItem(`jobLikedStatus_${jobId}`, this.isJobLiked); // บันทึกสถานะลงใน LocalStorage
               })
               .catch(cancelError => {
                 console.error(cancelError);
@@ -277,6 +287,7 @@ export default {
 
 
   },
+
 };
 </script>
   
