@@ -1,13 +1,19 @@
+<!--โค้ดเก่า
 <template>
   <div class="columns mt-6">
     <div class="column is-2"></div>
     <div class="tabs is-boxed column is-8">
       <ul>
-        <li :class="[select_option === 'user_profile' ? 'is-active' : '']" @click="select_option = 'user_profile'" > <a><span>User Profile</span></a></li>
-        <li :class="[select_option === 'resume' ? 'is-active' : '']" @click="select_option = 'resume'" ><a><span>Resume</span></a></li>
-        <li :class="[select_option === 'transcript' ? 'is-active' : '']" @click="select_option = 'transcript'" ><a><span>Transcript</span></a></li>
-        <li :class="[select_option === 'portfolio' ? 'is-active' : '']" @click="select_option = 'portfolio'" ><a><span>Portfolio</span></a></li>
-        <li :class="[select_option === 'preview' ? 'is-active' : '']" @click="select_option = 'preview'"><a><span>ตัวอย่างใบยื่นสมัคร</span></a></li>
+        <li :class="[select_option === 'user_profile' ? 'is-active' : '']" @click="select_option = 'user_profile'">
+          <a><span>User Profile</span></a></li>
+        <li :class="[select_option === 'resume' ? 'is-active' : '']" @click="select_option = 'resume'">
+          <a><span>Resume</span></a></li>
+        <li :class="[select_option === 'transcript' ? 'is-active' : '']" @click="select_option = 'transcript'">
+          <a><span>Transcript</span></a></li>
+        <li :class="[select_option === 'portfolio' ? 'is-active' : '']" @click="select_option = 'portfolio'">
+          <a><span>Portfolio</span></a></li>
+        <li :class="[select_option === 'preview' ? 'is-active' : '']" @click="select_option = 'preview'">
+          <a><span>ตัวอย่างใบยื่นสมัคร</span></a></li>
       </ul>
       <applicantProfile v-if="select_option === 'user_profile'"></applicantProfile>
       <UploadResume v-if="select_option === 'resume'"></UploadResume>
@@ -16,8 +22,40 @@
       <applicantPreview v-if="select_option === 'preview'"></applicantPreview>
     </div>
   </div>
+</template>-->
+<!--ใหม่-->
+<template>
+  <div class="container">
+    <div class="columns mt-6">
+      <div class="column has-background-light is-3 pt-3 pb-3 card">
+        <div
+          :class="['select_option', select_option === 'user_profile' ? ['has-background-primary', 'has-text-white'] : '']">
+          <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'user_profile'">User Profile
+          </p>
+        </div>
+        <div :class="['select_option', select_option === 'resume' ? ['has-background-primary', 'has-text-white'] : '']">
+          <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'resume'">Resume</p>
+        </div>
+        <div
+          :class="['select_option', select_option === 'transcript' ? ['has-background-primary', 'has-text-white'] : '']">
+          <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'transcript'">transcript</p>
+        </div>
+        <div
+          :class="['select_option', select_option === 'portfolio' ? ['has-background-primary', 'has-text-white'] : '']">
+          <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'portfolio'">portfolio</p>
+        </div>
+        <div :class="['select_option', select_option === 'preview' ? ['has-background-primary', 'has-text-white'] : '']">
+          <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'preview'">ตัวอย่างใบสมัคร</p>
+        </div>
+      </div>
+      <applicantProfile v-if="select_option === 'user_profile'"></applicantProfile>
+      <UploadResume v-if="select_option === 'resume'"></UploadResume>
+      <UploadTranscript v-if="select_option === 'transcript'"></UploadTranscript>
+      <UploadPortfolio v-if="select_option === 'portfolio'"></UploadPortfolio>
+      <applicantPreview v-if="select_option === 'preview'"></applicantPreview>
+    </div>
+  </div>
 </template>
-
 
 <script>
 import applicantProfile from '@/components/applicant-profile.vue';
@@ -33,20 +71,20 @@ export default {
     UploadTranscript,
     UploadPortfolio,
     applicantPreview,
-    
-},
+
+  },
   data() {
     return {
-       firstName: "",
+      firstName: "",
       lastName: "",
       birthdate: "",
       phone_number: "",
       gender: "",
       email: "",
       address: "",
-      modify_profile : false,
-      select_option : 'user_profile',
-      user:''
+      modify_profile: false,
+      select_option: 'user_profile',
+      user: ''
     };
   },
   mounted() {
@@ -61,10 +99,10 @@ export default {
           Authorization: `Bearer ${token}`,
         },
       };
-      
+
       axios.get("http://localhost:3000/applicant/getData", config).then((res) => {
         this.user = res.data;
-       // console.log("appProfile", res.data[0].email)
+        // console.log("appProfile", res.data[0].email)
         this.firstName = res.data[0].firstName;
         this.lastName = res.data[0].lastName;
         this.birthdate = new Date(res.data[0].birthdate).toISOString().split("T")[0];

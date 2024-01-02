@@ -15,6 +15,10 @@
                     :class="['select_option', select_option === 'favorite' ? ['has-background-primary', 'has-text-white'] : '']">
                     <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'favorite'">งานถูกใจ</p>
                 </div>
+                <div
+                    :class="['select_option', select_option === 'report_history' ? ['has-background-primary', 'has-text-white'] : '']">
+                    <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'report_history'">ประวัติการรีพอร์ต</p>
+                </div>
             </div>
             <applicantApplication v-if="select_option === 'application'">
             </applicantApplication>
@@ -23,7 +27,10 @@
             </applicantHistory>
             <applicantFavoritejob
                 v-if="select_option === 'favorite'">
-            </applicantFavoritejob> 
+            </applicantFavoritejob>
+            <applicantreporthistory
+                v-if="select_option === 'report_history'">
+            </applicantreporthistory> 
         </div>
     </div>
 </template>
@@ -31,11 +38,13 @@
 import applicantApplication from '@/components/applicant-application.vue';
 import applicantHistory from '@/components/applicant-history.vue';
 import applicantFavoritejob from '@/components/applicant-favorite.vue';
+import applicantreporthistory from '@/components/applicant-report.vue';
 export default ({
     components: {
      applicantHistory,
      applicantApplication,
      applicantFavoritejob,
+     applicantreporthistory,
     },
     data() {
   return {

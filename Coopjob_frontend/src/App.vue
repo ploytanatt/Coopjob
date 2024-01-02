@@ -43,11 +43,17 @@
               </router-link>
 
               <!-- ของคนหางาน -->
+              <router-link class="navbar-item " to="/" v-if="user.role === 'applicant'">
+                หางาน
+              </router-link>
               <router-link class="navbar-item " to="/applicantProfile" v-if="user.role === 'applicant' ">
                 <font-awesome-icon icon="exclamation" style="color: red" v-if="applicant.status === 'close'" />ประวัติส่วนตัว
               </router-link>
               <router-link class="navbar-item " to="/MyJobs" v-if="user.role === 'applicant'">
                 งานของฉัน
+              </router-link>
+              <router-link class="navbar-item " to="/MyJobs" v-if="user.role === 'applicant'">
+                บัญชี
               </router-link>
 
               <button class="button is-danger" @click="logout()" v-if="user">
