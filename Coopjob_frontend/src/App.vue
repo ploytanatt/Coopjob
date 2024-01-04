@@ -74,6 +74,7 @@
 <script>
 import axios from "@/plugins/axios";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
 export default {
   components: {
     FontAwesomeIcon
@@ -117,8 +118,10 @@ export default {
   },
 };
 </script>
+<style scope>
 
-<style scoped>
+
+/* และสไตล์อื่น ๆ ที่คุณต้องการ */
 .navbar {
   background-color: #b9b9b9;
   padding: 10px;
@@ -128,13 +131,10 @@ export default {
 }
 
 .navbar-item-logo {
- 
   padding: 10px;
 }
 
 .navbar-burger {
-  margin-top: 20px; 
-  
+  margin-top: 20px;
 }
-
 </style>

@@ -1,18 +1,18 @@
 <template>
-  <div>
+  
+  <div class="container mt-4">
+    
     <div class="columns m-5">
-      <div class="column is-1">
-        <img
-          src="https://media.licdn.com/dms/image/D4D0BAQEadGTydTHpOA/company-logo_200_200/0/1695133131669/img_golf_course_management_logo?e=2147483647&v=beta&t=xLnWCc44yGYTSK1xdMk4dg_EQXsXlblzMqdARTvs8eQ"
-          alt="Your Image" style="width: 100%; height: 100%; object-fit: cover;" />
-      </div>
-      <div class="column is-4">
-        <p class="is-size-5"><b>บริษัท sssss</b></p>
+
+      <img :src="imagePath(jobs[0].company.profile_image)" class="column is-2 profile_image" />
+      <div class="column ml-4" style="position: relative; top: 100px">
+        <p class="is-size-4 has-text-weight-bold">{{ jobs[0].company.company_name }}</p>
       </div>
       <div class="column is-4">
         <!--ช่องว่าง-->
       </div>
       <div class="column is-3 has-text-right">
+        
         <!--<button class="button mr-2" v-show="user.role === 'applicant'" @click="favoriteJob(jobs.job_id)">
           <font-awesome-icon icon="heart" />
         </button>-->
@@ -40,13 +40,13 @@
       <p class="has-text-right"></p>
       <div class="columns mt-1">
         <div class="column is-11">
-          <p class="is-size-5-mobile is-size-4-desktop pl-4"><b>ชื่องาน : {{ jobs.title }}</b></p>
+          <p class="is-size-5-mobile is-size-4-desktop pl-4"><b>ชื่องาน : {{ jobs[0].title }}</b></p>
           <div class="pl-2">
             <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>รายละเอียด : </b>{{ jobs.description }}</span>
+              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>รายละเอียด : </b>{{ jobs[0].description }}</span>
             </div>
             <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>สถานที่ทำงาน : </b>{{ jobs.location }} </span>
+              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>สถานที่ทำงาน : </b>{{ jobs[0].location }} </span>
             </div>
             <div class="p-4">
               <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>จำนวนที่รับสมัคร : </b></span>
@@ -58,16 +58,16 @@
               <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>สวัสดิการ : </b></span>
             </div>
             <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-6"><b>ค่าตอบแทน: </b> {{ jobs.salary }} / วัน</span>
+              <span class="is-size-5-mobile is-size-4-desktop pl-6"><b>ค่าตอบแทน: </b> {{ jobs[0].salary }} / วัน</span>
               <span class="is-size-5-mobile is-size-4-desktop pl-6"><b>สวัสดิการอื่นๆ </b>: xxxx </span>
             </div>
             <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>ระยะเวลาทำงาน :</b> {{ jobs.internship_duration }}
+              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>ระยะเวลาทำงาน :</b> {{ jobs[0].internship_duration }}
                 เดือน
               </span>
             </div>
             <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>คุณสมบัติผู้สมัคร :</b> {{ jobs.qualifications }}
+              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>คุณสมบัติผู้สมัคร :</b> {{ jobs[0].qualifications }}
               </span>
             </div>
             <div class="p-4">
@@ -92,8 +92,9 @@ export default {
   },
   data() {
     return {
-      company: null,
+
       jobs: [],
+      alljobs: [],
       user: [],
       isJobLiked: false, // เพิ่มตัวแปรเพื่อเก็บสถานะการถูกใจ
     };
@@ -120,16 +121,35 @@ export default {
         console.log("App.vue", this.user)
       });
     },
-    getCompanyJobs(jobId) {
-      axios
-        .get(`http://localhost:3000/recruiter/getJobDetail/${jobId}`)
-        .then((response) => {
-          this.jobs = response.data;
+  getCompanyJobs(jobId) {
+  axios.get(`http://localhost:3000/recruiter/getJobDetail/${jobId}`)
+    .then((response) => {
+      const job = response.data;
+
+      // เรียก API เพื่อดึงข้อมูลบริษัท
+      axios.get(`http://localhost:3000/recruiter/getRecruiterDetails/${job.user_id}`)
+        .then(recruiterResponse => {
+          // เชื่อมโยงข้อมูลบริษัทกับงาน
+          job.company = recruiterResponse.data;
+
+          // ใช้ Map เพื่อเพิ่ม job ลงใน jobs
+          this.jobs = this.jobs.map(job => {
+              return job;
+          });
+          // ถ้า job ไม่มีอยู่ใน jobs ให้เพิ่ม job เข้าไป
+          if (!this.jobs.find(existingJob => existingJob.id === job.id)) {
+            this.jobs.push(job);
+          }
         })
-        .catch((error) => {
+        .catch(error => {
           console.error(error);
         });
-    },
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+},
+
     applyToJob(jobId) {
       const token = localStorage.getItem("token");
       const config = {
@@ -178,8 +198,6 @@ export default {
         console.log(error);
       }
     },
-
-
 
     showReportPopup() {
       Swal.fire({
@@ -264,7 +282,6 @@ export default {
         });
     },
 
-
     checkJobLikedStatus(jobId) {
       // ตรวจสอบสถานะการถูกใจแล้วอัปเดตค่า isJobLiked ตามความเหมาะสม
       const token = localStorage.getItem("token");
@@ -284,7 +301,13 @@ export default {
           // โค้ดในกรณีเกิดข้อผิดพลาด
         });
     },
-
+    imagePath(companyProfileImage) {
+      if (companyProfileImage) {
+        return "http://localhost:3000" + companyProfileImage.replace(/\\/g, '/').replace('static', '');
+      } else {
+        return "https://bulma.io/images/placeholders/640x360.png";
+      }
+    },
 
   },
 
@@ -293,5 +316,13 @@ export default {
   
 <style scoped>
 /* สไตล์ของหน้ารายละเอียดบริษัท */
+.profile_image {
+  width: 150px;
+  height: 150px;
+  border: 2px solid gray;
+  padding: 0;
+  border-radius: 25px;
+}
+
 </style>
   

@@ -28,6 +28,17 @@ router.get("/getRecruiter", async (req, res) => {
   }
 });
 
+//แสดงงานทั้งหมดที่ประกาศ
+router.get("/getAllJobs", isLoggedIn, async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT * FROM jobs ");
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 const passwordValidator = (value, helpers) => {
     if (value.length < 8) {
       throw new Joi.ValidationError("Password must contain at least 8 characters");
@@ -222,7 +233,7 @@ router.post("/addJob", isLoggedIn, async (req, res) => {
   }
 });
 
-//แสดงงานทั้งหมด ของผู้ใช้
+//แสดงงานทั้งหมด ของแต่ละผู้ใช้
 router.get("/getJob", isLoggedIn, async (req, res) => {
   try {
     const userId = req.user.user_id;
