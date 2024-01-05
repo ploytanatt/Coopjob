@@ -1,7 +1,6 @@
 <template>
-  
   <div class="container mt-4">
-    
+
     <div class="columns m-5">
 
       <img :src="imagePath(jobs[0].company.profile_image)" class="column is-2 profile_image" />
@@ -12,7 +11,7 @@
         <!--ช่องว่าง-->
       </div>
       <div class="column is-3 has-text-right">
-        
+
         <!--<button class="button mr-2" v-show="user.role === 'applicant'" @click="favoriteJob(jobs.job_id)">
           <font-awesome-icon icon="heart" />
         </button>-->
@@ -62,12 +61,14 @@
               <span class="is-size-5-mobile is-size-4-desktop pl-6"><b>สวัสดิการอื่นๆ </b>: xxxx </span>
             </div>
             <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>ระยะเวลาทำงาน :</b> {{ jobs[0].internship_duration }}
+              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>ระยะเวลาทำงาน :</b> {{ jobs[0].internship_duration
+              }}
                 เดือน
               </span>
             </div>
             <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>คุณสมบัติผู้สมัคร :</b> {{ jobs[0].qualifications }}
+              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>คุณสมบัติผู้สมัคร :</b> {{ jobs[0].qualifications
+              }}
               </span>
             </div>
             <div class="p-4">
@@ -103,7 +104,6 @@ export default {
     const jobId = this.$route.params.jobId;
     this.getCompanyJobs(jobId);
     this.getUser();
-    this.checkJobLikedStatus(jobId); // เรียกใช้เมื่อโหลดหน้าเสร็จ
     const storedLikedStatus = localStorage.getItem(`jobLikedStatus_${jobId}`);
     this.isJobLiked = storedLikedStatus === 'true'; // หรือทำเงื่อนไขตามความเหมาะสม
   },
@@ -121,34 +121,34 @@ export default {
         console.log("App.vue", this.user)
       });
     },
-  getCompanyJobs(jobId) {
-  axios.get(`http://localhost:3000/recruiter/getJobDetail/${jobId}`)
-    .then((response) => {
-      const job = response.data;
+    getCompanyJobs(jobId) {
+      axios.get(`http://localhost:3000/recruiter/getJobDetail/${jobId}`)
+        .then((response) => {
+          const job = response.data;
 
-      // เรียก API เพื่อดึงข้อมูลบริษัท
-      axios.get(`http://localhost:3000/recruiter/getRecruiterDetails/${job.user_id}`)
-        .then(recruiterResponse => {
-          // เชื่อมโยงข้อมูลบริษัทกับงาน
-          job.company = recruiterResponse.data;
+          // เรียก API เพื่อดึงข้อมูลบริษัท
+          axios.get(`http://localhost:3000/recruiter/getRecruiterDetails/${job.user_id}`)
+            .then(recruiterResponse => {
+              // เชื่อมโยงข้อมูลบริษัทกับงาน
+              job.company = recruiterResponse.data;
 
-          // ใช้ Map เพื่อเพิ่ม job ลงใน jobs
-          this.jobs = this.jobs.map(job => {
-              return job;
-          });
-          // ถ้า job ไม่มีอยู่ใน jobs ให้เพิ่ม job เข้าไป
-          if (!this.jobs.find(existingJob => existingJob.id === job.id)) {
-            this.jobs.push(job);
-          }
+              // ใช้ Map เพื่อเพิ่ม job ลงใน jobs
+              this.jobs = this.jobs.map(job => {
+                return job;
+              });
+              // ถ้า job ไม่มีอยู่ใน jobs ให้เพิ่ม job เข้าไป
+              if (!this.jobs.find(existingJob => existingJob.id === job.id)) {
+                this.jobs.push(job);
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            });
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
         });
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-},
+    },
 
     applyToJob(jobId) {
       const token = localStorage.getItem("token");
@@ -228,7 +228,7 @@ export default {
           };
 
           const data = {
-            job_id: reportOption === 'job' ? this.jobs.job_id : null,
+            job_id: (reportOption === 'job') ? this.jobs.job_id : null,
             user_id: this.user.user_id,
             title,
             description,
@@ -304,25 +304,7 @@ export default {
         });
     },
 
-    checkJobLikedStatus(jobId) {
-      // ตรวจสอบสถานะการถูกใจแล้วอัปเดตค่า isJobLiked ตามความเหมาะสม
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
-      axios
-        .get(`http://localhost:3000/application/checkFavoriteJob/${jobId}`, config)
-        .then((res) => {
-          this.isJobLiked = res.data.isLiked; // อัปเดตค่า isJobLiked
-        })
-        .catch((error) => {
-          console.error(error);
-          // โค้ดในกรณีเกิดข้อผิดพลาด
-        });
-    },
+    
     imagePath(companyProfileImage) {
       if (companyProfileImage) {
         return "http://localhost:3000" + companyProfileImage.replace(/\\/g, '/').replace('static', '');
@@ -345,6 +327,5 @@ export default {
   padding: 0;
   border-radius: 25px;
 }
-
 </style>
   

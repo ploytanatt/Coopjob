@@ -231,17 +231,19 @@ router.delete('/cancelFavoriteJob/:jobId', isLoggedIn, async (req, res) => {
 
 //รีพอร์ตงาน
 // Add this to your backend routes
-
 router.post('/sendReport', isLoggedIn, async (req, res) => {
   console.log('Received a POST request to /application/sendReport', req.body);
   try {
     const { job_id, user_id, title, description } = req.body;
 
-    // Save the report details to the database or perform any necessary actions
-    const query = `INSERT INTO report_company (user_id, job_id, title, description) VALUES (?, ?, ?, ?)`;
+    // Set job_id based on title
+    const updatedJobId = (title === 'Company') ? job_id : null;
+
+    // Save the report details to the database or perform any necessary actions ใส่ now()เพื่อให้เอาวันที่ปัจจุบันมา
+    const query = `INSERT INTO report_company (user_id, job_id, title, description, created_at) VALUES (?, ?, ?, ?, NOW())`;
 
     // ใช้ pool.query แทน connection.query
-    pool.query(query, [user_id, job_id, title, description], (error, results, fields) => {
+    pool.query(query, [user_id, updatedJobId, title, description], (error, results, fields) => {
       if (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error' });
@@ -254,6 +256,30 @@ router.post('/sendReport', isLoggedIn, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+router.get('/getReports', isLoggedIn, async (req, res) => {
+  const userId = req.user.user_id;
+  try {
+    const [results] = await pool.query(`
+      SELECT report_id, title, description, created_at
+      FROM report_company
+      WHERE user_id = ?
+    `, [userId]);
+    const reports = results.map((row) => {
+      return {
+        report_id: row.report_id,
+        title: row.title,
+        description: row.description,
+        created_at: row.created_at,
+      };
+    });
+    res.json(reports);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 
 
