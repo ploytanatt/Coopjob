@@ -83,6 +83,7 @@ CREATE TABLE `companies` (
   `profile_image` varchar(255) DEFAULT 'static\\uploads\\sorry.png',
   `cover_image` varchar(100) DEFAULT 'static\\uploads\\sorry.png',
   `company_video` varchar(500) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
   `status` enum('close','open') DEFAULT 'close',
   `role` varchar(45) DEFAULT 'recruiter',
   PRIMARY KEY (`company_id`),
@@ -129,6 +130,7 @@ CREATE TABLE `jobs` (
   `date_posted` date DEFAULT NULL,
   `internship_duration` int DEFAULT NULL,
   `status` enum('close','open') DEFAULT 'open',
+  `job_type` enum('internship','cooperative') DEFAULT NULL,
   PRIMARY KEY (`job_id`),
   KEY `job_recruiter_id_idx` (`user_id`),
   CONSTRAINT `job_recruiter_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
@@ -230,4 +232,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-01-04 15:36:51
+-- Dump completed on 2024-01-04 23:28:25
