@@ -205,30 +205,52 @@ export default {
         html:
           '<div>' +
           '<label for="report-title">Title: </label>' +
+          '<input type="hidden" id="report-title" class="swal2-input">' +
           '<label><input type="radio" name="report-option" value="job" checked> Job </label>' +
           '<label><input type="radio" name="report-option" value="company"> Company </label>' +
           '</div><br>' +
           '<label for="report-description">Description:</label><br>' +
           '<textarea id="report-description" class="swal2-input" placeholder="Description"></textarea>',
         showCancelButton: true,
-        confirmButtonText: 'ส่งรายงาน',
-        cancelButtonText: 'ยกเลิก',
+        confirmButtonText: 'Submit Report',
+        cancelButtonText: 'Cancel',
         showLoaderOnConfirm: true,
         preConfirm: () => {
           const reportOption = document.querySelector('input[name="report-option"]:checked').value;
-          const title = document.getElementById('report-title').value;
+          const title = (reportOption === 'job') ? 'Job' : 'Company'; // Set title based on report-option
           const description = document.getElementById('report-description').value;
 
-          // ทำสิ่งที่คุณต้องการกับ reportOption, title, และ description
-          console.log('Report Option:', reportOption);
-          console.log('Title:', title);
-          console.log('Description:', description);
+          const token = localStorage.getItem('token');
+          const config = {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          };
 
-          // ตอบสนองกับข้อมูล
-          Swal.fire({
-            title: 'ส่งรายงานเรียบร้อย',
-            icon: 'success',
-          });
+          const data = {
+            job_id: reportOption === 'job' ? this.jobs.job_id : null,
+            user_id: this.user.user_id,
+            title,
+            description,
+          };
+
+          // Send the report data to the backend
+          axios.post('http://localhost:3000/application/sendReport', data, config)
+            .then((res) => {
+              console.log(res.data.message);
+              Swal.fire({
+                title: 'Report submitted successfully',
+                icon: 'success',
+              });
+            })
+            .catch((error) => {
+              console.error(error);
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to submit report. Please try again later.',
+              });
+            });
         },
       });
     },
