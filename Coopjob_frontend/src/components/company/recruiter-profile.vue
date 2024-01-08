@@ -4,29 +4,47 @@
     <fieldset :disabled="!modify_profile">
 
       <div class="card-content">
-    <div class="media">
-      <div class="media-left">
-        <div class="container overlay-container">
-        <figure class="image">
-          <img :src="CoverimagePath(cover_image)" alt="Cover Image" class="image-preview cover_image" v-if="cover_image && !modify_profile">
-          <img :src="CoverimagePath(cover_image)" alt="Cover Image" class="image-preview cover_image"  v-if="cover_image && modify_profile && !cover_image_preview"/>
-          <img :src="cover_image_preview" alt="Cover Image" class="image-preview cover_image" v-if="cover_image_preview && modify_profile"/>  
-          <div class="overlay-icon" v-if="modify_profile">
-            <label class="file-label">
-              <button class="button is-dark">
-                <span class="icon is-large">
-                  <font-awesome-icon :icon="['fas', 'camera']" />
-                </span>
-              </button>
-            </label>
-            <input class="file-input" type="file" @change="handleCoverImageUpload" accept="image/*" />
+        <div class="media">
+          <div class="media-left">
+            <div class="container overlay-container">
+              <figure class="image">
+                <img
+                  :src="CoverimagePath(cover_image)"
+                  alt="Cover Image"
+                  class="image-preview cover_image"
+                  v-if="cover_image && !modify_profile"
+                />
+                <img
+                  :src="CoverimagePath(cover_image)"
+                  alt="Cover Image"
+                  class="image-preview cover_image"
+                  v-if="cover_image && modify_profile && !cover_image_preview"
+                />
+                <img
+                  :src="cover_image_preview"
+                  alt="Cover Image"
+                  class="image-preview cover_image"
+                  v-if="cover_image_preview && modify_profile"
+                />
+                <div class="overlay-icon" v-if="modify_profile">
+                  <label class="file-label">
+                    <button class="button is-dark">
+                      <span class="icon is-large">
+                        <font-awesome-icon :icon="['fas', 'camera']" />
+                      </span>
+                    </button>
+                  </label>
+                  <input
+                    class="file-input"
+                    type="file"
+                    @change="handleCoverImageUpload"
+                    accept="image/*"
+                  />
+                </div>
+              </figure>
+            </div>
           </div>
-        </figure>
         </div>
-       
-    
-  </div>
-  </div>
       </div>
 
 
@@ -194,6 +212,7 @@ export default {
        
         if (user[0].profile_image) {
           this.profile_image = user[0].profile_image.replace(/\\/g, '/').replace('static', '');
+          console.log("ชื่อรูปโปร" + this.profile_image)
         }
         if (user[0].cover_image) {
           this.cover_image = user[0].cover_image.replace(/\\/g, '/').replace('static', '');
@@ -208,11 +227,12 @@ export default {
     },
     imagePath(previewProfileImage) {
       if (previewProfileImage) {
-        return 'http://localhost:3000' + previewProfileImage;
+        return "http://localhost:3000" + previewProfileImage;
       } else {
-        return 'https://bulma.io/images/placeholders/640x360.png';
+        return "https://bulma.io/images/placeholders/640x360.png";
       }
     },
+
 
     CoverimagePath(previewCoverImage) {
       if (previewCoverImage) {
@@ -221,7 +241,6 @@ export default {
         return 'https://bulma.io/images/placeholders/640x360.png';
       }
     },
-   
     saveProfile() {
       const token = localStorage.getItem('token');
       const config = {
@@ -234,11 +253,16 @@ export default {
       formData.append('company_name', this.company_name);
       formData.append('email', this.email);
       formData.append('description', this.description);
-       if (this.profile_image) {
-        formData.append('profile_image', this.profile_image, this.profile_image.name);
-      }
 
+      // เพิ่มเงื่อนไขเพื่อตรวจสอบว่ามีการเลือกไฟล์รูปภาพใหม่หรือไม่
+      if (this.profile_image && this.profile_image instanceof File) {
+        formData.append('profile_image', this.profile_image, this.profile_image_name);
+      }
+      if (this.cover_image && this.cover_image instanceof File) {
+        formData.append('cover_image', this.cover_image, this.cover_image_name);
+      }
       formData.append('company_video', this.company_video);
+
       axios
         .post('http://localhost:3000/recruiter/editProfile', formData, config)
         .then((response) => {
@@ -262,7 +286,10 @@ export default {
             showConfirmButton: false,
           });
         });
-    },
+  },
+
+
+
     handleProfileImageUpload(event) {
       const file = event.target.files[0];
       this.profile_image = file;

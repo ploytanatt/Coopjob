@@ -6,6 +6,10 @@ const bcrypt = require('bcrypt');
 const { isLoggedIn } = require("../middleware");
 const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+
 router.get('/getData', isLoggedIn, async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM companies WHERE user_id=?', [req.user.user_id]);
@@ -21,17 +25,6 @@ router.get('/getData', isLoggedIn, async (req, res) => {
 router.get("/getRecruiter", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM companies");
-    res.status(200).json(rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-//แสดงงานทั้งหมดที่ประกาศ
-router.get("/getAllJobs", isLoggedIn, async (req, res) => {
-  try {
-    const [rows] = await pool.query("SELECT * FROM jobs ");
     res.status(200).json(rows);
   } catch (error) {
     console.error(error);
@@ -107,87 +100,70 @@ const profileEditSchema = Joi.object({
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'static/uploads/'); // กำหนดโฟลเดอร์ที่จะเก็บไฟล์ให้เป็น static/resume/
+      cb(null, 'static/uploads/');
     },
     filename: function (req, file, cb) {
       const uniqueFileName = `${uuidv4().slice(0, 4)}-${file.originalname}`;
-      cb(null, uniqueFileName); // กำหนดชื่อไฟล์เก็บในโฟลเดอร์เป็นชื่อที่ไม่ซ้ำกัน
+      cb(null, uniqueFileName);
     }
   }),
   limits: {
-    fileSize: 15 * 1024 * 1024  // กำหนดขนาดสูงสุดของไฟล์เป็น 15MB
+    fileSize: 15 * 1024 * 1024
   }
 });
 
-router.post("/editProfile", isLoggedIn, upload.fields([{
-  name: 'profile_image', maxCount: 1
-}]), async (req, res) => {
+
+router.post("/editProfile", isLoggedIn, upload.fields([{ name: "profile_image", maxCount: 1 }, { name: "cover_image", maxCount: 1 }]), async (req, res) => {
   try {
-    // ตรวจสอบความถูกต้องของข้อมูลที่รับเข้ามา
     const { error } = profileEditSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    // ดึงข้อมูลบริษัทที่ต้องการแก้ไขจากฐานข้อมูล
+
     const {
       company_name,
-      email,
       description,
       company_video,
     } = req.body;
-    const companyId = req.user.user_id;
-    const filePath = req.files['profile_image'];
-    const status = 'open'
-    // ตรวจสอบว่าอีเมลใหม่ซ้ำกับที่มีอยู่ในตาราง companies หรือไม่
-    const [existingRecruiter] = await pool.query('SELECT * FROM companies WHERE email = ?', [email]);
-    if (existingRecruiter.length > 0 && existingRecruiter[0].user_id !== companyId) {
-      return res.status(400).json({ message: 'Email already exists' });
-    }
-      await pool.query('UPDATE companies SET company_name = ?, email = ?, description = ?, profile_image = ?, company_video = ?, status = ? WHERE user_id = ?',[company_name, email, description, filePath, company_video, status, companyId]);
-      await pool.query('UPDATE users SET status = ? WHERE user_id = ?', [status, companyId])
-      console.log("Recruiter edit Successfuly")
 
-       res.json({ message: 'File uploaded successfully', profile_image:filePath , });
+
+    const businessTypeArray = req.body.business_type;
+    const businessTypeString = businessTypeArray.map(item => item.title).join(',');
+
+    // ดึงข้อมูลรูปบริษัทที่ต้องการแก้ไขจากฐานข้อมูล
+    const companyId = req.user.user_id;
+    const [existingCompanyProfile] = await pool.query('SELECT profile_image FROM companies WHERE user_id = ?', [companyId]);
+    const [existingCompanyCover] = await pool.query('SELECT cover_image FROM companies WHERE user_id = ?', [companyId]);
+
+    // ตรวจสอบว่ามีไฟล์อัปโหลดใหม่หรือไม่ ถ้ามีจะเอาที่อยู่รูปใหม่ไป แต่ถ้าไม่ได้มีการอัพโหลดไฟล์ใหม่จะให้ดึงรูปเก่า
+    const profileImageFilename = req.files && req.files['profile_image'] ? req.files['profile_image'][0].filename : existingCompanyProfile[0].profile_image.replace(/\\/g, '/').replace(/\/?uploads\//, '').replace('/static', '');
+    const coverImageFilename = req.files && req.files['cover_image'] ? req.files['cover_image'][0].filename : existingCompanyCover[0].cover_image.replace(/\\/g, '/').replace(/\/?uploads\//, '').replace('/static', '');
+
+    // กำหนดชื่อไฟล์และเก็บ URL ของไฟล์
+    const profileImageUrl = `/static/uploads/${profileImageFilename}`;
+    const coverImageUrl = `/static/uploads/${coverImageFilename}`;
+
+    // ทำการอัปเดตข้อมูลในฐานข้อมูล
+    const [result] = await pool.query('UPDATE companies SET company_name = ?, description = ?, business_type = ?, profile_image = ?, cover_image = ?, company_video = ? WHERE user_id = ?',
+      [company_name, description,businessTypeString, profileImageUrl, coverImageUrl, company_video, companyId]);
+
+    // ตรวจสอบว่ามีการกรอกข้อมูลครบหรือไม่
+    if (req.files && (req.files['profile_image'] || req.files['cover_image'])) {
+      // ทำการอัปเดตสถานะในตาราง users เป็น 'open'
+      await pool.query('UPDATE users SET status = ? WHERE user_id = ?', ['open', companyId]);
+    }
+
+    console.log("Recruiter edit Profile Successfully");
+
+    res.json({ message: 'File uploaded successfully', profile_image: profileImageFilename });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server error" });
   }
 });
-//router.post("/editProfile", isLoggedIn, upload.single('profile_image'), async (req, res) => {
-//  try {
-//    // ตรวจสอบความถูกต้องของข้อมูลที่รับเข้ามา
-//    const { error } = profileEditSchema.validate(req.body);
-//    if (error) {
-//      return res.status(400).json({ message: error.details[0].message });
-//    }
-//
-//    // ดึงข้อมูลบริษัทที่ต้องการแก้ไขจากฐานข้อมูล
-//    const {
-//      company_name,
-//      email,
-//      description,
-//      company_video,
-//    } = req.body;
-//    const companyId = req.user.user_id;
-//    const profileImageFile = req.files.path;
-//   // const coverImageFile = req.files['cover_image']
-//    const status = 'open'
-//    // ตรวจสอบว่าอีเมลใหม่ซ้ำกับที่มีอยู่ในตาราง companies หรือไม่
-//    const [existingRecruiter] = await pool.query('SELECT * FROM companies WHERE email = ?', [email]);
-//    if (existingRecruiter.length > 0 && existingRecruiter[0].user_id !== companyId) {
-//      return res.status(400).json({ message: 'Email already exists' });
-//    }
-//      await pool.query('UPDATE companies SET company_name = ?, email = ?, description = ?, profile_image = ?, company_video = ?, status = ? WHERE user_id = ?',[company_name, email, description, profileImageFile, company_video, status, companyId]);
-//      await pool.query('UPDATE users SET status = ? WHERE user_id = ?', [status, companyId])
-//      console.log("Recruiter edit Successfuly")
-//
-//       res.json({ message: 'File uploaded successfully',  });
-//  } catch (error) {
-//    console.log(error);
-//    res.status(500).json({ message: "Server error" });
-//  }
-//});
+
+
 
 const addJobSchema = Joi.object({
   title: Joi.string().required(),
@@ -201,7 +177,7 @@ const addJobSchema = Joi.object({
 
 router.post("/addJob", isLoggedIn, async (req, res) => {
   try {
-    // ตรวจสอบความถูกต้องของข้อมูลที่รับเข้ามา
+    // ตรวจสอบความถูกต้องของข้อมูลที่รับเข้ามาs
     const { error, value } = addJobSchema.validate(req.body, { abortEarly: false });
     if (error) {
       return res.status(400).json({ message: error.details.map((detail) => detail.message) });
@@ -233,7 +209,7 @@ router.post("/addJob", isLoggedIn, async (req, res) => {
   }
 });
 
-//แสดงงานทั้งหมด ของแต่ละผู้ใช้
+//แสดงงานทั้งหมด ของผู้ใช้
 router.get("/getJob", isLoggedIn, async (req, res) => {
   try {
     const userId = req.user.user_id;
