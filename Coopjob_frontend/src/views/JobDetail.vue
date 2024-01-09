@@ -22,11 +22,11 @@
         </button>-->
 
         <!-- ปุ่ม Like  เปี่ลยนสีที่ปุ่ม-->
-        <button class="button mr-2" @click="favoriteJob(jobs.job_id)"
+        <button class="button mr-2" @click="favoriteJob(jobs[0].job_id)"
           :class="{ 'is-danger': isJobLiked, 'is-dark': !isJobLiked }" v-show="user.role === 'applicant'">
           <font-awesome-icon icon="heart" />
         </button>
-        <button class="button is-success mr-2" v-show="user.role === 'applicant'" @click="applyToJob(jobs.job_id)">
+        <button class="button is-success mr-2" v-show="user.role === 'applicant'" @click="applyToJob(jobs[0].job_id)">
           ยื่นสมัคร
         </button>
         <button class="button is-danger" v-show="user.role === 'applicant'" @click="showReportPopup">
@@ -161,7 +161,7 @@ export default {
         user_id: this.user.user_id,
         job_id: jobId,
       };
-      //console.log(`Applying to job ${jobId}`);
+      console.log(`Applying to job ${jobId}`);
       try {
         axios
           .post(`http://localhost:3000/application/sendApplicationJob`, data, config)
@@ -304,7 +304,7 @@ export default {
         });
     },
 
-    
+
     imagePath(companyProfileImage) {
       if (companyProfileImage) {
         return "http://localhost:3000" + companyProfileImage.replace(/\\/g, '/').replace('static', '');
