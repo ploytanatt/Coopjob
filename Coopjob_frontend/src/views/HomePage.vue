@@ -35,7 +35,7 @@
           <div class="card" @click="goToCompanyDetails(company.user_id)" v-if="company.status === 'open'">
             <div class="card-image">
               <figure class="image is-4by3">
-                <img :src="imagePath(company.profile_image)" alt="Company Logo">
+                <img :src="imagePath(company.cover_image)" alt="Company Logo">
               </figure>
             </div>
             <div class="card-content">
@@ -108,7 +108,7 @@
           </div>
           <div class="media-content">
             <p>
-              <strong>{{ job.title }}</strong>
+              <strong>{{ job.job_title }}</strong>
             </p>
             <p>
               <small>{{ job.company.company_name }}</small>

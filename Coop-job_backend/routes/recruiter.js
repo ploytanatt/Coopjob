@@ -9,6 +9,17 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+//แสดงงานทั้งหมดที่ประกาศ
+router.get("/getAllJobs", isLoggedIn, async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT * FROM jobs ");
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 router.get('/getData', isLoggedIn, async (req, res) => {
   try {
@@ -90,11 +101,20 @@ router.post('/signup', async (req, res) => {
 
 //สำหรับตรวจสอบไฟล์ ที่รับมา
 const profileEditSchema = Joi.object({
+  contact_person_name:  Joi.string().required(),
+  contact_phone_number: Joi.string().required(),
+  contact_email: Joi.string().required(),
+  contact_person_department: Joi.string().required(),
   company_name: Joi.string().required(),
-  email: Joi.string().email().required(),
+  business_type: Joi.string().required(),
+  company_phone_number:Joi.string().required(),
+  website:Joi.string().required(),
+  location:Joi.string().required(),
   description: Joi.string().required(),
+  expedition:Joi.string().required(),
   company_video: Joi.string().required(),
 });
+
 
 // ตั้งค่า multer upload
 const upload = multer({
@@ -120,37 +140,57 @@ router.post("/editProfile", isLoggedIn, upload.fields([{ name: "profile_image", 
       return res.status(400).json({ message: error.details[0].message });
     }
 
-
     const {
+      contact_person_name,
+      contact_phone_number,
+      contact_email,
+      contact_person_department,
       company_name,
+      business_type,
+      company_phone_number,
+      website,
+      location,
       description,
+      expedition,
       company_video,
     } = req.body;
 
-
-    const businessTypeArray = req.body.business_type;
-    const businessTypeString = businessTypeArray.map(item => item.title).join(',');
-
-    // ดึงข้อมูลรูปบริษัทที่ต้องการแก้ไขจากฐานข้อมูล
+    // Uncomment the following lines if you are handling business types
+     const businessTypeArray = JSON.parse(business_type);
+     const businessTypeString = JSON.stringify(businessTypeArray);
+    
     const companyId = req.user.user_id;
     const [existingCompanyProfile] = await pool.query('SELECT profile_image FROM companies WHERE user_id = ?', [companyId]);
     const [existingCompanyCover] = await pool.query('SELECT cover_image FROM companies WHERE user_id = ?', [companyId]);
 
-    // ตรวจสอบว่ามีไฟล์อัปโหลดใหม่หรือไม่ ถ้ามีจะเอาที่อยู่รูปใหม่ไป แต่ถ้าไม่ได้มีการอัพโหลดไฟล์ใหม่จะให้ดึงรูปเก่า
     const profileImageFilename = req.files && req.files['profile_image'] ? req.files['profile_image'][0].filename : existingCompanyProfile[0].profile_image.replace(/\\/g, '/').replace(/\/?uploads\//, '').replace('/static', '');
     const coverImageFilename = req.files && req.files['cover_image'] ? req.files['cover_image'][0].filename : existingCompanyCover[0].cover_image.replace(/\\/g, '/').replace(/\/?uploads\//, '').replace('/static', '');
 
-    // กำหนดชื่อไฟล์และเก็บ URL ของไฟล์
     const profileImageUrl = `/static/uploads/${profileImageFilename}`;
     const coverImageUrl = `/static/uploads/${coverImageFilename}`;
 
-    // ทำการอัปเดตข้อมูลในฐานข้อมูล
-    const [result] = await pool.query('UPDATE companies SET company_name = ?, description = ?, business_type = ?, profile_image = ?, cover_image = ?, company_video = ? WHERE user_id = ?',
-      [company_name, description,businessTypeString, profileImageUrl, coverImageUrl, company_video, companyId]);
+    // Update the database with the new information
+    const [result] = await pool.query(
+      'UPDATE companies SET contact_person_name = ?, contact_phone_number = ?, contact_email = ?, contact_person_department = ?, company_name = ?, description = ?, expedition = ?, business_type = ?, company_phone_number = ?, website = ?, location = ?, profile_image = ?, cover_image = ?, company_video = ? WHERE user_id = ?',
+      [
+        contact_person_name,
+        contact_phone_number,
+        contact_email,
+        contact_person_department,
+        company_name, 
+        description,
+        expedition,
+        businessTypeString, 
+        company_phone_number,
+        website,
+        location,
+        profileImageUrl, 
+        coverImageUrl, 
+        company_video, 
+        companyId
+      ]);
 
-    // ตรวจสอบว่ามีการกรอกข้อมูลครบหรือไม่
     if (req.files && (req.files['profile_image'] || req.files['cover_image'])) {
-      // ทำการอัปเดตสถานะในตาราง users เป็น 'open'
       await pool.query('UPDATE users SET status = ? WHERE user_id = ?', ['open', companyId]);
     }
 
@@ -165,14 +205,21 @@ router.post("/editProfile", isLoggedIn, upload.fields([{ name: "profile_image", 
 
 
 
+
 const addJobSchema = Joi.object({
-  title: Joi.string().required(),
-  location: Joi.string().required(),
-  salary: Joi.number().required().min(0),
-  status: Joi.string().valid("open", "close").required(),
-  description: Joi.string().required(),
-  qualifications: Joi.string().required(),
-  internship_duration: Joi.number().min(0),
+  job_type:Joi.string().required(),
+  project_name:Joi.string().required(),
+  job_title:Joi.string().required(),
+  description:Joi.string().required(),
+  job_position:Joi.string().required(),
+  position_type:Joi.string().required(),
+  quantity:Joi.string().required(),
+  gpa:Joi.string().required(),
+  salary:Joi.number().required().min(0),
+  benefit:Joi.string().required(),
+  specification:Joi.string().required(),
+  internship_duration:Joi.number().min(0),
+  status:Joi.string().valid("open", "close").required(),
 });
 
 router.post("/addJob", isLoggedIn, async (req, res) => {
@@ -184,11 +231,17 @@ router.post("/addJob", isLoggedIn, async (req, res) => {
     }
     // สร้างข้อมูลงานใหม่
     const {
-      title,
-      location,
-      salary,
+      job_type,
+      project_name,
+      job_title,
       description,
-      qualifications,
+      job_position,
+      quantity,
+      gpa,
+      position_type,
+      salary,
+      benefit, 
+      specification,
       internship_duration,
       status,
     } = value;
@@ -197,8 +250,23 @@ router.post("/addJob", isLoggedIn, async (req, res) => {
     const datePosted = new Date(); // เวลาปัจจุบัน
     // เพิ่มข้อมูลงานใหม่ลงในตาราง jobs
     await pool.query(
-      'INSERT INTO jobs (user_id, title, location, salary, description, qualifications, date_posted, internship_duration, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [req.user.user_id, title, location, salary, description, qualifications, datePosted, internship_duration, status]
+      'INSERT INTO jobs (user_id, job_type, project_name, job_title, description, job_position, quantity, gpa, position_type, salary, benefit,  specification,  internship_duration, status, date_posted) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [req.user.user_id, 
+        job_type,
+        project_name,
+        job_title,
+        description,
+        job_position,
+        quantity,
+        gpa,
+        position_type,
+        salary,
+        benefit, 
+        specification,
+        internship_duration,
+        status,
+        datePosted
+      ]
     );
 
     console.log("addJob ", );
@@ -269,7 +337,6 @@ router.put('/updateJob/:jobId', isLoggedIn, async (req, res) => {
     }
     const {
       title,
-      location,
       salary,
       status,
       description,

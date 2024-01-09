@@ -1,10 +1,11 @@
 <template>
   <div class="p-6 card">
+ 
     <h1 class="title">อัพโหลดไฟล์</h1>
     <div class="field">
       <div class="file is-medium is-boxed has-name">
         <label class="file-label">
-          <input class="file-input" type="file" name="resume" />
+          <input class="file-input" type="file" name="resume" accept=".pdf, .jpg, .jpeg" />
           <span class="file-cta">
             <span class="file-icon">
               <i class="fas fa-upload"></i>
@@ -17,7 +18,7 @@
       <div class="field">
         <label class="label">เว็บไซต์ของบริษัท</label>
         <div class="control">
-          <textarea class="textarea"></textarea>
+          <input class="input" type="text" />
         </div>
       </div>
       <label class="label">ชื่องาน</label>

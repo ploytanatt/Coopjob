@@ -1,6 +1,6 @@
 <template>
    <div class="container mt-4">
-    <img :src="'https://sv1.picz.in.th/images/2023/05/22/Fif20Z.jpg'" class="background_image" />
+    <img :src="imagePath(company.cover_image)" class="cover_image" />
     <div class="columns is-gapless ml-6 mb-6" style="position: relative; top: -80px">
       <img :src="imagePath(company.profile_image)" class="column is-2 profile_image" />
       <div class="column ml-4" style="position: relative; top: 100px">
@@ -53,6 +53,7 @@ export default {
         .then((response) => {
           this.company = response.data;
           this.company.profile_image = response.data.profile_image.replace(/\\/g, '/').replace('static', '');
+          this.company.cover_image = response.data.cover_image.replace(/\\/g, '/').replace('static', '');
         })
         .catch((error) => {
           console.error(error);
@@ -88,6 +89,10 @@ export default {
   height: 150px;
   border: 2px solid gray;
   border-radius: 25px;
+}
+.cover_image {
+  object-fit: cover; 
+  border-radius: 10px; 
 }
 
 </style>

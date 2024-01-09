@@ -1,34 +1,22 @@
 <template>
     <div class="container">
         <div class="columns mt-6">
-            <div class="column has-background-light is-3 pt-3 pb-3 cardcontainer">
-                <div :class="[
-                    'select_option',
-                    select_option === 'recruiterProfile' ? 'has-background-primary has-text-white' : '',]">
-                    <router-link to="/recruiterProfile">
-                        <p class="has-text-centered is-size-5 p-3" @click="select_option = 'recruiterProfile'">ข้อมูลบริษัท
-                        </p>
-                    </router-link>
-                </div>
-                <div :class="[
-                        'select_option',
-                        select_option === 'myjob'
-                            ? 'has-background-primary has-text-white'
-                            : '',
-                    ]">
-                    <router-link to="/recruiterJob">
-                        <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'myjob'">
-                            งานที่ประกาศ</p>
-                    </router-link>
-                </div>
-            </div>
+          <div class="column tap-list is-3 pt-3 pb-3 cardtab">
+          <div :class="['select_option', select_option === 'recruiterProfile' ? 'has-background-light' : '']">
+            <router-link to="/recruiterProfile">
+              <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'recruiterProfile'">ข้อมูลบริษัท</p>
+            </router-link>
+          </div>
+          <div :class="['select_option', select_option === 'myjob' ? 'has-background-light' : '']">
+            <router-link to="/recruiterJob">
+              <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myjob'">งานที่ประกาศ</p>
+            </router-link>
+          </div>
+        </div>
+
             <div class="p-6 card">
         <h1 class="title">งานที่ประกาศ</h1><div>
-
           <div class="twitter-pop-out-container">
-
-
-
           <button class="button is-primary add" @click="openAddJobModal">เพิ่มงาน</button>
           <div class="modal" :class="{ 'is-active': addJob }">
             <div class="modal-background" @click="closeAddJobModal"></div>
@@ -43,15 +31,13 @@
               </section>
             </div>
           </div>
-        
-
-
-    
+      
     <noInformationVue v-if="!(jobs.length > 0)"></noInformationVue>
+
         <div class="detail" v-for="job in jobs" :key="job.job_id">
           <button class="button is-warning is-pulled-right" @click="toggleJobStatus">
-  {{ isJobOpen ? 'ปิดรับสมัคร' : 'เปิดรับสมัคร' }}
-</button>
+            {{ isJobOpen ? 'ปิดรับสมัคร' : 'เปิดรับสมัคร' }}
+          </button>
 
                   <div class="job-detail">
                     <div class="columns is-multiline is-mobile">
@@ -157,9 +143,6 @@ export default {
       // นำ jobId ไปยังหน้าแก้ไขงาน
       this.$router.push(`/edit-job/${jobId}`);
     },
-  //  addJobs() {
-  //    this.$router.push("/recruiterAddJob");
-  //  },
     confirmDeleteJob(job_id) {
       Swal.fire({
         title: "ยืนยันการลบงาน",
@@ -205,28 +188,40 @@ export default {
 }
 
 .select_option:hover {
-    background-color: rgb(255, 255, 255);
+    background-color: #ffffff;
 }
 .job-detail {
-  border-radius: 6px;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid #cbcbcb;
+  border-radius: 7px;
   padding: 1rem;
-  background-color: #f1f1f1;
+  background-color: #ffffff;
 }
 .detail{
-  padding: 0.5rem;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin: 1rem;
-  background-color: #6b6b69;
 }
 .card {
-  width: 60%;
-  
+  width: 100%;
+  background-color: #eeeeee;
 }
 .add{
     margin-left: 1rem;
 }
 .title{
     margin-left: 1rem;
+}
+.cardtab {
+  background-color: #eeeeee;
+
+}
+.select_option {
+  cursor: pointer;
+  background-color: #eeeeee;
+}
+.select_option:hover {
+  background-color: #4a84ca21;
+}
+.has-background-light {
+  background-color: #4a83cadc !important;
 }
 </style>

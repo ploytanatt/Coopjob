@@ -40,7 +40,7 @@ router.post("/signin", async (req, res, next) => {
       token = generateToken();
       await conn.query("INSERT INTO access_tokens(user_id, token) VALUES (?, ?)", [user.user_id, token]);
         if (user.role === 'applicant') {
-          await pool.query('INSERT INTO applicants (user_id, email) VALUES (?, ?)',[user.user_id, email]);
+          await pool.query('INSERT INTO students (user_id, email) VALUES (?, ?)',[user.user_id, email]);
         }else if (user.role === 'recruiter') {
           await pool.query('INSERT INTO companies (user_id, email) VALUES (?, ?)', [user.user_id, email]);
         

@@ -6,11 +6,11 @@
       <label class="label">ประเภทงาน</label>
       <div class="control">
         <label class="radio">
-          <input type="radio" v-model="jobType" value="internship" />
+          <input type="radio" v-model="job_type" value="internship" />
           ฝึกงาน
         </label>
         <label class="radio">
-          <input type="radio" v-model="jobType" value="cooperative" />
+          <input type="radio" v-model="job_type" value="cooperative" />
           สหกิจศึกษา
         </label>
       </div>
@@ -26,9 +26,9 @@
     <div class="field" >
       <label class="label">ชื่องาน</label>
       <div class="control">
-        <input class="input" type="text" v-model="$v.title.$model" />
+        <input class="input" type="text" v-model="$v.job_title.$model" />
       </div>
-      <p v-if="$v.title.$error" class="help is-danger">โปรดกรอกชื่องาน</p>
+      <p v-if="$v.job_title.$error" class="help is-danger">โปรดกรอกชื่องาน</p>
     </div>
 
     <div class="field">
@@ -39,13 +39,7 @@
       <p v-if="$v.description.$error" class="help is-danger">โปรดกรอกคำอธิบาย</p>
     </div>
 
-    <div class="field">
-      <label class="label">สถานที่ทำงาน</label>
-      <div class="control">
-        <input class="input" type="text" v-model="$v.location.$model" />
-      </div>
-      <p v-if="$v.location.$error" class="help is-danger">โปรดกรอกสถานที่ปฏิบัติงาน</p>
-    </div>
+
 
 
 
@@ -55,9 +49,9 @@
         <div class="field">
           <label class="label">ตำแหน่ง</label>
           <div class="control">
-            <input class="input" type="text" v-model="job_position" />
+            <input class="input" type="text" v-model="$v.job_position.$model" />
           </div>
-          
+          <p v-if="$v.job_position.$error" class="help is-danger">โปรดกรอกคำอธิบาย</p>
         </div>
       </div>
       <div class="column is-3">
@@ -66,7 +60,7 @@
           <div class="control">
         <div class="field has-addons">
           <div class="control">
-            <input class="input" type="number" v-model="$v.salary.$model" />
+            <input class="input" type="number" v-model="$v.quantity.$model" />
           </div>
           <div class="control">
             <a class="button is-static">
@@ -76,6 +70,7 @@
         </div>
       </div>
         </div>
+        <p v-if="$v.salary.$error" class="help is-danger">โปรดกรอกข้อมูล</p>
       </div>
 
       <div class="column is-3">
@@ -88,44 +83,45 @@
         </div>
       </div>
     </div>
-
+    <multiselect v-model="position_type"  placeholder="ค้นหาหรือพิมพ์เพื่อเพิ่มประเภท" label="title" track-by="title" :options="options" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
     <div class="columns">
-  <div class="column is-3">
-    <div class="field">
-      <label class="label">ค่าตอบแทน</label>
-      <div class="control">
-        <div class="field has-addons">
+      <div class="column is-3">
+        <div class="field">
+          <label class="label">ค่าตอบแทน</label>
           <div class="control">
-            <input class="input" type="number" v-model="$v.salary.$model" />
+            <div class="field has-addons">
+              <div class="control">
+                <input class="input" type="number" v-model="$v.salary.$model" />
+              </div>
+              <div class="control">
+                <a class="button is-static">
+                  บาท/วัน
+                </a>
+              </div>
+            </div>
           </div>
-          <div class="control">
-            <a class="button is-static">
-              บาท/วัน
-            </a>
-          </div>
+          <p v-if="$v.salary.$error" class="help is-danger">โปรดกรอกเงินเดือน</p>
         </div>
       </div>
-      <p v-if="$v.salary.$error" class="help is-danger">โปรดกรอกเงินเดือน</p>
-    </div>
-  </div>
-  <div class="column is-9">
-    <div class="field">
-      <label class="label">สวัสดิการ</label>
-      <div class="control">
-        <input class="input" type="text" v-model="benefit" />
+      <div class="column is-9">
+        <div class="field">
+          <label class="label">สวัสดิการ</label>
+          <div class="control">
+            <input class="input" type="text" v-model="$v.benefit.$model" />
+          </div>
+          <p v-if="$v.benefit.$error" class="help is-danger">โปรดกรอกข้อมูล</p>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
     
 
     <div class="field">
       <label class="label">คุณสมบัติผู้สมัคร</label>
       <div class="control">
-        <textarea class="textarea" v-model="$v.qualifications.$model"></textarea>
+        <textarea class="textarea" v-model="$v.specification.$model"></textarea>
       </div>
-      <p v-if="$v.qualifications.$error" class="help is-danger">โปรดกรอกคุณสมบัติ</p>
+      <p v-if="$v.specification.$error" class="help is-danger">โปรดกรอกคุณสมบัติ</p>
     </div>
     <div class="field">
       <label class="label">ระยะเวลาฝึกงาน (เดือน)</label>
@@ -135,12 +131,6 @@
       <p v-if="$v.internship_duration.$error" class="help is-danger">โปรดกรอกระยะเวลา</p>
     </div>
 
-    <div class="field" >
-      <label class="label">วิธีการเดินทาง</label>
-      <div class="control">
-        <input class="input" type="text" v-model="expedition" />
-      </div>
-    </div>
 
     <div class="field">
       <label class="label">สถานะ</label>
@@ -156,7 +146,7 @@
 
     <div class="field is-grouped">
       <div class="control">
-        <button class="button is-primary" @click="addJob">บันทึก</button>
+        <button class="button is-primary" @click="addJob()">บันทึก</button>
       </div>
       <div class="control">
         <button class="button is-link" @click="cancel">ยกเลิก</button>
@@ -170,27 +160,61 @@
 import { required, minValue } from 'vuelidate/lib/validators';
 import axios from 'axios';
 import Swal from "sweetalert2";
+import Multiselect from 'vue-multiselect'
 export default {
+  components: {
+    Multiselect,
+  },
   data() {
     return {
-      jobType: 'internship',
+      job_type: 'internship',
       project_name:'',
-      title: '',
-      location: '',
+      job_title: '',
+      description: '',
       job_position:'',
+      
       quantity: 0,
       gpa:'',
+      position_type:[],
       salary: 0,
+      benefit:'', 
+      specification: '',
+      internship_duration:'',
       status: 'open',
-      description: '',
-      benefit:'',
-      qualifications: '',
-      expedition:'',
-      internship_duration: 0,
+      options: [
+        { title: 'ผู้จัดการโปรแกรม (Program Manager)' },
+        { title: 'นักพัฒนาซอฟต์แวร์ (Software Developer)' },
+        { title: 'ผู้ชี่วยจัดการโปรแกรม (Assistant Program Manager)' },
+        { title: 'นักพัฒนาเว็บ (Web Developer)' },
+        { title: 'นักวิเคราะห์ธุรกรรม (Business Analyst)' },
+        { title: 'นักพัฒนาแอปพลิเคชันมือถือ (Mobile App Developer)' },
+        { title: 'ผู้จัดการโครงการไอที (IT Project Manager)' },
+        { title: 'นักทดสอบซอฟต์แวร์ (Software Tester)' },
+        { title: 'นักวิเคราะห์ข้อมูล (Data Analyst)' },
+        { title: 'นักวิเคราะห์ระบบ (Systems Analyst)' },
+        { title: 'ผู้จัดการด้านความปลอดภัยไอที (IT Security Manager)' },
+        { title: 'นักวิเคราะห์ความเสี่ยงทางไอที (IT Risk Analyst)' },
+        { title: 'นักวิเคราะห์ความเสี่ยงด้านความปลอดภัย (Security Risk Analyst)' },
+        { title: 'นักวิเคราะห์ธุรกิจอัจฉริยะ (Business Intelligence Analyst)' },
+        { title: 'นักพัฒนา DevOps (DevOps Developer)' },
+        { title: 'ผู้ประสานงานโปรแกรม (Software Coordinator)' },
+        { title: 'นักวิเคราะห์ฐานข้อมูล (Database Analyst)' },
+        { title: 'นักวิเคราะห์ระบบองค์กร (Enterprise Systems Analyst)' },
+        { title: 'นักพัฒนาเกม (Game Developer)' },
+        { title: 'ผู้จัดการศูนย์ข้อมูล (Data Center Manager)' },
+        { title: 'นักวิเคราะห์ภาพระบบ (Systems Imaging Analyst)' },
+        { title: 'นักวิเคราะห์ความเสี่ยงด้านข้อมูล (Data Risk Analyst)' },
+        { title: 'นักวิเคราะห์ระบบรักษาความปลอดภัย (Security Systems Analyst)' },
+        { title: 'นักพัฒนา Blockchain (Blockchain Developer)' },
+        { title: 'ผู้บริหารด้านนวัตกรรมทางดิจิทัล (Digital Innovation Executive)' },
+        { title: 'นักพัฒนาทำเว็บ (Full-stack Web Developer)' },
+      ]
+
     };
   },
   methods: {
     addJob() {
+      const position_type_String = JSON.stringify(this.position_type);
       const token = localStorage.getItem("token");
       const config = {
         headers: {
@@ -200,13 +224,20 @@ export default {
       this.$v.$touch();
       if (!this.$v.$error) {
       const data ={
-        title: this.title,
-        description: this.description,
-        salary: this.salary,
-        location: this.location,
-        qualifications: this.qualifications,
-        internship_duration: this.internship_duration,
-        status: this.status
+        job_type:this.job_type,
+        project_name:this.project_name,
+        job_title:this.job_title,
+        description:this.description,
+        location:this.location,
+        job_position:this.job_position,
+        position_type: position_type_String,
+        quantity:this.quantity,
+        gpa:this.gpa,
+        salary:this.salary,
+        benefit:this.benefit,
+        specification:this.specification,
+        internship_duration:this.internship_duration,
+        status:this.status
       }
 
       axios
@@ -224,8 +255,7 @@ export default {
           })
           .catch((error) => {
             if (error.response) {
-              console.log('erroewi]jt',error.response.data);
-              alert("โปรดกรอกข้อมูลให้ครบก่อน",error.response.data );
+              console.log("response.data",error.response.data );
             }
           });
       }
@@ -233,23 +263,41 @@ export default {
     cancel() {
       this.$router.push('/recruiterJob');
     },
-    
+    removeItem(item) {
+      // ลบรายการที่ถูกเลือก
+      this.selectedValues = this.selectedValues.filter(value => value !== item);
+    },
+    customLabel(option) {
+      // กำหนด custom label สำหรับแสดงผลใน dropdown
+      return `${option.name} (${option.id})`;
+    },
+    addTag(newTag) {
+      // ฟังก์ชันที่ถูกเรียกเมื่อมีการเพิ่มแท็กใหม่
+      console.log("Added new tag:", newTag);
+      this.position_type.push({ title: newTag });
+    },
   },
   validations: {
-    title: {
+    job_title: {
       required,
-    },
-    location: {
-      required,
-    },
-    salary: {
-      required,
-      minValue: minValue(0),
     },
     description: {
       required,
     },
-    qualifications: {
+    job_position:{
+      required
+    },
+    quantity:{
+      required
+    },
+    salary:{
+      required
+    },
+    benefit:{
+      required
+    },
+
+    specification: {
       required,
     },
     internship_duration: {
@@ -263,8 +311,48 @@ export default {
 
 <style scoped>
 .card {
-  width: 60%;
-  margin: 0 auto;
+  width:  50%; /* เพิ่มความกว้างของการ์ด ค่าที่เพิ่มขึ้นนี้ขึ้นอยู่กับความต้องการของคุณ */
+  margin: 0 auto; /* ใช้ในการจัดวางการ์ดให้อยู่ตรงกลางหน้าจอ */
+  background-color: #eeeeee;
+}
+.profile_image {
+  width: 150px;
+  height: 150px;
+  border: 2px solid gray;
+  border-radius: 25px;
+}
+.cover_image {
+ /* ทำให้ภาพเต็มความกว้างของ div */
+/* ทำให้ภาพเต็มความสูงของ div */
+  object-fit: cover; /* ปรับขนาดภาพให้พอดีกับขนาดของ div โดยไม่เกี่ยวข้องกับสัดส่วนของภาพ */
+  border-radius: 10px; /* สามารถปรับค่า border-radius ตามที่ต้องการ */
 }
 
+.field.is-horizontals {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.selected-items {
+  margin-top: 10px;
+}
+.tag {
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+.overlay-container {
+      position: relative;
+    }
+.overlay-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.contactperson {
+  background-color: rgb(255, 255, 255);
+  border: 1px solid rgb(203, 203, 203);
+
+}
 </style>
