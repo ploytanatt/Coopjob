@@ -133,6 +133,7 @@ const upload = multer({
 });
 
 
+
 router.post("/editProfile", isLoggedIn, upload.fields([{ name: "profile_image", maxCount: 1 }, { name: "cover_image", maxCount: 1 }]), async (req, res) => {
   try {
     const { error } = profileEditSchema.validate(req.body);
@@ -203,7 +204,14 @@ router.post("/editProfile", isLoggedIn, upload.fields([{ name: "profile_image", 
   }
 });
 
+const addJobByUploadSchema = Joi.object({
+  job_title: Joi.string().required(),
+  status: Joi.string().valid("open", "close").required(),
+  create_type: Joi.string().valid("upload", "form").required(),
+  description: Joi.string().required(),
+  internship_duration: Joi.number().min(0),
 
+});
 
 
 const addJobSchema = Joi.object({
@@ -221,6 +229,37 @@ const addJobSchema = Joi.object({
   internship_duration:Joi.number().min(0),
   status:Joi.string().valid("open", "close").required(),
 });
+router.post("/addJobByUpload", isLoggedIn, upload.fields([{ name: "job_upload_file", maxCount: 1 }]), async (req, res) => {
+  try {
+    // ตรวจสอบความถูกต้องของข้อมูลที่รับเข้ามา
+    const { error, value } = addJobByUploadSchema.validate(req.body, { abortEarly: false });
+    if (error) {
+      return res.status(400).json({ message: error.details.map((detail) => detail.message) });
+    }
+
+    // สร้างข้อมูลงานใหม่
+    const { job_title, website, status, create_type, description, internship_duration } = value;
+
+    // เพิ่มข้อมูลวันที่
+    const datePosted = new Date(); // เวลาปัจจุบัน
+    const uploadedFile = req.files && req.files['job_upload_file'] ? req.files['job_upload_file'][0] : null;
+    const uploadedFileName = uploadedFile ? uploadedFile.filename : null;
+    
+    // เพิ่มข้อมูลงานใหม่ลงในตาราง jobs
+    await pool.query(
+      'INSERT INTO jobs (user_id, job_title, job_upload_file, status, create_type, description, internship_duration, date_posted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [req.user.user_id, job_title, uploadedFileName, status, create_type, description, internship_duration, datePosted]
+    );
+
+    console.log("addJobByUpload");
+    res.status(200).json({ message: "Job added successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
 
 router.post("/addJob", isLoggedIn, async (req, res) => {
   try {
