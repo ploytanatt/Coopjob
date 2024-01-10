@@ -177,7 +177,6 @@ DROP TABLE IF EXISTS `jobs`;
 CREATE TABLE `jobs` (
   `job_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL,
-  `company_id` int DEFAULT NULL,
   `project_name` varchar(255) DEFAULT NULL COMMENT 'หัวข้อโครงงาน',
   `job_type` enum('internship','cooperative') DEFAULT NULL COMMENT 'ประเภทงาน',
   `job_title` varchar(255) DEFAULT NULL COMMENT 'ชื่องาน',
@@ -193,10 +192,11 @@ CREATE TABLE `jobs` (
   `date_posted` date DEFAULT NULL COMMENT 'วันที่โพสประกาศ',
   `status` enum('close','open') DEFAULT 'close' COMMENT 'สถานะของโพส เปิด/ปิด',
   `create_type` enum('upload','form') DEFAULT NULL COMMENT 'ประเภทที่สร้างประกาศงาน อัพโหลด/กรอกฟอร์ม',
+  `job_upload_file` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`job_id`),
   KEY `job_recruiter_id_idx` (`user_id`),
   CONSTRAINT `job_recruiter_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -205,7 +205,7 @@ CREATE TABLE `jobs` (
 
 LOCK TABLES `jobs` WRITE;
 /*!40000 ALTER TABLE `jobs` DISABLE KEYS */;
-INSERT INTO `jobs` VALUES (32,62,NULL,'sfdsf','internship','sdfsdf','sfsfsdf','3','[{\"title\":\"นักพัฒนาแอปพลิเคชันมือถือ (Mobile App Developer)\"}]',33,'3',33,'3sfsdf','sdfsdf',3,'2024-01-10','open',NULL),(33,62,NULL,'asdasdas','internship','dasdasda','sdasdasa','22','[{\"title\":\"asdas\"},{\"title\":\"นักพัฒนาเว็บ (Web Developer)\"}]',3,'2',4,'2','asdasdas',222,'2024-01-10','open',NULL);
+INSERT INTO `jobs` VALUES (32,62,'sfdsf','internship','sdfsdf','sfsfsdf','3','[{\"title\":\"นักพัฒนาแอปพลิเคชันมือถือ (Mobile App Developer)\"}]',33,'3',33,'3sfsdf','sdfsdf',3,'2024-01-10','open',NULL,NULL),(33,62,'asdasdas','internship','dasdasda','sdasdasa','22','[{\"title\":\"asdas\"},{\"title\":\"นักพัฒนาเว็บ (Web Developer)\"}]',3,'2',4,'2','asdasdas',222,'2024-01-10','open',NULL,NULL),(34,62,'หปฟห','internship','ปฟหป','ฟหปฟห','ปฟหปฟห','[{\"title\":\"asdaas\"},{\"title\":\"นักพัฒนาเว็บ (Web Developer)\"}]',3,'2',4,'asd','sda',1,'2024-01-10','open',NULL,NULL),(36,62,NULL,NULL,'dgdfg','dfgdfdfg',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2024-01-10','open','upload','9c94-209456.jpg');
 /*!40000 ALTER TABLE `jobs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -343,4 +343,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-01-10  6:07:58
+-- Dump completed on 2024-01-10  7:51:51
