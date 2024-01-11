@@ -139,12 +139,84 @@
         </div>
       </div>
 
-      <div class="field">
-        <label class="label">สถานที่ทำงาน</label>
-        <div class="control">
-          <input class="input" type="textarea" v-model="location" />
+
+     <div class="columns">
+        <div class="column is-3">
+          <div class="field">
+            <label class="label">บ้านเลขที่ / ซอย</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$v.address.$model" />
+            </div>
+            <template v-if="$v.address.$error">
+              <p v-if="$v.address.$error" class="help is-danger">โปรดกรอกคุณสมบัติ</p>
+            </template>
+          </div>
         </div>
-     </div>
+        <div class="column is-6 "  >
+          <div class="field">
+            <label class="label">สถานที่ตั้งบริษัท</label>
+            <div class="control">
+              <input class="input" type="text" v-model="$v.location.$model" />
+            </div>
+            <template v-if="$v.location.$error">
+              <p v-if="$v.location.$error" class="help is-danger">โปรดกรอกคุณสมบัติ</p>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns">
+       
+        <div class="column is-3">
+  <div class="field">
+      <label class="label">จังหวัด</label>
+      <div class="control">
+        <div class="select">
+          <select v-model="selectedLocation" @change="loadLocationData">
+      <option value="">เลือก</option>
+      <option v-for="province in locations" :key="province.id" :value="province.id">
+        {{ province.name_th }}
+      </option>
+    </select>
+        </div>
+      </div>
+    </div>
+  </div>
+     
+  <div class="column is-3">
+  <div class="field" v-if="selectedProvince">
+      <label class="label">อำเภอ</label>
+      <div class="control">
+        <div class="select">
+          <select v-model="selectedAmphure2" @change="loadAmphureData" >
+  <option value="">เลือก</option>
+  <option v-for="amphure in selectedProvince.amphure" :key="amphure.id" :value="amphure.id">
+    {{amphure.name_th}}
+  </option>
+
+</select>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="column is-6">
+  <div class="field" v-if="selectedAmphure">
+      <label class="label">ตำบล - รหัสไปรษณี</label>
+      <div class="control">
+        <div class="select">
+          <select v-model="selectedTambon" >
+      <option value="">เลือก</option>
+      <option v-for="tambon in selectedAmphure.tambon" :key="tambon.id" :value="tambon.id">
+        {{ tambon.name_th }} - {{ tambon.zip_code }}
+      </option>
+    </select>
+        </div>
+      </div>
+    </div>
+</div>
+</div>
+
 
       <div>
         <label class="label">คำอธิบาย</label>
@@ -202,14 +274,23 @@
 import { required,  email } from 'vuelidate/lib/validators';
 import axios from '@/plugins/axios';
 import Swal from 'sweetalert2';
-import Multiselect from 'vue-multiselect'
-
+import Multiselect from 'vue-multiselect';
+import jsonData from '@/assets/api_province_with_amphure_tambon.json'
 export default {
   components: {
     Multiselect,
+
   },
   data() {
     return {
+      locations: jsonData,
+      selectedLocation: '',
+      selectedProvince: '',
+      selectedAmphure: '',
+      selectedAmphure2: '',
+      selectedTambon: '',
+      selectedZipCode:'',
+
       contact_person_name: '',
       contact_phone_number:'',
       contact_email:'',
@@ -219,6 +300,7 @@ export default {
       business_type: [],
       company_phone_number:'',
       website:'',
+      address:'',
       location:'',
       description: '',
       expedition:'',
@@ -231,6 +313,7 @@ export default {
       cover_image_name: '',
       cover_image_preview: '',
       modify_profile: false,  
+      status:"เปิด",
       options: [
         { title: 'โฆษณา / ประชาสัมพันธ์'},{ title: 'เกษตรกรรม / ป่าไม้'},
         { title: 'สายการบิน'},{ title: 'ความงาม / เครื่องสำอางค์'},{ title: 'เครื่องดื่ม / อาหาร / ภัตตาคาร'},
@@ -249,6 +332,26 @@ export default {
   this.getUserProfile();
 },
   methods: {
+
+    loadLocationData() {
+    this.selectedAmphure = '';
+    this.selectedTambon = '';
+    if (this.selectedLocation) {
+      this.selectedProvince = this.locations.find(location => location.id === this.selectedLocation) || {};
+    } else {
+      this.selectedProvince = {};
+    }
+  },
+  loadAmphureData() {
+    this.selectedTambon = '';
+    if (this.selectedAmphure2) {
+      this.selectedAmphure = this.selectedProvince.amphure.find(amphure => amphure.id === this.selectedAmphure2) || {};
+      console.log("จังหวัด อำดภอ", this.selectedAmphure)
+    } else {
+      this.selectedAmphure = {};
+    }
+  },
+
     getUserProfile() {
       const token = localStorage.getItem('token');
       const config = {
@@ -273,6 +376,7 @@ export default {
         this.company_name = user[0].company_name;
         this.company_phone_number = user[0].company_phone_number;
         this.website = user[0].website;
+        this.address = user[0].address;
         this.location = user[0].location;
         this.expedition = user[0].expedition;
         this.description = user[0].description;
@@ -314,6 +418,7 @@ export default {
       formData.append('description', this.description);
       formData.append('company_phone_number', this.company_phone_number);
       formData.append('website', this.website);
+      formData.append('address', this.address);
       formData.append('location', this.location);
       formData.append('expedition', this.expedition);
       // เพิ่มเงื่อนไขเพื่อตรวจสอบว่ามีการเลือกไฟล์รูปภาพใหม่หรือไม่
@@ -413,6 +518,9 @@ export default {
     location:{
       required
     },
+    address:{
+      required,
+    },  
     description: {
       required,
     },
@@ -467,5 +575,13 @@ export default {
   border: 1px solid rgb(203, 203, 203);
 
 }
+.vs__selected-options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
 
+  .vs__selected-single {
+    flex: 1;
+  }
 </style>
