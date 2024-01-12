@@ -1,6 +1,35 @@
 <template>
   <div class="container">
-    <div class="column m-0 p-0">
+      <div class="columns mt-6">
+        <div class="column tap-list is-3 pt-3 pb-3 cardtab">
+        <div :class="['select_option', select_option === 'recruiterProfile' ? 'has-background-light' : '']">
+          <router-link to="/recruiterProfile">
+            <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'recruiterProfile'">ข้อมูลบริษัท</p>
+          </router-link>
+        </div>
+        <div :class="['select_option', select_option === 'myjob' ? 'has-background-light' : '']">
+          <router-link to="/recruiterJob">
+            <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myjob'">งานที่ประกาศ</p>
+          </router-link>
+        </div>
+        <div :class="['select_option', select_option === 'myApplicant' ? 'has-background-light' : '']">
+            <router-link to="/applicantList">
+              <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myApplicant'">คนที่มายื่นสมัคร</p>
+            </router-link>
+            </div>
+        <div :class="['select_option', select_option === 'myAccount' ? 'has-background-light' : '']">
+          <router-link to="/recruiterAccount">
+            <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myAccount'">ตั้งค่าบัญชีผู้ใช้</p>
+          </router-link>
+        </div>
+      </div>
+
+      
+      <div class="p-6 card">
+            <h1 class="title">รายชื่อผู่ที่มาสมัครงาน</h1>
+
+           
+            <div class="column is-12" >
       <!-- Filter Dropdown -->
       <div class="field">
         <label class="label">Filter by Status</label>
@@ -15,7 +44,7 @@
           </div>
         </div>
       </div>
-
+        </div>
       <!-- Loading Spinner -->
       <div v-if="isLoading" class="loading-spinner">
         Loading...
@@ -50,7 +79,10 @@
         <span>{{ currentPage }}</span>
         <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
       </div>
-    </div>
+
+
+        </div>
+      </div>
   </div>
 </template>
 
@@ -66,6 +98,7 @@ export default {
       isLoading: false,
       itemsPerPage: 10,
       currentPage: 1,
+      select_option : 'myApplicant',
     };
   },
   mounted() {
@@ -186,5 +219,26 @@ export default {
 }
 .pagination button {
   margin: 0 5px;
+}
+.card {
+  width: 100%;
+  background-color: #eeeeee;
+}
+.cardtab {
+  background-color: #eeeeee;
+
+}
+.select_option {
+  cursor: pointer;
+  background-color: #eeeeee;
+}
+.select_option:hover {
+  background-color: #4a84ca21;
+}
+.has-background-light {
+  background-color: #4a83cadc !important;
+}
+.email{
+  background-color: aqua;
 }
 </style>

@@ -65,6 +65,12 @@ const routes = [
     meta: { login: true },
     component: () => import('../views/recruiter/RecruiterJobEdit.vue')
   },
+    {
+    path: '/recruiterAccount',
+    name: 'recruiterAccount',
+    meta: { login: true },
+    component: () => import('../views/recruiter/RecruiterAccount.vue')
+  },
   {
     path: '/company/:companyId',
     name: 'CompanyDetails',
@@ -89,6 +95,7 @@ const routes = [
     meta: { login: true },
     component: () => import('../views/recruiter/Applicant-detail.vue')
   },
+
 ]
 
 const router = new VueRouter({

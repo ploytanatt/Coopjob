@@ -41,9 +41,9 @@
               <router-link class="navbar-item " to="/applicantList" v-if="user.role === 'recruiter'">
                 คนที่มายื่นสมัคร 
               </router-link>
-              <router-link class="navbar-item " to="/" v-if="user.role === 'recruiter'">
-                <i class="fa-solid fa-gear"></i>
-                <span>แก้ไขบัญชีผู้ใช้</span>
+              <router-link class="navbar-item " to="/recruiterAccount" v-if="user.role === 'recruiter'">
+                <i class="fa-solid fa-gear p-2"></i>
+                <span>ตั้งค่าบัญชีผู้ใช้</span>
               </router-link>
               
 

@@ -39,7 +39,7 @@
             </template>
           </div>
           <div class="field">
-            <button class="button is-link">Sign up</button>
+            <button class="button is-link">Sign In</button>
           </div>
         </form>
       </div>
@@ -67,7 +67,7 @@
             </template>
           </div>
           <div class="field">
-            <button class="button is-link">Sign up</button>
+            <button class="button is-link">Sign In</button>
           </div>
         </form>
       </div>

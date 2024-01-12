@@ -12,6 +12,16 @@
               <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myjob'">งานที่ประกาศ</p>
             </router-link>
           </div>
+          <div :class="['select_option', select_option === 'myApplicant' ? 'has-background-light' : '']">
+            <router-link to="/applicantList">
+              <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myApplicant'">คนที่มายื่นสมัคร</p>
+            </router-link>
+            </div>
+          <div :class="['select_option', select_option === 'myAccount' ? 'has-background-light' : '']">
+            <router-link to="/recruiterAccount">
+              <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myAccount'">ตั้งค่าบัญชีผู้ใช้</p>
+            </router-link>
+            </div>
         </div>
         <recruiterProfile v-if="select_option === 'recruiterProfile'"></recruiterProfile>
       </div>
@@ -44,5 +54,8 @@ export default ({
 }
 .has-background-light {
   background-color: #4a83cadc !important;
+}
+.email{
+  background-color: aqua;
 }
 </style>

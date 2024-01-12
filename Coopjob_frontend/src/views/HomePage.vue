@@ -34,24 +34,28 @@
         <div class="column is-3" v-for="company in paginatedCompanies" :key="company.job_id">
           <div class="card" @click="goToCompanyDetails(company.user_id)" v-if="company.status === 'open'">
             <div class="card-image">
-              <figure class="image is-4by3">
+              <figure class="image-preview cover_image">
                 <img :src="imagePath(company.cover_image)" alt="Company Logo">
               </figure>
             </div>
             <div class="card-content">
               <div class="media">
-                <div class="media-left">
-                  <figure class="image is-48x48">
+                <div class="profile_image">
+                  <figure class="profile_image">
                     <img :src="imagePath(company.profile_image)" alt="Company Logo">
                   </figure>
                 </div>
                 <div class="media-content">
                   <p>
                     <strong>{{ company.company_name }}</strong>
+                    <span class="tag is-normal">{{ company.location }}</span>
                   </p>
                 </div>
               </div>
-              <span class="tag is-normal">Normal</span>
+              
+                <span v-for="(type, index) in parseBusinessType(company.business_type)" :key="index" class="tag is-normal">{{ type.title }}</span>
+              
+              
             </div>
           </div>
         </div>
@@ -113,6 +117,7 @@
             <p>
               <small>{{ job.company.company_name }}</small>
             </p>
+            <span class="tag is-normal">{{ job.job_type }}</span>
           </div>
         </div>
       </div>
@@ -233,6 +238,14 @@ export default {
     changeTab(tab) {
       this.activeTab = tab;
     },
+    parseBusinessType(businessType) {
+    try {
+      return JSON.parse(businessType);
+    } catch (error) {
+      console.error('Error parsing business type:', error);
+      return [];
+    }
+  },
   },
 };
 </script>
@@ -252,7 +265,20 @@ export default {
   margin-bottom: 20px;
 }
 
-/* เพิ่มสไตล์ที่ต้องการสำหรับ pagination */
+.profile_image {
+  width: 70px;
+  height:70px;
+  margin-right: 1rem;
+  
+
+}
+.cover_image {
+ /* ทำให้ภาพเต็มความกว้างของ div */
+/* ทำให้ภาพเต็มความสูงของ div */
+  width: 100%; 
+
+  border-radius: 10px; /* สามารถปรับค่า border-radius ตามที่ต้องการ */
+}
 .pagination {
   margin-top: 20px;
   justify-content: center;
