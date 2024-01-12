@@ -57,7 +57,7 @@ router.get('/getJobApplications', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-        SELECT ja.job_id, ja.student_id, ja.status, j.job_title, ja.student_job_id
+        SELECT ja.job_id, ja.student_id, ja.status, j.title, ja.student_job_id
         FROM student_jobs ja
         INNER JOIN jobs j ON ja.job_id = j.job_id
         WHERE ja.student_id = ?
@@ -80,6 +80,35 @@ router.get('/getJobApplications', isLoggedIn, async (req, res) => {
   }
 });
 
+//ดึงมาเฉพาะงานที่ approve แล้ว
+// ยังไม่ได้ใช้ เพราะใช้ v-if status = approve แทน
+/*router.get('/getApproveJob', isLoggedIn, async (req, res) => {
+  const userId = req.user.user_id;
+  try {
+    const [results] = await pool.query(`
+        SELECT ja.job_id, ja.student_id, ja.status, j.title, ja.student_job_id
+        FROM student_jobs ja
+        INNER JOIN jobs j ON ja.job_id = j.job_id
+        WHERE ja.student_id = ? AND ja.status = 'approve'
+      `, [userId]);
+    const approvedJobApplications = results.map((row) => {
+      return {
+        student_job_id: row.student_job_id,
+        student_id: row.student_id,
+        status: row.status,
+        job: {
+          job_id: row.job_id,
+          title: row.title,
+        },
+      };
+    });
+    res.json(approvedJobApplications);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});*/
+
 
 
 router.put('/cancelJob/:applicationId', isLoggedIn, async (req, res) => {
@@ -93,15 +122,18 @@ router.put('/cancelJob/:applicationId', isLoggedIn, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+
 // Get job applications for a specific recruiter
 router.get('/getApplications', isLoggedIn, async (req, res) => {
   const recruiterId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-        SELECT ja.*, j.job_title as job_title
-        FROM student_jobs ja
-        INNER JOIN jobs j ON ja.job_id = j.job_id
-        WHERE j.user_id = ?
+    SELECT ja.*, j.title as job_title
+    FROM student_jobs ja
+    INNER JOIN jobs j ON ja.job_id = j.job_id
+    WHERE j.user_id = ?
+    
       `, [recruiterId]);
     const applications = results.map((row) => {
       return {
@@ -178,7 +210,7 @@ router.get('/getFavoriteJobs', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-        SELECT fj.*, j.job_title as job_title
+        SELECT fj.*, j.title as job_title
         FROM favorite_jobs fj
         INNER JOIN jobs j ON fj.job_id = j.job_id
         WHERE fj.user_id = ?

@@ -4,8 +4,12 @@
             <div class="column has-background-light is-3 pt-3 pb-3 card">
                 <div
                     :class="['select_option', select_option === 'application' ? ['has-background-primary', 'has-text-white'] : '']">
-                    <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'application'">งานกำลังที่ยื่นสมัคร
+                    <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'application'">งานที่กำลังยื่นสมัคร
                     </p>
+                </div>
+                <div
+                    :class="['select_option', select_option === 'approve' ? ['has-background-primary', 'has-text-white'] : '']">
+                    <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'approve'">งานที่ผ่านการคัดเลือก</p>
                 </div>
                 <div
                     :class="['select_option', select_option === 'history' ? ['has-background-primary', 'has-text-white'] : '']">
@@ -22,6 +26,9 @@
             </div>
             <applicantApplication v-if="select_option === 'application'">
             </applicantApplication>
+            <applicantApproveJob
+                v-if="select_option === 'approve'">
+            </applicantApproveJob>
             <applicantHistory
                 v-if="select_option === 'history'">
             </applicantHistory>
@@ -36,12 +43,14 @@
 </template>
 <script lang="ts">
 import applicantApplication from '@/components/applicant-application.vue';
+import applicantApproveJob from '@/components/applicant-approvejob.vue';
 import applicantHistory from '@/components/applicant-history.vue';
 import applicantFavoritejob from '@/components/applicant-favorite.vue';
 import applicantreporthistory from '@/components/applicant-report.vue';
 export default ({
     components: {
      applicantHistory,
+     applicantApproveJob,
      applicantApplication,
      applicantFavoritejob,
      applicantreporthistory,
