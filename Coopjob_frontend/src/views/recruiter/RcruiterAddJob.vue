@@ -180,6 +180,7 @@ export default {
       benefit:'', 
       specification: '',
       internship_duration:'',
+  
       status: 'open',
       options: [
         { title: 'ผู้จัดการโปรแกรม (Program Manager)' },
@@ -237,6 +238,7 @@ export default {
         benefit:this.benefit,
         specification:this.specification,
         internship_duration:this.internship_duration,
+     
         status:this.status
       }
 

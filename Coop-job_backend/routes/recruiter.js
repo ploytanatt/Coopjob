@@ -126,7 +126,9 @@ const upload = multer({
     filename: function (req, file, cb) {
       const uniqueFileName = `${uuidv4().slice(0, 4)}-${file.originalname}`;
       cb(null, uniqueFileName);
-    }
+    },
+    
+  
   }),
   limits: {
     fileSize: 15 * 1024 * 1024
@@ -232,7 +234,8 @@ const addJobSchema = Joi.object({
   internship_duration:Joi.number().min(0),
   status:Joi.string().valid("open", "close").required(),
 });
-router.post("/addJobByUpload", isLoggedIn, upload.fields([{ name: "job_upload_file", maxCount: 1 }]), async (req, res) => {
+
+router.post("/addJobByUpload", isLoggedIn, upload.single("job_upload_file"), async (req, res) => {
   try {
     // ตรวจสอบความถูกต้องของข้อมูลที่รับเข้ามา
     const { error, value } = addJobByUploadSchema.validate(req.body, { abortEarly: false });
@@ -240,18 +243,29 @@ router.post("/addJobByUpload", isLoggedIn, upload.fields([{ name: "job_upload_fi
       return res.status(400).json({ message: error.details.map((detail) => detail.message) });
     }
 
-    // สร้างข้อมูลงานใหม่
     const { job_title, website, status, create_type, description, internship_duration } = value;
 
     // เพิ่มข้อมูลวันที่
     const datePosted = new Date(); // เวลาปัจจุบัน
-    const uploadedFile = req.files && req.files['job_upload_file'] ? req.files['job_upload_file'][0] : null;
-    const uploadedFileName = uploadedFile ? uploadedFile.filename : null;
-    
-    // เพิ่มข้อมูลงานใหม่ลงในตาราง jobs
+
+    // ดึงไฟล์ที่อัปโหลด
+    const uploadedFile = req.file;
+
+    // ตรวจสอบไฟล์ที่อัปโหลด
+    if (!uploadedFile) {
+      return res.status(400).json({ message: "กรุณาอัปโหลดไฟล์" });
+    }
+
+    // ตั้งชื่อไฟล์ใหม่
+    const newFileName = `job-upload-${uploadedFile.filename}`;
+    // ย้ายไฟล์ไปที่โฟลเดอร์ปลายทาง
+    const newFilePath = path.join(uploadedFile.destination, newFileName);
+    fs.renameSync(uploadedFile.path, newFilePath);
+
+    // เพิ่มข้อมูลลงในฐานข้อมูล
     await pool.query(
       'INSERT INTO jobs (user_id, job_title, job_upload_file, status, create_type, description, internship_duration, date_posted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [req.user.user_id, job_title, uploadedFileName, status, create_type, description, internship_duration, datePosted]
+      [req.user.user_id, job_title, newFilePath, status, create_type, description, internship_duration, datePosted]
     );
 
     console.log("addJobByUpload");
@@ -288,11 +302,12 @@ router.post("/addJob", isLoggedIn, async (req, res) => {
       status,
     } = value;
 
+    const create_type = 'form';
     // เพิ่มข้อมูลวันที่
     const datePosted = new Date(); // เวลาปัจจุบัน
     // เพิ่มข้อมูลงานใหม่ลงในตาราง jobs
     await pool.query(
-      'INSERT INTO jobs (user_id, job_type, project_name, job_title, description, job_position, quantity, gpa, position_type, salary, benefit,  specification,  internship_duration, status, date_posted) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO jobs (user_id, job_type, project_name, job_title, description, job_position, quantity, gpa, position_type, salary, benefit,  specification,  internship_duration, create_type, status, date_posted) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [req.user.user_id, 
         job_type,
         project_name,
@@ -306,6 +321,7 @@ router.post("/addJob", isLoggedIn, async (req, res) => {
         benefit, 
         specification,
         internship_duration,
+        create_type,
         status,
         datePosted
       ]

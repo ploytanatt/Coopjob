@@ -113,6 +113,7 @@ export default {
           this.description = job.description
           this.qualifications = job.qualifications,
           this.internship_duration = job.internship_duration
+          
         })
         .catch((error) => {
           console.log(error);

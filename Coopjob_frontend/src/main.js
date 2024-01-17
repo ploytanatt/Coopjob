@@ -7,13 +7,20 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons';
 
-
 Vue.use(Vuelidate)
 library.add(fas);
-Vue.config.productionTip = false
-/* eslint-disable */
-Vue.component('FontAwesomeIcon', FontAwesomeIcon)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+// Vuetify
+import 'vuetify/dist/vuetify.min.css';
+import Vuetify from 'vuetify';
+import 'vuetify/dist/vuetify.min.css'
+
+Vue.use(Vuetify);
+
 new Vue({
-  router,  // add router here
+  router,
+  vuetify: new Vuetify(),
   render: h => h(App),
 }).$mount('#app')

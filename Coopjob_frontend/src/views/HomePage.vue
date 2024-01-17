@@ -48,7 +48,8 @@
                 <div class="media-content">
                   <p>
                     <strong>{{ company.company_name }}</strong>
-                    <span class="tag is-normal">{{ company.location }}</span>
+                  
+                    <span v-for="(type, index) in parseLocation(company.location)" :key="index" class="tag ">{{ type.province  }} {{ type.amphure }} {{ type.tambon }}{{ type.zip_code }}</span>
                   </p>
                 </div>
               </div>
@@ -241,6 +242,14 @@ export default {
     parseBusinessType(businessType) {
     try {
       return JSON.parse(businessType);
+    } catch (error) {
+      console.error('Error parsing business type:', error);
+      return [];
+    }
+  },
+  parseLocation(location) {
+    try {
+      return JSON.parse(location);
     } catch (error) {
       console.error('Error parsing business type:', error);
       return [];

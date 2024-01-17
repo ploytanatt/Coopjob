@@ -57,7 +57,7 @@ router.get('/getJobApplications', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-        SELECT ja.job_id, ja.student_id, ja.status, j.title, ja.student_job_id
+        SELECT ja.job_id, ja.student_id, ja.status, j.job_title, ja.student_job_id
         FROM student_jobs ja
         INNER JOIN jobs j ON ja.job_id = j.job_id
         WHERE ja.student_id = ?
@@ -129,7 +129,7 @@ router.get('/getApplications', isLoggedIn, async (req, res) => {
   const recruiterId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-    SELECT ja.*, j.title as job_title
+    SELECT ja.*, j.job_title as job_title
     FROM student_jobs ja
     INNER JOIN jobs j ON ja.job_id = j.job_id
     WHERE j.user_id = ?
@@ -210,7 +210,7 @@ router.get('/getFavoriteJobs', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-        SELECT fj.*, j.title as job_title
+        SELECT fj.*, j.job_title as job_title
         FROM favorite_jobs fj
         INNER JOIN jobs j ON fj.job_id = j.job_id
         WHERE fj.user_id = ?

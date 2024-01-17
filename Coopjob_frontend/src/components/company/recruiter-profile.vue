@@ -138,9 +138,7 @@
           </div>
         </div>
       </div>
-
-
-     <div class="columns">
+      <div class="columns">
         <div class="column is-3">
           <div class="field">
             <label class="label">บ้านเลขที่ / ซอย</label>
@@ -152,71 +150,76 @@
             </template>
           </div>
         </div>
-        <div class="column is-6 "  >
-          <div class="field">
-            <label class="label">สถานที่ตั้งบริษัท</label>
-            <div class="control">
-              <input class="input" type="text" v-model="$v.location.$model" />
+
+        <div class="column is-9">
+  <div class="field ">
+    <label class="label">ที่อยู่</label>
+    <div class="control location">
+      <span>ตำบล {{ location[2].tambon }} อำเภอ {{ location[1].amphure }} จังหวัด {{ location[0].province }} {{ location[3].zip_code }}</span>
+    
+      <!-- หรือสามารถใช้ไอคอนแก้ไข -->
+      <!-- <span @click="editLocation" class="edit-icon">&#9998;</span> -->
+    </div>
+  </div>
+</div>
+
+      </div>
+      <label class="label">แก้ไขที่อยู่</label>
+      <div class="columns">
+        
+        <div class="column is-3">
+        <div class="field">
+         
+          <div class="control">
+            <div class="select">
+              <select v-model="selectedLocation" @change="loadLocationData">
+          <option value="">จังหวัด</option>
+          <option v-for="province in locations" :key="province.id" :value="province.id">
+            {{ province.name_th }}
+          </option>
+        </select>
+
+        
             </div>
-            <template v-if="$v.location.$error">
-              <p v-if="$v.location.$error" class="help is-danger">โปรดกรอกคุณสมบัติ</p>
-            </template>
+          </div>
+        </div>
+        </div>
+     
+      <div class="column is-3">
+        <div class="field" v-if="selectedProvince">
+      
+            <div class="control">
+              <div class="select">
+                <select v-model="selectedAmphure2" @change="loadAmphureData" >
+                  <option value="">อำเภอ</option>
+                  <option v-for="amphure in selectedProvince.amphure" :key="amphure.id" :value="amphure.id">
+                    {{amphure.name_th}}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+      </div>
+  
+      <div class="column is-3">
+      <div class="field" v-if="selectedAmphure">
+          <div class="control">
+            <div class="select">
+              <select v-model="selectedTambon2"  @change="loadTambonData">
+                <option value="">ตำบล  - รหัสไปรษณี</option>
+                <option v-for="tambon in selectedAmphure.tambon" :key="tambon.id" :value="tambon.id">
+                  {{ tambon.name_th }} - {{ tambon.zip_code }}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
-
-      <div class="columns">
-       
-        <div class="column is-3">
-  <div class="field">
-      <label class="label">จังหวัด</label>
-      <div class="control">
-        <div class="select">
-          <select v-model="selectedLocation" @change="loadLocationData">
-      <option value="">เลือก</option>
-      <option v-for="province in locations" :key="province.id" :value="province.id">
-        {{ province.name_th }}
-      </option>
-    </select>
-        </div>
-      </div>
-    </div>
   </div>
-     
-  <div class="column is-3">
-  <div class="field" v-if="selectedProvince">
-      <label class="label">อำเภอ</label>
-      <div class="control">
-        <div class="select">
-          <select v-model="selectedAmphure2" @change="loadAmphureData" >
-  <option value="">เลือก</option>
-  <option v-for="amphure in selectedProvince.amphure" :key="amphure.id" :value="amphure.id">
-    {{amphure.name_th}}
-  </option>
 
-</select>
-        </div>
-      </div>
-    </div>
+  <div>
+    <p>ไรสส{{ location[0].province }}</p>
   </div>
-  
-  <div class="column is-6">
-  <div class="field" v-if="selectedAmphure">
-      <label class="label">ตำบล - รหัสไปรษณี</label>
-      <div class="control">
-        <div class="select">
-          <select v-model="selectedTambon" >
-      <option value="">เลือก</option>
-      <option v-for="tambon in selectedAmphure.tambon" :key="tambon.id" :value="tambon.id">
-        {{ tambon.name_th }} - {{ tambon.zip_code }}
-      </option>
-    </select>
-        </div>
-      </div>
-    </div>
-</div>
-</div>
-
 
       <div>
         <label class="label">คำอธิบาย</label>
@@ -289,6 +292,7 @@ export default {
       selectedAmphure: '',
       selectedAmphure2: '',
       selectedTambon: '',
+      selectedTambon2: '',
       selectedZipCode:'',
 
       contact_person_name: '',
@@ -331,6 +335,13 @@ export default {
   mounted() {
   this.getUserProfile();
 },
+watch: {
+    // Watch for changes in selectedLocation, selectedAmphure2, or other properties
+    selectedLocation: 'combineData',
+    selectedAmphure2: 'combineData',
+    selectedTambon2: 'combineData'
+    // ... add more properties as needed
+  },
   methods: {
 
     loadLocationData() {
@@ -338,19 +349,38 @@ export default {
     this.selectedTambon = '';
     if (this.selectedLocation) {
       this.selectedProvince = this.locations.find(location => location.id === this.selectedLocation) || {};
-    } else {
+    }
+    else {
       this.selectedProvince = {};
     }
   },
   loadAmphureData() {
-    this.selectedTambon = '';
-    if (this.selectedAmphure2) {
-      this.selectedAmphure = this.selectedProvince.amphure.find(amphure => amphure.id === this.selectedAmphure2) || {};
-      console.log("จังหวัด อำดภอ", this.selectedAmphure)
-    } else {
-      this.selectedAmphure = {};
-    }
-  },
+  this.selectedTambon = '';
+  if (this.selectedAmphure2) {
+    this.selectedAmphure = this.selectedProvince.amphure.find(amphure => amphure.id === this.selectedAmphure2) || {};
+    console.log("จังหวัด อำเภอ", this.selectedAmphure)
+  }
+else {
+    this.selectedAmphure = {};
+  }
+},
+loadTambonData() {
+  if (this.selectedTambon2) {
+    this.selectedTambon = this.selectedAmphure.tambon.find(tambon => tambon.id === this.selectedTambon2) || {};
+    console.log("ตำบล", this.selectedTambon)
+  } else {
+    this.selectedTambon = {};
+  }
+},
+combineData() {
+  // รวมข้อมูลจังหวัด, อำเภอ, และตำบล ลงใน property location ในรูปแบบของ array
+  this.location = [
+    { province: this.selectedProvince.name_th },
+    { amphure: this.selectedAmphure.name_th },
+    { tambon: this.selectedTambon.name_th },
+    { zip_code: this.selectedTambon.zip_code },
+  ];
+},
 
     getUserProfile() {
       const token = localStorage.getItem('token');
@@ -377,12 +407,13 @@ export default {
         this.company_phone_number = user[0].company_phone_number;
         this.website = user[0].website;
         this.address = user[0].address;
-        this.location = user[0].location;
+        this.location = JSON.parse(user[0].location);
         this.expedition = user[0].expedition;
         this.description = user[0].description;
         this.business_type = JSON.parse(user[0].business_type);
         this.role = user[0].role;
         this.company_video = user[0].company_video;
+
       });
     },
     imagePath(previewProfileImage) {
@@ -402,6 +433,7 @@ export default {
     },
     saveProfile() {
       const businessTypeString = JSON.stringify(this.business_type);
+      const locationString = JSON.stringify(this.location);
       const token = localStorage.getItem('token');
       const config = {
         headers: {
@@ -419,7 +451,7 @@ export default {
       formData.append('company_phone_number', this.company_phone_number);
       formData.append('website', this.website);
       formData.append('address', this.address);
-      formData.append('location', this.location);
+      formData.append('location', locationString);
       formData.append('expedition', this.expedition);
       // เพิ่มเงื่อนไขเพื่อตรวจสอบว่ามีการเลือกไฟล์รูปภาพใหม่หรือไม่
       if (this.profile_image && this.profile_image instanceof File) {
@@ -584,4 +616,12 @@ export default {
   .vs__selected-single {
     flex: 1;
   }
+
+.location{
+ color: #909090;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  height: auto;
+  padding: 8px;
+}
 </style>
