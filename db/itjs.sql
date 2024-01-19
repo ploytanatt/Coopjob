@@ -18,7 +18,7 @@
 --
 -- Table structure for table `access_tokens`
 --
-
+USE itjs;
 DROP TABLE IF EXISTS `access_tokens`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;

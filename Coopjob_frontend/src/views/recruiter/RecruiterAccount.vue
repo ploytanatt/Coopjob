@@ -157,7 +157,7 @@ methods: {
     password: this.check_password_Email,
   };
   axios
-    .post('http://localhost:3000/recruiter/changeEmail', data, config)
+    .post('http://localhost:3000/user/changeEmail', data, config)
     .then((response) => {
       console.log('Email change successful:', response);
       Swal.fire({
@@ -237,7 +237,7 @@ methods: {
         };
 
         axios
-          .post('http://localhost:3000/recruiter/changePassword', data, config)
+          .post('http://localhost:3000/user/changePassword', data, config)
           .then((response) => {
             console.log('Password change successful:', response);
             Swal.fire({

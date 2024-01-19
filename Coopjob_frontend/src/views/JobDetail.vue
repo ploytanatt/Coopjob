@@ -228,7 +228,7 @@ export default {
           };
 
           const data = {
-            job_id: (reportOption === 'job') ? this.jobs.job_id : null,
+            job_id: this.jobs[0].job_id, // ส่ง job_id ไปทุกครั้งไม่ว่า option จะเป็น 'job' หรือ 'company'
             user_id: this.user.user_id,
             title,
             description,
@@ -252,6 +252,7 @@ export default {
               });
             });
         },
+
       });
     },
 

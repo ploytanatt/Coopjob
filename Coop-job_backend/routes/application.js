@@ -52,8 +52,10 @@ router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
 });
 
 
+
+
 //Get job applications for a specific user
-router.get('/getJobApplications', isLoggedIn, async (req, res) => {
+/*router.get('/getJobApplications', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   try {
     const [results] = await pool.query(`
@@ -78,36 +80,45 @@ router.get('/getJobApplications', isLoggedIn, async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
-});
-
-//ดึงมาเฉพาะงานที่ approve แล้ว
-// ยังไม่ได้ใช้ เพราะใช้ v-if status = approve แทน
-/*router.get('/getApproveJob', isLoggedIn, async (req, res) => {
+}); */
+// Get job applications for a specific user with additional details ใหม่
+router.get('/getJobApplications', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-        SELECT ja.job_id, ja.student_id, ja.status, j.title, ja.student_job_id
+        SELECT ja.student_job_id, ja.student_id, ja.status, j.job_id, j.job_title AS job_title, c.company_id, c.company_name
         FROM student_jobs ja
         INNER JOIN jobs j ON ja.job_id = j.job_id
-        WHERE ja.student_id = ? AND ja.status = 'approve'
-      `, [userId]);
-    const approvedJobApplications = results.map((row) => {
-      return {
-        student_job_id: row.student_job_id,
-        student_id: row.student_id,
-        status: row.status,
-        job: {
-          job_id: row.job_id,
-          title: row.title,
-        },
-      };
+        LEFT JOIN companies c ON j.user_id = c.user_id
+        WHERE ja.student_id = ?
+    `, [userId]);
+
+    console.log(results); // ล็อกผลลัพธ์เพื่อตรวจสอบโครงสร้าง
+
+    const jobApplications = results.map((row) => {
+        return {
+            student_job_id: row.student_job_id,
+            student_id: row.student_id,
+            status: row.status,
+            job: {
+                job_id: row.job_id,
+                title: row.job_title,
+            },
+            company: {
+                company_id: row.company_id,
+                company_name: row.company_name,
+            },
+        };
     });
-    res.json(approvedJobApplications);
-  } catch (error) {
+
+    res.json(jobApplications);
+} catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
-  }
-});*/
+}
+
+});
+
 
 
 
@@ -269,13 +280,13 @@ router.post('/sendReport', isLoggedIn, async (req, res) => {
     const { job_id, user_id, title, description } = req.body;
 
     // Set job_id based on title
-    const updatedJobId = (title === 'Company') ? job_id : null;
+    const updatedJobId = job_id;
 
     // Save the report details to the database or perform any necessary actions ใส่ now()เพื่อให้เอาวันที่ปัจจุบันมา
     const query = `INSERT INTO report_company (user_id, job_id, title, description, created_at) VALUES (?, ?, ?, ?, NOW())`;
 
     // ใช้ pool.query แทน connection.query
-    pool.query(query, [user_id, updatedJobId, title, description], (error, results, fields) => {
+    pool.query(query, [user_id, job_id, title, description], (error, results, fields) => {
       if (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error' });
@@ -283,6 +294,7 @@ router.post('/sendReport', isLoggedIn, async (req, res) => {
         res.json({ message: 'Report submitted successfully' });
       }
     });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
@@ -309,6 +321,52 @@ router.get('/getReports', isLoggedIn, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+//benefitreport
+const benefitReportSchema = Joi.object({
+  company_name: Joi.string().required(),
+  job_position: Joi.string().required(),
+  description: Joi.string().required(),
+  salary: Joi.number().required().min(0),
+  benefit: Joi.string().required(),
+  job_id: Joi.string().required(), // สมมุติว่าเป็น string ในการอ้างอิงไอดีงาน
+});
+
+module.exports = benefitReportSchema;
+router.post("/addBenefitReport", isLoggedIn, async (req, res) => {
+  try {
+    const { error, value } = benefitReportSchema.validate(req.body, { abortEarly: false });
+    if (error) {
+      return res.status(400).json({ message: error.details.map((detail) => detail.message) });
+    }
+
+    const {
+      company_name,
+      job_position,
+      description,
+      salary,
+      benefit,
+    } = value;
+
+    // ตัวแปรที่จำเป็นสำหรับ benefit_reports
+    const user_id = req.user.user_id;
+    const job_id = req.body.job_id; // สมมุติว่ามี property job_id ใน req.body
+
+    const datePosted = new Date(); // เวลาปัจจุบัน
+
+    // เพิ่มข้อมูลลงในตาราง benefit_reports
+    await pool.query(
+      'INSERT INTO benefit_reports (user_id, job_id, company_name, position, description, salary, benefit, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())',
+      [user_id, job_id, company_name, job_position, description, salary, benefit, datePosted]
+    );
+
+    res.status(200).json({ message: "Benefit report added successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 

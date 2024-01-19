@@ -95,6 +95,12 @@ const routes = [
     meta: { login: true },
     component: () => import('../views/recruiter/Applicant-detail.vue')
   },
+  {
+    path: '/benefitReport',
+    name: 'benefitReport',
+    meta: { login: true },
+    component: () => import('../components/applicant-benefit.vue')
+  },
 
 ]
 
