@@ -102,6 +102,12 @@ const routes = [
     component: () => import('../components/applicant-benefit.vue')
   },
 
+  {
+    path: '/jobsearch',
+    name: 'jobsearch',
+    meta: {title: 'บริษัท'},
+    component: () => import('../views/JobSearch.vue')
+  },
 ]
 
 const router = new VueRouter({
