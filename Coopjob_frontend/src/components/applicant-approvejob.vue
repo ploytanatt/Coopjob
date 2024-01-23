@@ -8,6 +8,13 @@
                             <p class="is-size-5 has-text-weight-bold"> job_id: {{ application.job.job_id }} </p>
                         </div>
                         <div class="column">
+                            <p class="is-size-5 has-text-weight-bold"> บริษัท id: {{ application.company.company_id }} </p>
+                        </div>
+                        <div class="column">
+                            <p class="is-size-5 has-text-weight-bold"> ชื่อบริษัท: {{ application.company.company_name }}
+                            </p>
+                        </div>
+                        <div class="column">
                             <p class="is-size-5 has-text-weight-bold"> ตำแหน่ง: {{ application.job.title }} </p>
                         </div>
                         <div class="column">
@@ -17,7 +24,11 @@
                     <button class="button is-danger" @click="showReportPopup(application.job.job_id)">
                         รายงาน
                     </button>
-                    <button class="button is-primary" @click="BenefitReportPopup(application.job.job_id)">
+                    <!--<button class="button is-primary" @click="BenefitReportPopup(application.job.job_id)">
+                        กรอกค่าแรงและสวัสดิการ
+                    </button>-->
+                    <button class="button is-primary"
+                        @click="gotobenefit(application.company.company_name, application.job.job_id)">
                         กรอกค่าแรงและสวัสดิการ
                     </button>
                     <button class="button is-light">
@@ -46,7 +57,23 @@ export default {
         this.getJobApplications();
         this.getUser();
     },
+    updated() {
+        console.log(this.applications); // ล็อกแอปพลิเคชันเพื่อตรวจสอบโครงสร้าง
+    },
     methods: {
+        gotobenefit(companyName, job_id) {
+    this.$router.push({
+        path: "/benefitReport",
+        query: {
+            companyName,
+            job_id,
+        },
+    });
+    this.closeAddJobModal();
+},
+
+
+
         getJobApplications() {
             const token = localStorage.getItem("token");
             const config = {
@@ -89,62 +116,59 @@ export default {
 
         showReportPopup(jobId) {
             this.selectedJobId = jobId;
-            Swal.fire({
-                title: 'Report',
-                html:
-                    '<div>' +
-                    '<label for="report-title">Title: </label>' +
-                    '<input type="hidden" id="report-title" class="swal2-input">' +
-                    '<label><input type="radio" name="report-option" value="job" checked> Job </label>' +
-                    '<label><input type="radio" name="report-option" value="company"> Company </label>' +
-                    '<label><input type="radio" name="report-option" value="mentor"> Mentor </label>' +
-                    '<label><input type="radio" name="report-option" value="work"> Work </label>' +
-                    '<label><input type="radio" name="report-option" value="other"> Other </label>' +
-                    '</div><br>' +
-                    '<label for="report-description">Description:</label><br>' +
-                    '<textarea id="report-description" class="swal2-input" placeholder="Description"></textarea>',
-                showCancelButton: true,
-                confirmButtonText: 'Submit Report',
-                cancelButtonText: 'Cancel',
-                showLoaderOnConfirm: true,
-                preConfirm: () => {
-                    const reportOption = document.querySelector('input[name="report-option"]:checked').value;
-                    const title = this.getReportTitle(reportOption);
-                    const description = document.getElementById('report-description').value;
+            (async () => {
+                const result = await Swal.fire({
+                    title: 'Report',
+                    html:
+                        '<div>' +
+                        '<label for="report-title">Title: </label>' +
+                        '<input type="hidden" id="report-title" class="swal2-input">' +
+                        '<label><input type="radio" name="report-option" value="job" checked> Job </label>' +
+                        '<label><input type="radio" name="report-option" value="company"> Company </label>' +
+                        '<label><input type="radio" name="report-option" value="mentor"> Mentor </label>' +
+                        '<label><input type="radio" name="report-option" value="work"> Work </label>' +
+                        '<label><input type="radio" name="report-option" value="other"> Other </label>' +
+                        '</div><br>' +
+                        '<label for="report-description">Description:</label><br>' +
+                        '<textarea id="report-description" class="swal2-input" placeholder="Description"></textarea>',
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit Report',
+                    cancelButtonText: 'Cancel',
+                    showLoaderOnConfirm: true,
+                    preConfirm: async () => {
+                        const reportOption = document.querySelector('input[name="report-option"]:checked').value;
+                        const title = this.getReportTitle(reportOption);
+                        const description = document.getElementById('report-description').value;
 
-                    const token = localStorage.getItem('token');
-                    const config = {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    };
+                        const token = localStorage.getItem('token');
+                        const config = {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        };
 
-                    const data = {
-                        job_id: this.selectedJobId, // ใช้ค่าจาก selectedJobId
-                        user_id: this.user.user_id,
-                        title, // ค่า title จะเป็นค่าจาก option ที่ถูกเลือก
-                        description,
-                    };
+                        const data = {
+                            job_id: this.selectedJobId,
+                            user_id: this.user.user_id,
+                            title,
+                            description,
+                        };
 
-                    // Send the report data to the backend
-                    return axios.post('http://localhost:3000/application/sendReport', data, config)
-                        .then((res) => {
+                        try {
+                            const res = await axios.post('http://localhost:3000/application/sendReport', data, config);
                             console.log(res.data.message);
-                            return {
-                                success: true,
-                            };
-                        })
-                        .catch((error) => {
+                            return { success: true };
+                        } catch (error) {
                             console.error(error);
                             return {
                                 success: false,
                                 errorMessage: 'Failed to submit report. Please try again later.',
                             };
-                        });
-                },
+                        }
+                    },
+                });
 
-            }).then((result) => {
-                if (result.success) {
+                if (result.isConfirmed && result.value.success) {
                     Swal.fire({
                         title: 'Report submitted successfully',
                         icon: 'success',
@@ -153,11 +177,15 @@ export default {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: result.errorMessage,
+                        text: result.value.errorMessage,
                     });
                 }
-            });
+            })();
         },
+
+
+
+
 
         getReportTitle(option) {
             // Define how you want to map the option to a title
@@ -180,96 +208,96 @@ export default {
 
 
         BenefitReportPopup(jobId) {
-        this.selectedJobId = jobId;
-        // เริ่มต้นด้วยตัวแปรที่ใช้เก็บข้อมูลค่าแรงและสวัสดิการ
-        let salaryAndBenefits = {
-            companyName: '',
-            position: '',
-            jobDetails: '',
-            salary: '',
-            benefits: ''
-        };
+            this.selectedJobId = jobId;
+            // เริ่มต้นด้วยตัวแปรที่ใช้เก็บข้อมูลค่าแรงและสวัสดิการ
+            let salaryAndBenefits = {
+                companyName: '',
+                position: '',
+                jobDetails: '',
+                salary: '',
+                benefits: ''
+            };
 
-        Swal.fire({
-            title: 'ค่าแรงและสวัสดิการที่ได้รับ',
-            html:
-                '<div>' +
-                '<div style="margin-bottom: 10px;">' +
-                '<label for="company-name">ชื่อบริษัท:</label>' +
-                '<input type="text" id="company-name" class="swal2-input" v-model="salaryAndBenefits.companyName">' +
-                '</div>' +
-                '<div style="margin-bottom: 10px;">' +
-                '<label for="position">ตำแหน่ง:</label>' +
-                '<input type="text" id="position" class="swal2-input" v-model="salaryAndBenefits.position">' +
-                '</div>' +
-                '<div style="margin-bottom: 10px;">' +
-                '<label for="job-details">รายละเอียดงาน:</label>' +
-                '<textarea id="job-details" class="swal2-input" v-model="salaryAndBenefits.jobDetails"></textarea>' +
-                '</div>' +
-                '<div style="margin-bottom: 10px;">' +
-                '<label for="salary">ค่าแรงที่ได้รับ (ต่อวัน):</label>' +
-                '<input type="text" id="salary" class="swal2-input" v-model="salaryAndBenefits.salary">' +
-                '</div>' +
-                '<div style="margin-bottom: 10px;">' +
-                '<label for="benefits">สวัสดิการที่ได้รับ:</label>' +
-                '<textarea id="benefits" class="swal2-input" v-model="salaryAndBenefits.benefits"></textarea>' +
-                '</div>' +
-                '</div>' ,
-            showCancelButton: true,
-            confirmButtonText: 'Submit Report',
-            cancelButtonText: 'Cancel',
-            showLoaderOnConfirm: true,
-            preConfirm: () => {
-                const reportOption = document.querySelector('input[name="report-option"]:checked').value;
-                const title = this.getReportTitle(reportOption);
-                const description = document.getElementById('report-description').value;
+            Swal.fire({
+                title: 'ค่าแรงและสวัสดิการที่ได้รับ',
+                html:
+                    '<div>' +
+                    '<div style="margin-bottom: 10px;">' +
+                    '<label for="company-name">ชื่อบริษัท:</label>' +
+                    '<input type="text" id="company-name" class="swal2-input" v-model="salaryAndBenefits.companyName">' +
+                    '</div>' +
+                    '<div style="margin-bottom: 10px;">' +
+                    '<label for="position">ตำแหน่ง:</label>' +
+                    '<input type="text" id="position" class="swal2-input" v-model="salaryAndBenefits.position">' +
+                    '</div>' +
+                    '<div style="margin-bottom: 10px;">' +
+                    '<label for="job-details">รายละเอียดงาน:</label>' +
+                    '<textarea id="job-details" class="swal2-input" v-model="salaryAndBenefits.jobDetails"></textarea>' +
+                    '</div>' +
+                    '<div style="margin-bottom: 10px;">' +
+                    '<label for="salary">ค่าแรงที่ได้รับ (ต่อวัน):</label>' +
+                    '<input type="text" id="salary" class="swal2-input" v-model="salaryAndBenefits.salary">' +
+                    '</div>' +
+                    '<div style="margin-bottom: 10px;">' +
+                    '<label for="benefits">สวัสดิการที่ได้รับ:</label>' +
+                    '<textarea id="benefits" class="swal2-input" v-model="salaryAndBenefits.benefits"></textarea>' +
+                    '</div>' +
+                    '</div>',
+                showCancelButton: true,
+                confirmButtonText: 'Submit Report',
+                cancelButtonText: 'Cancel',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    const reportOption = document.querySelector('input[name="report-option"]:checked').value;
+                    const title = this.getReportTitle(reportOption);
+                    const description = document.getElementById('report-description').value;
 
-                const token = localStorage.getItem('token');
-                const config = {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                };
+                    const token = localStorage.getItem('token');
+                    const config = {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    };
 
-                const data = {
-                    job_id: this.selectedJobId,
-                    user_id: this.user.user_id,
-                    title,
-                    description,
-                    salaryAndBenefits: salaryAndBenefits, // ส่งข้อมูลค่าแรงและสวัสดิการไปที่ backend
-                };
+                    const data = {
+                        job_id: this.selectedJobId,
+                        user_id: this.user.user_id,
+                        title,
+                        description,
+                        salaryAndBenefits: salaryAndBenefits, // ส่งข้อมูลค่าแรงและสวัสดิการไปที่ backend
+                    };
 
-                // Send the report data to the backend
-                return axios.post('http://localhost:3000/application/sendReport', data, config)
-                    .then((res) => {
-                        console.log(res.data.message);
-                        return {
-                            success: true,
-                        };
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                        return {
-                            success: false,
-                            errorMessage: 'Failed to submit report. Please try again later.',
-                        };
+                    // Send the report data to the backend
+                    return axios.post('http://localhost:3000/application/sendReport', data, config)
+                        .then((res) => {
+                            console.log(res.data.message);
+                            return {
+                                success: true,
+                            };
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                            return {
+                                success: false,
+                                errorMessage: 'Failed to submit report. Please try again later.',
+                            };
+                        });
+                },
+            }).then((result) => {
+                if (result.success) {
+                    Swal.fire({
+                        title: 'Report submitted successfully',
+                        icon: 'success',
                     });
-            },
-        }).then((result) => {
-            if (result.success) {
-                Swal.fire({
-                    title: 'Report submitted successfully',
-                    icon: 'success',
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: result.errorMessage,
-                });
-            }
-        });
-    },
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.errorMessage,
+                    });
+                }
+            });
+        },
 
 
 
