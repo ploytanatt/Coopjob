@@ -7,26 +7,9 @@
         src="https://picsum.photos/id/366/600/375"
         alt=""
       />
-      <div class="field has-addons">
-        <p class="control">
-          <input
-            class="input"
-            type="text"
-            placeholder="ชื่อตำแหน่งงาน หรือชื่อบริษัท"
-          />
-        </p>
-        <p class="control">
-          <span class="select">
-            <select>
-              <option>ประเภทงานทั้งหมด</option>
-              <option>UX/UI</option>
-              <option>design</option>
-            </select>
-          </span>
-        </p>
-        <p class="control">
-          <a class="button is-info">ค้นหา</a>
-        </p>
+      <div class="">
+
+        <a class="pagination-next" @click="goToJobsearch">ค้นหางาน</a>
       </div>
 
       <!-- Companies Section -->
@@ -229,6 +212,9 @@ export default {
       } else {
         return "https://bulma.io/images/placeholders/640x360.png";
       }
+    },
+    goToJobsearch() {
+      this.$router.push("/jobsearch");
     },
     goToCompanyDetails(companyId) {
       this.$router.push("/company/" + companyId);

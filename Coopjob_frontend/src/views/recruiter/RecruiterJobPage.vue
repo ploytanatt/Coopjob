@@ -44,9 +44,6 @@
       
     <noInformationVue v-if="!(jobs.length > 0)"></noInformationVue>
 
-   
-
-
       <div class="tabs is-centered is-boxed">
         <ul>
           <li :class="{ 'is-active': activeTab === 'form' }">
@@ -87,16 +84,8 @@
           <p>status: {{ job.status }}</p>
       </div>
       <div class="column">
-      <button class="button is-warning is-pulled-right" @click="toggleJobStatus">
-          {{ isJobOpen ? 'ปิดรับสมัคร' : 'เปิดรับสมัคร' }}
-        </button>
-
-        <v-switch
-                        v-model="job.status"
-                        
-                        
-                      >
-                      </v-switch>
+        <v-switch v-model="job.status">
+        </v-switch>
         <button class="button is-danger is-pulled-right" @click="confirmDeleteJob(job.job_id)">ลบงาน</button>
       </div>
     </div>
@@ -129,25 +118,22 @@
       <div class="column">
         <img :src="imagePath(job.job_upload_file)" class="jobUpload">
       </div>
-      
+    
     </div>
     <div class="columns">
       <div class="column">
         <button class="button is-info" @click="editJob(job.job_id)">แก้ไขงาน</button>
-
       </div>
     </div>
+    </div>
   </div>
-
-
-          </div>
 </div>
 
-        </div>
-        </div>
-    </div>
-    </div>
-    </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
 </template>
 <script>
 import axios from "axios";
@@ -164,7 +150,6 @@ export default {
       select_option : 'myjob',
       isJobOpen: true,
       activeTab: 'form',
-
     };
   },
   mounted() {
@@ -199,7 +184,6 @@ export default {
     toggleJobStatus() {
     // เปลี่ยนสถานะการรับสมัครเมื่อกดปุ่ม toggle
     this.isJobOpen = !this.isJobOpen;
-    // สามารถทำการส่งคำขอ API ไปยังเซิร์ฟเวอร์เพื่ออัปเดตสถานะการรับสมัครที่นี่
   },
     openAddJobModal() {
       this.addJob = true;
@@ -208,12 +192,10 @@ export default {
       this.addJob = false;
     },
     goToAddForm() {
-      // Navigate to the form add job page
       this.$router.push("/recruiterAddJob");
       this.closeAddJobModal();
     },
     goToAddFile() {
-      // Navigate to the file upload add job page
       this.$router.push("/recruiterAddJobByUpload");
       this.closeAddJobModal();
     },

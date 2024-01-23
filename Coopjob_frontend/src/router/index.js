@@ -95,7 +95,12 @@ const routes = [
     meta: { login: true },
     component: () => import('../views/recruiter/Applicant-detail.vue')
   },
-
+  {
+    path: '/jobsearch',
+    name: 'jobsearch',
+    meta: {title: 'บริษัท'},
+    component: () => import('../views/JobSearch.vue')
+  },
 ]
 
 const router = new VueRouter({

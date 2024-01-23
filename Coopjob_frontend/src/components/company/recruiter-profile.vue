@@ -3,7 +3,7 @@
 
       <button v-show="!modify_profile" class="button is-small is-info" @click="modify_profile = !modify_profile" >แก้ไข</button>
 
-    <fieldset :disabled="!modify_profile">
+      <fieldset :disabled="!modify_profile">
       
       <div class="card-content">
         <label class="label">ผู้ติดต่อ</label>
@@ -15,10 +15,7 @@
                 <div class="control">
                   <input class="input" type="text"  v-model="$v.contact_person_name.$model"/>
                 </div>
-                <template v-if="$v.contact_person_name.$error">
-                  <p v-if="$v.contact_person_name.$error" class="help is-danger">โปรดกรอกชื่อ</p>
-                </template>
-                
+        
               </div>
             </div>
             <div class="column is-6">
@@ -157,8 +154,7 @@
     <div class="control location">
       <span>ตำบล {{ location[2].tambon }} อำเภอ {{ location[1].amphure }} จังหวัด {{ location[0].province }} {{ location[3].zip_code }}</span>
     
-      <!-- หรือสามารถใช้ไอคอนแก้ไข -->
-      <!-- <span @click="editLocation" class="edit-icon">&#9998;</span> -->
+
     </div>
   </div>
 </div>
@@ -264,7 +260,6 @@
       </div>
 
     </fieldset>
-
     <div class="mt-6 modify_profile">
       <button v-show="!modify_profile" class="button is-medium ml-2 is-info" @click="modify_profile = !modify_profile" >แก้ไข</button>
       <button v-show="modify_profile" class="button is-medium ml-2 is-success" @click="saveProfile" :disabled="$v.$error">บันทึก</button>
@@ -277,11 +272,11 @@
 import { required,  email } from 'vuelidate/lib/validators';
 import axios from '@/plugins/axios';
 import Swal from 'sweetalert2';
-import Multiselect from 'vue-multiselect';
+//import Multiselect from 'vue-multiselect';
 import jsonData from '@/assets/api_province_with_amphure_tambon.json'
 export default {
   components: {
-    Multiselect,
+ //   Multiselect,
 
   },
   data() {
@@ -408,6 +403,7 @@ combineData() {
         this.website = user[0].website;
         this.address = user[0].address;
         this.location = JSON.parse(user[0].location);
+       // this.location = user[0].location;
         this.expedition = user[0].expedition;
         this.description = user[0].description;
         this.business_type = JSON.parse(user[0].business_type);
@@ -431,6 +427,14 @@ combineData() {
         return 'https://bulma.io/images/placeholders/640x360.png';
       }
     },
+    locationArray() {
+      try {
+        return JSON.parse(this.location);
+      } catch (error) {
+        console.error('Error parsing location data:', error);
+        return null;
+      }
+    },
     saveProfile() {
       const businessTypeString = JSON.stringify(this.business_type);
       const locationString = JSON.stringify(this.location);
@@ -441,6 +445,7 @@ combineData() {
           'Content-Type': 'multipart/form-data',
         },
       };
+      
       const formData = new FormData();
       formData.append('contact_person_name', this.contact_person_name);
       formData.append('contact_phone_number', this.contact_phone_number);

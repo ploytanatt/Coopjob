@@ -43,7 +43,7 @@
       </div>
       <noInformation v-if="!previewCurrentPortfolio"></noInformation>
     </div>
-  </template>
+</template>
   
   <script>
   import axios from "@/plugins/axios";
