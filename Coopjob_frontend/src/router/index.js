@@ -30,6 +30,12 @@ const routes = [
     component: () => import('../views/applicant/ApplicantProfilePage.vue')
   },
   {
+    path: '/applicantAccount',
+    name: 'applicantAccount',
+    meta: { login: true },
+    component: () => import('../views/applicant/ApplicantAccount.vue')
+  },
+  {
     path: '/MyJobs',
     name: 'MyJobs',
     meta: { login: true ,title:'งานที่สมัคร'},
