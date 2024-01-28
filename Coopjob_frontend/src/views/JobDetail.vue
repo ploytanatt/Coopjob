@@ -44,11 +44,9 @@
             <div class="p-4">
               <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>รายละเอียด : </b>{{ jobs[0].description }}</span>
             </div>
+            
             <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>สถานที่ทำงาน : </b>{{ jobs[0].location }} </span>
-            </div>
-            <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>จำนวนที่รับสมัคร : </b></span>
+              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>จำนวนที่รับสมัคร : </b>{{ jobs[0].date_posted }}</span>
             </div>
             <div class="p-4">
               <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>วันที่รับสมัคร : </b></span>

@@ -74,8 +74,8 @@
           <p>จำนวนที่รับ: {{ job.quantity }}</p>
           <p>คุณสมบัติผู้สมัคร: {{ job.specification }}</p>
           <p>ตำแหน่ง: {{ job.job_position }}</p>
+          <p>สวัสดิการ: {{ job.benefit}}</p>
 
-        <p>Benefit: {{ job.benefit }}</p>
           <p>GPA: {{ job.gpa }}</p>
           <p>Internship Duration: {{ job.internship_duration }} months</p>
           <p v-if="job.job_type==='cooperative'">Project Name: {{ job.project_name }}</p>
@@ -83,11 +83,15 @@
           <span v-for="(type, index) in parsePositionType(job.position_type)" :key="index" class="tag is-medium">{{ type.title }} </span>
           <p>status: {{ job.status }}</p>
       </div>
-      <div class="column">
+      <div class="columns">
+        <div class="column">
         <v-switch v-model="job.status">
         </v-switch>
+      </div>
+      <div class="column">
         <button class="button is-danger is-pulled-right" @click="confirmDeleteJob(job.job_id)">ลบงาน</button>
       </div>
+    </div>
     </div>
     
     <div class="columns">

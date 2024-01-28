@@ -17,7 +17,7 @@
     </div>
 
     <div class="field" >
-      <label class="label">หัวข้อโครงงาน</label>
+      <label class="label">หัวข้อโครงงาน(ถ้ามี)</label>
       <div class="control">
         <input class="input" type="text" v-model="project_name" />
       </div>
@@ -161,6 +161,7 @@ import { required, minValue } from 'vuelidate/lib/validators';
 import axios from 'axios';
 import Swal from "sweetalert2";
 import Multiselect from 'vue-multiselect'
+import JobtypeJson from '@/assets/jobtype.json'
 export default {
   components: {
     Multiselect,
@@ -180,37 +181,8 @@ export default {
       benefit:'', 
       specification: '',
       internship_duration:'',
-  
       status: 'open',
-      options: [
-        { title: 'ผู้จัดการโปรแกรม (Program Manager)' },
-        { title: 'นักพัฒนาซอฟต์แวร์ (Software Developer)' },
-        { title: 'ผู้ชี่วยจัดการโปรแกรม (Assistant Program Manager)' },
-        { title: 'นักพัฒนาเว็บ (Web Developer)' },
-        { title: 'นักวิเคราะห์ธุรกรรม (Business Analyst)' },
-        { title: 'นักพัฒนาแอปพลิเคชันมือถือ (Mobile App Developer)' },
-        { title: 'ผู้จัดการโครงการไอที (IT Project Manager)' },
-        { title: 'นักทดสอบซอฟต์แวร์ (Software Tester)' },
-        { title: 'นักวิเคราะห์ข้อมูล (Data Analyst)' },
-        { title: 'นักวิเคราะห์ระบบ (Systems Analyst)' },
-        { title: 'ผู้จัดการด้านความปลอดภัยไอที (IT Security Manager)' },
-        { title: 'นักวิเคราะห์ความเสี่ยงทางไอที (IT Risk Analyst)' },
-        { title: 'นักวิเคราะห์ความเสี่ยงด้านความปลอดภัย (Security Risk Analyst)' },
-        { title: 'นักวิเคราะห์ธุรกิจอัจฉริยะ (Business Intelligence Analyst)' },
-        { title: 'นักพัฒนา DevOps (DevOps Developer)' },
-        { title: 'ผู้ประสานงานโปรแกรม (Software Coordinator)' },
-        { title: 'นักวิเคราะห์ฐานข้อมูล (Database Analyst)' },
-        { title: 'นักวิเคราะห์ระบบองค์กร (Enterprise Systems Analyst)' },
-        { title: 'นักพัฒนาเกม (Game Developer)' },
-        { title: 'ผู้จัดการศูนย์ข้อมูล (Data Center Manager)' },
-        { title: 'นักวิเคราะห์ภาพระบบ (Systems Imaging Analyst)' },
-        { title: 'นักวิเคราะห์ความเสี่ยงด้านข้อมูล (Data Risk Analyst)' },
-        { title: 'นักวิเคราะห์ระบบรักษาความปลอดภัย (Security Systems Analyst)' },
-        { title: 'นักพัฒนา Blockchain (Blockchain Developer)' },
-        { title: 'ผู้บริหารด้านนวัตกรรมทางดิจิทัล (Digital Innovation Executive)' },
-        { title: 'นักพัฒนาทำเว็บ (Full-stack Web Developer)' },
-      ]
-
+      options: JobtypeJson,
     };
   },
   methods: {
@@ -264,10 +236,6 @@ export default {
     },
     cancel() {
       this.$router.push('/recruiterJob');
-    },
-    removeItem(item) {
-      // ลบรายการที่ถูกเลือก
-      this.selectedValues = this.selectedValues.filter(value => value !== item);
     },
     customLabel(option) {
       // กำหนด custom label สำหรับแสดงผลใน dropdown

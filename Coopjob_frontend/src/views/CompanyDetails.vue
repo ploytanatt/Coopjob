@@ -16,7 +16,9 @@
       <p class="is-size-4 has-text-weight-bold">{{ index + 1 + "." }} {{ job.title }}</p>
       <div class="columns is-multiline ml-6 mt-1">
         <div class="column is-9">
-          <i class="pi pi-map-marker"> <span class="is-size-5 pl-4"><b>สถานที่ทำงาน: </b>{{ job.location }}</span> </i>
+          <i class="pi pi-map-marker"> 
+          <span class="is-size-5 pl-4"><b>สถานที่ทำงาน: </b>{{ company.address }}</span> </i>
+          <span v-for="(type, index) in parseLocation(company.location)" :key="index" >{{ type.tambon }} {{ type.amphure }} {{ type.province  }}  {{ type.zip_code }}</span>
         </div>
         <div class="column is-3">
           <i class="pi pi-dollar">
@@ -26,7 +28,7 @@
           <i class="pi pi-user"><span class="is-size-5 pl-4"><b>ระยะเวลา(เดือน): </b>{{ job.internship_duration }}</span></i>
         </div>
         <p class="is-size-5 column is-3">
-          <b>คุณสมบัติ: </b>{{ job.qualifications }}
+          <b>คุณสมบัติ: </b>{{ job.specification }}
         </p>
       </div>
     </div>
@@ -47,6 +49,7 @@ export default {
     this.getCompanyJobs(companyId);
   },
   methods: {
+    
     getCompanyDetails(companyId) {
       axios
         .get(`http://localhost:3000/recruiter/getRecruiterDetails/${companyId}`)
@@ -78,7 +81,15 @@ export default {
     },
     viewJob(jobId){
         this.$router.push("/job/"+jobId);
+    },
+    parseLocation(location) {
+    try {
+      return JSON.parse(location);
+    } catch (error) {
+      console.error('Error parsing business type:', error);
+      return [];
     }
+  },
   },
 };
 </script>

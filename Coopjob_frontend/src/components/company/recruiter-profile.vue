@@ -272,12 +272,11 @@
 import { required,  email } from 'vuelidate/lib/validators';
 import axios from '@/plugins/axios';
 import Swal from 'sweetalert2';
-//import Multiselect from 'vue-multiselect';
+import Multiselect from 'vue-multiselect';
 import jsonData from '@/assets/api_province_with_amphure_tambon.json'
 export default {
   components: {
- //   Multiselect,
-
+    Multiselect,
   },
   data() {
     return {
