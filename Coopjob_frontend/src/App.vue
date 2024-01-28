@@ -57,8 +57,9 @@
               <router-link class="navbar-item " to="/MyJobs" v-if="user.role === 'applicant'">
                 งานของฉัน
               </router-link>
-              <router-link class="navbar-item " to="/MyJobs" v-if="user.role === 'applicant'">
-                บัญชี
+              <router-link class="navbar-item " to="/applicantAccount" v-if="user.role === 'applicant'">
+                <i class="fa-solid fa-gear p-2"></i>
+                <span>ตั้งค่าบัญชีผู้ใช้</span>
               </router-link>
 
               <button class="button is-danger" @click="logout()" v-if="user">
