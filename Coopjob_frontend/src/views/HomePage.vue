@@ -15,34 +15,32 @@
       <!-- Companies Section -->
       <div class="columns is-multiline">
         <div class="column is-3" v-for="company in paginatedCompanies" :key="company.job_id">
-          <div class="card" @click="goToCompanyDetails(company.user_id)" v-if="company.status === 'open'">
-            <div class="card-image">
-              <figure class="image-preview cover_image">
-                <img :src="imagePath(company.cover_image)" alt="Company Logo">
-              </figure>
-            </div>
+
+          <div class="card is-fullwidth"  @click="goToCompanyDetails(company.user_id)">
+            <header class="card-header">
+              <img :src="imagePath(company.cover_image)"  class="card-header-img" />
+            </header>
             <div class="card-content">
-              <div class="media">
-                <div class="profile_image">
-                  <figure class="profile_image">
-                    <img :src="imagePath(company.profile_image)" alt="Company Logo">
-                  </figure>
+              <a class="card-profile">
+                <img :src="imagePath(company.profile_image)"  class="card-profile-img" />
+              </a>
+              <div class="card-user">
+                <div class="card-user-name">
+                  <a>{{ company.company_name }}</a>
                 </div>
-                <div class="media-content">
-                  <p>
-                    <strong>{{ company.company_name }}</strong>
-                  
-                    <span v-for="(type, index) in parseLocation(company.location)" :key="index" class="tag ">{{ type.province  }} {{ type.amphure }} {{ type.tambon }}{{ type.zip_code }}</span>
-                  </p>
-                </div>
+                <span>{{ company.contact_email }}</span>
               </div>
-              
-                <span v-for="(type, index) in parseBusinessType(company.business_type)" :key="index" class="tag is-normal">{{ type.title }}</span>
-              
-              
+              <div class="card-stats">
+                <i class="fa-sharp fa-solid fa-location-dot"></i>
+                <span v-for="(type, index) in parseLocation(company.location)" :key="index" > {{ type.tambon }} {{ type.amphure }} {{ type.province }} {{ type.zip_code }}</span>
+                <br>
+                <i class="fa-regular fa-briefcase"></i>
+                <span v-for="(type, index) in parseBusinessType(company.business_type)" :key="index" class="tag is-normal"> {{ type.title }}</span>
+
+              </div>
             </div>
+          </div>  
           </div>
-        </div>
       </div>
 
       <!-- Pagination Controls for companies -->
@@ -58,56 +56,57 @@
         </ul>
       </nav>
 
+    <!-- jobtype tabs -->
+    <div class="tabs is-centered is-boxed">
+      <ul>
+        <li :class="{ 'is-active': activeTab === 'internship' }">
+          <a @click="changeTab('internship')">
+            <span class="icon is-small"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i></span>
+            <span>ฝึกงาน</span>
+          </a>
+        </li>
+        <li :class="{ 'is-active': activeTab === 'cooperative' }">
+          <a @click="changeTab('cooperative')">
+            <span class="icon is-small"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></span>
+            <span>สหกิจศึกษา</span>
+          </a>
+        </li>
+        <li :class="{ 'is-active': activeTab === 'all' }">
+          <a @click="changeTab('all')">
+            <span class="icon is-small"><i class="fas fa-film" aria-hidden="true"></i></span>
+            <span>ทั้งหมด</span>
+          </a>
+        </li>
+      </ul>
+    </div>
 
-<!-- jobtype tabs -->
-<div class="tabs is-centered is-boxed">
-  <ul>
-    <li :class="{ 'is-active': activeTab === 'internship' }">
-      <a @click="changeTab('internship')">
-        <span class="icon is-small"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i></span>
-        <span>ฝึกงาน</span>
-      </a>
-    </li>
-    <li :class="{ 'is-active': activeTab === 'cooperative' }">
-      <a @click="changeTab('cooperative')">
-        <span class="icon is-small"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></span>
-        <span>สหกิจศึกษา</span>
-      </a>
-    </li>
-    <li :class="{ 'is-active': activeTab === 'all' }">
-      <a @click="changeTab('all')">
-        <span class="icon is-small"><i class="fas fa-film" aria-hidden="true"></i></span>
-        <span>ทั้งหมด</span>
-      </a>
-    </li>
-  </ul>
-</div>
+  <!-- Jobs Section -->
+  <div class="columns is-multiline ">
+    <div class=" card column job_card is-3" v-for="job in filteredJobs" :key="job.job_id" @click="goToJobDetails(job.job_id)">
 
-<!-- Jobs Section -->
-<div class="columns is-multiline">
-  <div class="column is-3" v-for="job in filteredJobs" :key="job.job_id" @click="goToJobDetails(job.job_id)">
-    <div class="card">
-      <div class="card-content">
-        <div class="media">
-          <div class="media-left">
-            <figure class="image is-48x48">
-              <img :src="imagePath(job.company.profile_image)" alt="Company Logo">
-            </figure>
+      <div class="job-card-content">
+        <a class="job-card-img">
+          <img :src="imagePath(job.company.profile_image)" class="job-image"/>
+        </a>
+
+        <div class="card-user">
+          <div class="card-user-name">
+            <strong>{{ job.job_title }}</strong>
           </div>
-          <div class="media-content">
-            <p>
-              <strong>{{ job.job_title }}</strong>
-            </p>
-            <p>
-              <small>{{ job.company.company_name }}</small>
-            </p>
-            <span class="tag is-normal">{{ job.job_type }}</span>
-          </div>
+          <i class="fa-solid fa-buildings fa-fw"></i>
+          <span>
+            <small> {{ job.company.company_name }}</small>
+          </span>
+          <br>
+          <i class="fa-solid fa-graduation-cap"></i>
+  
+          <span>
+            <small> {{ job.job_type }}</small>
+          </span>
         </div>
-      </div>
+        </div>
     </div>
   </div>
-</div>
 
 <!-- Pagination Controls for Jobs -->
 <nav class="pagination" role="navigation" aria-label="pagination">
@@ -251,6 +250,7 @@ export default {
   padding: 2rem;
 }
 
+
 #suggest {
   display: flex;
   justify-content: center;
@@ -260,20 +260,49 @@ export default {
   margin-bottom: 20px;
 }
 
-.profile_image {
-  width: 70px;
-  height:70px;
-  margin-right: 1rem;
-  
+.card-header {
+  position: relative;
+ 
+}
+.card-header-img {
+    
+  width: 100%;
+  height: 100px;
+ 
 
 }
-.cover_image {
- /* ทำให้ภาพเต็มความกว้างของ div */
-/* ทำให้ภาพเต็มความสูงของ div */
-  width: 100%; 
-
-  border-radius: 10px; /* สามารถปรับค่า border-radius ตามที่ต้องการ */
+.card-content {
+    padding: 0px;
 }
+.card-profile {
+  background-color: #fff;
+  border-radius: 6px;
+  display: inline-block !important;
+  float: left;
+  margin: -30px 5px 0 8px;
+  max-width: 100%;
+  padding: 1px;
+  vertical-align: bottom;
+  position: relative;
+}
+.card-profile-img {
+  border: 2px solid #fff;
+  border-radius: 7px;
+  box-sizing: border-box;
+  color: #fff;
+  height: 72px;
+  width: 72px;
+}
+
+.card-user {
+    margin: 5px 0 0;
+}
+
+.card-stats {
+    margin-left: 11px;
+    padding: 10px 0;
+}
+
 .pagination {
   margin-top: 20px;
   justify-content: center;
@@ -301,4 +330,31 @@ export default {
 .pagination-next[disabled] {
   opacity: 0.5; /* Or a different style to convey disabled state */
 }
+
+.job_card{
+  background-color: #ffffff;
+  margin: 1rem;
+}
+.job-card-img {
+  background-color: #fff;
+  border-radius: 6px;
+  display: inline-block !important;
+  float: left;
+  margin: 0px 25px 0 8px;
+  max-width: 100%;
+  padding: 1px;
+  vertical-align: bottom;
+  position: relative;
+
+}
+.job-image {
+  border: 2px solid #ffffff;
+  border-radius: 7px;
+  box-sizing: border-box;
+  color: #fff;
+  height: 72px;
+  width: 72px;
+}
+
+
 </style>

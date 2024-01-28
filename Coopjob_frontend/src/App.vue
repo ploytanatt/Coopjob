@@ -1,38 +1,32 @@
 <template>
   <div id="app">
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <nav class="navbar has-shadow" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
-        <a class="navbar-item-logo" href="/">
-          <img
-            src="./assets/images/logo.png"
-            width="200px" 
-            height="auto"
-            alt="Logo"
-          />
+        <a class="navbar-item" href="/">
+          <img src="./assets/images/logo.png" width="200px" height="auto">
         </a>
-        <a
-          role="button"
-          class="navbar-burger"
-          aria-label="menu"
-          aria-expanded="false"
-          data-target="navbarBasicExample"
-        >
+
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
         </a>
       </div>
 
-      <div id="navbarBasicExample" class="navbar-menu">
-        <div class="navbar-end">
-          <div class="navbar-item">
-            <div class="buttons">
-              <router-link class="button is-dark" to="/signup" v-if="!user">
-                <strong>Sign Up</strong>
-              </router-link>
-              <router-link class="button is-dark" to="/signin" v-if="!user">
+  <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-end">
+      <div class="buttons">
+              <div class="navbar-item">
+                <div class="buttons">
+                  <router-link class="button is-info" to="/signup" v-if="!user">
+                    <strong>Sign Up</strong>
+                  </router-link>
+                  <router-link class="button is-light" to="/signin" v-if="!user">
                 <strong>Sign In</strong>
               </router-link>
+                </div>
+              </div>
+
 
               <!-- ของบริษัท -->
               <router-link class="navbar-item " to="/recruiterProfile" v-if="user.role === 'recruiter'">
@@ -62,14 +56,20 @@
                 <span>ตั้งค่าบัญชีผู้ใช้</span>
               </router-link>
 
-              <button class="button is-danger" @click="logout()" v-if="user">
-                Logout
-              </button>
+        
+              <div class="navbar-item">
+                <div class="buttons">
+                  <a class="button is-danger" @click="logout()" v-if="user">
+                    Logout
+                  </a>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </nav>
+          
+    </div>
+
+  </div>
+</nav>
     <router-view
       :key="$route.fullPath"
       @auth-change="getUser"
@@ -124,23 +124,47 @@ export default {
   },
 };
 </script>
-<style scope>
-
-
-/* และสไตล์อื่น ๆ ที่คุณต้องการ */
+<style scoped>
 .navbar {
-  background-color: #b9b9b9;
+  background-color: #ffffff; /* Change the background color */
   padding: 10px;
   position: sticky;
   top: 0;
   z-index: 1000;
+  
 }
 
-.navbar-item-logo {
-  padding: 10px;
+.navbar-item-logo img {
+  max-height: 3rem; 
 }
 
 .navbar-burger {
   margin-top: 20px;
+  color: #000000;
+}
+
+.navbar-start a,
+.navbar-end a {
+  color: #000000;
+  margin-right: 10px;
+}
+
+.navbar-end a:hover {
+  color: #0052a3;
+}
+
+.navbar-dropdown {
+  background-color: #34495e; /* Change the dropdown background color */
+}
+
+.navbar-dropdown a {
+  color: #fff; /* Change the dropdown link color */
+}
+
+.buttons .button {
+  margin-right: 5px;
+}
+.navbar.has-shadow {
+    box-shadow: 0 2px 0 0 #0000001e;
 }
 </style>
