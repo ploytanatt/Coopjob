@@ -4,12 +4,27 @@
       <img
         id="suggest"
         class="is-rounded"
-        src="https://picsum.photos/id/366/600/375"
+        src="https://images.unsplash.com/photo-1435575653489-b0873ec954e2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         alt=""
       />
-      <div class="">
+      <div class="searchbar">
+        <div class="columns">
+        <div class="column is-3">
 
-        <a class="pagination-next" @click="goToJobsearch">ค้นหางาน</a>
+            <div class="control">
+              <input class="input" type="text" v-model="address" />
+            </div>
+            
+          </div>
+
+          <div class="column is-3">
+     
+            <div class="control">
+              <a class="pagination-next" @click="goToJobsearch">ค้นหางาน</a>
+            </div>
+          </div>
+      
+    </div>
       </div>
 
       <!-- Companies Section -->
@@ -250,7 +265,10 @@ export default {
   padding: 2rem;
 }
 
+.searchbar{
+  margin-bottom: 1rem;
 
+}
 #suggest {
   display: flex;
   justify-content: center;
