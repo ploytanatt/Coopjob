@@ -7,25 +7,18 @@
         src="https://images.unsplash.com/photo-1435575653489-b0873ec954e2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         alt=""
       />
-      <div class="searchbar">
-        <div class="columns">
-        <div class="column is-3">
 
-            <div class="control">
-              <input class="input" type="text" v-model="address" />
-            </div>
-            
-          </div>
+      <div class="field has-addons">
+  <p class="control has-icons-left">
+    <input class="input" type="text" placeholder="ชื่อตำแหน่งงาน" v-model="address">
+    <span class="icon is-small is-left">
+      <!-- ตัวอย่างใช้ Font Awesome -->
+      <i class="fas fa-search"></i>
+    </span>
+  </p>
+  <a class="pagination-next" @click="goToJobsearch">ค้นหางาน</a>
+</div>
 
-          <div class="column is-3">
-     
-            <div class="control">
-              <a class="pagination-next" @click="goToJobsearch">ค้นหางาน</a>
-            </div>
-          </div>
-      
-    </div>
-      </div>
 
       <!-- Companies Section -->
       <div class="columns is-multiline">
