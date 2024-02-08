@@ -5,38 +5,38 @@
                 <div class="pt-3" style="border-top: 0.5px solid gray">
                     <div class="columns p-4">
                         <div class="column">
-                            <p class="is-size-5 has-text-weight-bold"> job_id: {{ application.job.job_id }} </p>
-                        </div>
-                        <div class="column">
-                            <p class="is-size-5 has-text-weight-bold"> บริษัท id: {{ application.company.company_id }} </p>
+                            <img :src="application.company.profile_image" alt="Company Logo"
+                                style="max-width: 100px; max-height: 100px;">
                         </div>
                         <div class="column">
                             <p class="is-size-5 has-text-weight-bold"> ชื่อบริษัท: {{ application.company.company_name }}
                             </p>
+                            <p class="is-size-5 has-text-weight-bold"> ชื่องาน: {{ application.job.title }}</p>
                         </div>
+                    </div>
+                    <div class="columns p-4">
                         <div class="column">
-                            <p class="is-size-5 has-text-weight-bold"> ตำแหน่ง: {{ application.job.title }} </p>
+                            <p class="is-size-5 has-text-weight-bold"> ตำแหน่ง: {{ application.job.job_position }} </p>
                         </div>
                         <div class="column">
                             <p class="is-size-5 has-text-weight-bold"> สถานะ: {{ application.status }}</p>
                         </div>
                     </div>
-                    <button class="button is-danger" @click="showReportPopup(application.job.job_id)">
-                        รายงาน
-                    </button>
-                    <!--<button class="button is-primary" @click="BenefitReportPopup(application.job.job_id)">
-                        กรอกค่าแรงและสวัสดิการ
-                    </button>-->
-                    <button class="button is-primary"
-                        @click="gotobenefit(application.company.company_name, application.job.job_id)">
-                        กรอกค่าแรงและสวัสดิการ
-                    </button>
-                    <button class="button is-light">
-                        ดูใบตอบรับ
-                    </button>
-                    <button class="button is-info">
-                        ให้คะแนน
-                    </button>
+                    <div class="buttons mt-3">
+                        <button class="button is-danger" @click="showReportPopup(application.job.job_id)">
+                            รายงาน
+                        </button>
+                        <button class="button is-primary"
+                            @click="gotobenefit(application.company.company_name, application.job.job_id)">
+                            กรอกค่าแรงและสวัสดิการ
+                        </button>
+                        <button class="button is-light">
+                            ดูใบตอบรับ
+                        </button>
+                        <button class="button is-info">
+                            ให้คะแนน
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -62,15 +62,15 @@ export default {
     },
     methods: {
         gotobenefit(companyName, job_id) {
-    this.$router.push({
-        path: "/benefitReport",
-        query: {
-            companyName,
-            job_id,
+            this.$router.push({
+                path: "/benefitReport",
+                query: {
+                    companyName,
+                    job_id,
+                },
+            });
+            this.closeAddJobModal();
         },
-    });
-    this.closeAddJobModal();
-},
 
 
 

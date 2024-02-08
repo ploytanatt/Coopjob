@@ -5,22 +5,8 @@ const Joi = require('joi');
 const bcrypt = require('bcrypt');
 const { generateToken } = require("../utils/token");
 const { isLoggedIn } = require("../middleware");
-/*สมัครงาน
-router.post('/sendApplicationJob',isLoggedIn, async (req, res) => {
-    try {
-      const { job_id, user_id } = req.body;
-      const [result] = await pool.query(
-        'INSERT INTO student_jobs (job_id, student_id, status) VALUES (?, ?, ?)',
-        [job_id, user_id, 'pending']
-      );
-  
-      res.json({ message: 'Application submitted successfully' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Server error' });
-    }
-});*/
-//สมัครงานอันใหม่
+
+//สมัครงาน
 router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
   try {
     const { job_id, user_id } = req.body;
@@ -40,7 +26,7 @@ router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
 
     // ถ้ายังไม่มีการสมัคร
     const [result] = await pool.query(
-      'INSERT INTO student_jobs (job_id, student_id, status) VALUES (?, ?, ?)',
+      'INSERT INTO student_jobs (job_id, student_id, status, datetime) VALUES (?, ?, ?, now())',
       [job_id, user_id, 'pending']
     );
 
@@ -54,39 +40,12 @@ router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
 
 
 
-//Get job applications for a specific user
-/*router.get('/getJobApplications', isLoggedIn, async (req, res) => {
-  const userId = req.user.user_id;
-  try {
-    const [results] = await pool.query(`
-        SELECT ja.job_id, ja.student_id, ja.status, j.job_title, ja.student_job_id
-        FROM student_jobs ja
-        INNER JOIN jobs j ON ja.job_id = j.job_id
-        WHERE ja.student_id = ?
-      `, [userId]);
-    const jobApplications = results.map((row) => {
-      return {
-        student_job_id: row.student_job_id,
-        student_id: row.student_id,
-        status: row.status,
-        job: {
-          job_id: row.job_id,
-          title: row.title,
-        },
-      };
-    });
-    res.json(jobApplications);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
-}); */
 // Get job applications for a specific user with additional details ใหม่
 router.get('/getJobApplications', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-        SELECT ja.student_job_id, ja.student_id, ja.status, j.job_id, j.job_title AS job_title, c.company_id, c.company_name
+        SELECT ja.student_job_id, ja.student_id, ja.status, ja.datetime, j.job_id, j.job_title AS job_title, j.job_position, c.company_id, c.company_name, c.profile_image
         FROM student_jobs ja
         INNER JOIN jobs j ON ja.job_id = j.job_id
         LEFT JOIN companies c ON j.user_id = c.user_id
@@ -100,13 +59,16 @@ router.get('/getJobApplications', isLoggedIn, async (req, res) => {
             student_job_id: row.student_job_id,
             student_id: row.student_id,
             status: row.status,
+            datetime: row.datetime,
             job: {
                 job_id: row.job_id,
                 title: row.job_title,
+                job_position: row.job_position,
             },
             company: {
                 company_id: row.company_id,
                 company_name: row.company_name,
+                profile_image: row.profile_image,
             },
         };
     });
@@ -221,17 +183,18 @@ router.get('/getFavoriteJobs', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-        SELECT fj.*, j.job_title as job_title
-        FROM favorite_jobs fj
-        INNER JOIN jobs j ON fj.job_id = j.job_id
-        WHERE fj.user_id = ?
-      `, [userId]);
+      SELECT fj.*, j.job_title as job_title, c.company_name
+      FROM favorite_jobs fj
+      INNER JOIN jobs j ON fj.job_id = j.job_id
+      LEFT JOIN companies c ON j.user_id = c.user_id
+      WHERE fj.user_id = ?
+    `, [userId]);
     const FavoriteJobs = results.map((row) => {
       return {
         favorite_job_id: row.favorite_job_id,
-        job_id: row.job_id,  // เพิ่มค่า job_id ที่ตรงกับ user_id
-        jobTitle: row.job_title,
-        likedDate: row.liked_date,
+        job_id: row.job_id,
+        job_title: row.job_title,
+        company_name: row.company_name, 
       };
     });
     res.json(FavoriteJobs);
@@ -240,6 +203,7 @@ router.get('/getFavoriteJobs', isLoggedIn, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 
 // ยกเลิกการถูกใจงาน

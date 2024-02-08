@@ -5,17 +5,32 @@
         <div class="pt-3" style="border-top: 0.5px solid gray">
           <div class="columns p-4">
             <div class="column">
-              <p class="is-size-5 has-text-weight-bold"> job_id: {{ application.job.job_id }} </p>
+              <img :src="application.company.profile_image" alt="Company Logo"
+                style="max-width: 100px; max-height: 100px;">
+            </div>
+            <!--
+            <div class="column">
+              <img src="https://i.pinimg.com/originals/82/c6/5b/82c65b9bb0a75026fc4c82a438b4cc9b.jpg" alt="">
+            </div>-->
+            <div class="column is-two-thirds">
+              <p class="is-size-5 has-text-weight-bold"> ชื่อบริษัท: {{ application.company.company_name }}</p>
+              <p class="is-size-5 has-text-weight-bold"> ชื่องาน: {{ application.job.title }}</p>
+            </div>
+          </div>
+          <div class="columns p-4">
+            <div class="column">
+              <p class="is-size-5 has-text-weight-bold"> ตำแหน่ง: {{ application.job.job_position }} </p>
             </div>
             <div class="column">
-              <p class="is-size-5 has-text-weight-bold"> ตำแหน่ง: {{ application.job.title }} </p>
+              <p class="is-size-5 has-text-weight-bold">วันที่สมัคร: {{ application.datetime }}</p>
             </div>
             <div class="column">
               <p class="is-size-5 has-text-weight-bold"> สถานะ: {{ application.status }}</p>
             </div>
           </div>
           <div style="display: flex; flex-direction: row; justify-content: flex-end;">
-            <button class="button mx-4 mb-4 is-danger" @click="cancelApplication(application.student_job_id)">ยกเลิก</button>
+            <button class="button mx-4 mb-4 is-danger"
+              @click="cancelApplication(application.student_job_id)">ยกเลิก</button>
           </div>
         </div>
       </div>
@@ -60,8 +75,8 @@ export default {
       };
       const status = 'canceled'
       axios
-        .put(`http://localhost:3000/application/cancelJob/${applicationId}` ,{ status },
-          
+        .put(`http://localhost:3000/application/cancelJob/${applicationId}`, { status },
+
           config
         )
         .then((res) => {
@@ -76,5 +91,4 @@ export default {
   },
 };
 </script>
-<style scoped>
-</style>
+<style scoped></style>
