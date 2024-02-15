@@ -435,9 +435,7 @@ export default {
                     return axios.post('http://localhost:3000/application/sendReview', data, config)
                         .then((res) => {
                             console.log(res.data.message);
-                            return {
-                                success: true,
-                            };
+                            return { success: true }; // Return success status
                         })
                         .catch((error) => {
                             console.error(error);
@@ -447,8 +445,9 @@ export default {
                             };
                         });
                 },
+
             }).then((result) => {
-                if (result.success) {
+                if (result.value.success) {
                     Swal.fire({
                         title: 'Review submitted successfully',
                         icon: 'success',
@@ -456,12 +455,15 @@ export default {
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Already Review',
-                        text: result.errorMessage,
+                        title: 'Error',
+                        text: result.value.errorMessage,
                     });
                 }
             });
+
+
         },
+
 
 
 

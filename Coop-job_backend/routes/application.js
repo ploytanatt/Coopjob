@@ -335,34 +335,7 @@ router.post("/addBenefitReport", isLoggedIn, async (req, res) => {
 });
 
 
-/*ให้คะแนนบริษัท
-router.post('/sendReview', isLoggedIn, async (req, res) => {
-  try {
-    const { job_id, user_id, rating, comment } = req.body;
-
-    // ตรวจสอบว่า user_id นี้เคยให้คะแนนและเขียนรีวิวสำหรับ job_id นี้ไปแล้วหรือไม่
-    const [existingReview] = await pool.query(
-      'SELECT * FROM reviews WHERE job_id = ? AND user_id = ?',
-      [job_id, user_id]
-    );
-
-    if (existingReview.length > 0) {
-      // ถ้า user_id นี้เคยให้คะแนนและเขียนรีวิวสำหรับ job_id นี้ไปแล้ว
-      return res.status(400).json({ error: 'You have already submitted a review for this job.' });
-    }
-
-    // ถ้ายังไม่มีรีวิว
-    const [result] = await pool.query(
-      'INSERT INTO reviews (job_id, user_id, rating, comment, datetime) VALUES (?, ?, ?, ?, now())',
-      [job_id, user_id, rating, comment]
-    );
-
-    res.json({ message: 'Review submitted successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
-});*/
+/*ให้คะแนนบริษัท*/
 // Route for submitting a review
 router.post('/sendReview', isLoggedIn, async (req, res) => {
   try {
