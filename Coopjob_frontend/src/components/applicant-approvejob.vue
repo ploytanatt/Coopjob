@@ -33,7 +33,7 @@
                         <button class="button is-light">
                             ดูใบตอบรับ
                         </button>
-                        <button class="button is-info">
+                        <button class="button is-info" @click="showReviewPopup(application.job.job_id)">
                             ให้คะแนน
                         </button>
                     </div>
@@ -298,6 +298,173 @@ export default {
                 }
             });
         },
+
+
+        /*showReviewPopup(jobId) {
+            /*window.addEventListener('DOMContentLoaded', () => {
+                
+            })
+            Swal.fire({
+                title: 'ให้คะแนนและเขียนรีวิว',
+                html:
+                    '<div>' +
+                    '<div style="margin-bottom: 10px;">' +
+                    '<label for="rating">ให้คะแนน:</label><br>' +
+                    '<span class="star" data-value="1"><i class="fas fa-star"></i></span>' +
+                    '<span class="star" data-value="2"><i class="fas fa-star"></i></span>' +
+                    '<span class="star" data-value="3"><i class="fas fa-star"></i></span>' +
+                    '<span class="star" data-value="4"><i class="fas fa-star"></i></span>' +
+                    '<span class="star" data-value="5"><i class="fas fa-star"></i></span>' +
+                    '<font-awesome-icon icon="heart" />'+
+                    '<input type="hidden" id="rating">' +
+                    '</div>' +
+                    '<div style="margin-bottom: 10px;">' +
+                    '<label for="comment">เขียนคอมเม้น:</label>' +
+                    '<textarea id="comment" class="swal2-input"></textarea>' +
+                    '</div>' +
+                    '</div>',
+                showCancelButton: true,
+                confirmButtonText: 'Submit Review',
+                cancelButtonText: 'Cancel',
+                showLoaderOnConfirm: true,
+                didRender: () => {
+                    // เพิ่ม event listener เมื่อป๊อปอัพถูกแสดง
+                    const stars = document.querySelectorAll('.star');
+                    stars.forEach(star => {
+                        star.addEventListener('click', () => {
+                            const value = star.getAttribute('data-value');
+                            document.getElementById('rating').value = value;
+                            stars.forEach(s => {
+                                if (s.getAttribute('data-value') <= value) {
+                                    s.classList.add('selected');
+                                } else {
+                                    s.classList.remove('selected');
+                                }
+                            });
+                        });
+                    });
+                },
+                preConfirm: () => {
+                    const rating = document.getElementById('rating').value;
+                    const comment = document.getElementById('comment').value;
+
+                    const token = localStorage.getItem('token');
+                    const config = {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    };
+
+                    const data = {
+                        job_id: jobId,
+                        user_id: this.user.user_id,
+                        rating,
+                        comment,
+                    };
+
+                    // Send the review data to the backend
+                    return axios.post('http://localhost:3000/application/sendReview', data, config)
+                        .then((res) => {
+                            console.log(res.data.message);
+                            return {
+                                success: true,
+                            };
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                            return {
+                                success: false,
+                                errorMessage: 'Failed to submit review. Please try again later.',
+                            };
+                        });
+                },
+            }).then((result) => {
+                if (result.success) {
+                    Swal.fire({
+                        title: 'Review submitted successfully',
+                        icon: 'success',
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.errorMessage,
+                    });
+                }
+            });
+        },*/
+
+        showReviewPopup(jobId) {
+            Swal.fire({
+                title: 'ให้คะแนนและรีวิว',
+                html:
+                    `<div>
+                <label for="rating">เลือกคะแนน (1-5):</label>
+                <select id="rating" class="swal2-input">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+                <label for="comment">ความคิดเห็น:</label>
+                <textarea id="comment" class="swal2-input" placeholder="แสดงความคิดเห็นของคุณ"></textarea>
+            </div>`,
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                cancelButtonText: 'Cancel',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    const rating = document.getElementById('rating').value;
+                    const comment = document.getElementById('comment').value;
+
+                    const token = localStorage.getItem('token');
+                    const config = {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    };
+
+                    const data = {
+                        job_id: jobId,
+                        user_id: this.user.user_id,
+                        rating: rating,
+                        comment: comment,
+                    };
+
+                    return axios.post('http://localhost:3000/application/sendReview', data, config)
+                        .then((res) => {
+                            console.log(res.data.message);
+                            return { success: true }; // Return success status
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                            return {
+                                success: false,
+                                errorMessage: 'Failed to submit review. Please try again later.',
+                            };
+                        });
+                },
+
+            }).then((result) => {
+                if (result.value.success) {
+                    Swal.fire({
+                        title: 'Review submitted successfully',
+                        icon: 'success',
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.value.errorMessage,
+                    });
+                }
+            });
+
+
+        },
+
+
 
 
 
