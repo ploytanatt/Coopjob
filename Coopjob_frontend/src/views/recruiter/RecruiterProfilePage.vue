@@ -24,7 +24,6 @@
             </div>
         </div>
         <recruiterProfile v-if="select_option === 'recruiterProfile'"></recruiterProfile>
-        <p>dd</p>
       </div>
     </div>
 </template>

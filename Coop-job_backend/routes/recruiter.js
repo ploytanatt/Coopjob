@@ -10,9 +10,10 @@ const path = require('path');
 const fs = require('fs');
 
 //แสดงงานทั้งหมดที่ประกาศ
-router.get("/getAllJobs", isLoggedIn, async (req, res) => {
+router.get("/getAllJobs", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM jobs ");
+    //console.log("get all jobs success");
     res.status(200).json(rows);
   } catch (error) {
     console.error(error);
@@ -113,7 +114,7 @@ const profileEditSchema = Joi.object({
   location:Joi.string().required(),
   description: Joi.string().required(),
   expedition:Joi.string().required(),
-  company_video: Joi.string().required(),
+  company_video: Joi.string(),
 });
 
 
@@ -139,10 +140,10 @@ const upload = multer({
 
 router.post("/editProfile", isLoggedIn, upload.fields([{ name: "profile_image", maxCount: 1 }, { name: "cover_image", maxCount: 1 }]), async (req, res) => {
   try {
-    const { error } = profileEditSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.details[0].message });
-    }
+    //const { error } = profileEditSchema.validate(req.body);
+   // if (error) {
+   //   return res.status(400).json({ message: error.details[0].message });
+   // }
 
     const {
       contact_person_name,

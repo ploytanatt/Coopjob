@@ -1,11 +1,12 @@
 <template>
   <div class="p-6 card">
 
-      <button v-show="!modify_profile" class="button is-small is-info" @click="modify_profile = !modify_profile" >แก้ไข</button>
+     
 
-      <fieldset :disabled="!modify_profile">
       
       <div class="card-content">
+        <button v-show="!modify_profile" class="button is-small mb-3 is-info" @click="modify_profile = !modify_profile" >แก้ไข</button>
+      <fieldset :disabled="!modify_profile">
         <label class="label">ผู้ติดต่อ</label>
           <div class="notification contactperson is-rounded">
             <div class="columns">
@@ -212,11 +213,6 @@
         </div>
       </div>
   </div>
-
-  <div>
-    <p>ไรสส{{ location[0].province }}</p>
-  </div>
-
       <div>
         <label class="label">คำอธิบาย</label>
         <textarea class="textarea" v-model="$v.description.$model" :class="{ 'is-danger': $v.description.$error }"></textarea>
@@ -231,40 +227,40 @@
             <input class="input" type="text" v-model="expedition" />
           </div>
         </div>
-        
 
         <label class="label">วิดีโอของบริษัท</label>
           <div class="field" v-show="modify_profile">
-            <div class="columns">
-              <div class="column">
-                <img src="https://sv1.picz.in.th/images/2023/04/02/m1nC4y.png" />
-              </div>
-              <div class="column">
-                <img src="https://sv1.picz.in.th/images/2023/04/02/m1nvp8.png"/>
-              </div>
-              <div class="column">
-                <img src="https://sv1.picz.in.th/images/2023/04/02/m1nJNR.png"/>
-              </div>
-            </div>
             <div class="control">
-              <input class="input" type="text" v-model="company_video"/>
+             
+              <input class="input" type="text" v-model="company_video" placeholder="url ของยูทูป เช่น https://www.youtube.com/watch?v=A3sBZ5Nr4hc"/>
             </div>
           </div>
-          
-          <div
-            class="field is-horizontals" v-show="!modify_profile" v-html="company_video">
+            
+          <div class="field is-horizontals" >
+            <p class="is-size-6"></p>
+            <iframe 
+                  :src="'https://www.youtube.com/embed/' + getVideoId(company_video)"
+                  width="560" 
+                  height="315" 
+                  frameborder="0" 
+                  allowfullscreen
+                  v-if="company_video"
+                />
+
           </div>
         
     </div>
           </div>
-      </div>
-
+          
     </fieldset>
     <div class="mt-6 modify_profile">
-      <button v-show="!modify_profile" class="button is-medium ml-2 is-info" @click="modify_profile = !modify_profile" >แก้ไข</button>
-      <button v-show="modify_profile" class="button is-medium ml-2 is-success" @click="saveProfile" :disabled="$v.$error">บันทึก</button>
-      <button v-show="modify_profile" class="button is-medium ml-2 is-danger" @click="resetProfile">ยกเลิก</button>
+      <button v-show="!modify_profile" class="button is-medium mt-3 is-info" @click="modify_profile = !modify_profile" >แก้ไข</button>
+      <button v-show="modify_profile" class="button is-medium is-success" @click="saveProfile" :disabled="$v.$error">บันทึก</button>
+      <button v-show="modify_profile" class="button is-medium is-danger" @click="resetProfile">ยกเลิก</button>
     </div>
+      </div>
+
+
   </div>
 </template>
 
@@ -531,6 +527,16 @@ combineData() {
       console.log("Added new tag:", newTag);
       this.business_type.push({ title: newTag });
     },
+    getVideoId(url) {
+      const regExp = /^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#&?]*).*/;
+      const match = url.match(regExp);
+      if (match && match[2].length === 11) {
+        return match[2];
+      } else {
+        // Handle invalid YouTube URL
+        return 'invalid_video_id';
+      }
+    }
   },
   validations: {
     contact_person_name:{

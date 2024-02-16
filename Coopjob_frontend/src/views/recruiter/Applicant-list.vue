@@ -65,6 +65,7 @@
                 <p class="is-size-5 has-text-weight-bold">สถานะ: {{ application.status }}</p>
               </div>
             </div>
+           
             <button v-show="application.status === 'pending'" class="button is-medium is-success" @click="acceptApplicant(application.id)">ผ่าน</button>
             <button v-show="application.status === 'pending'" class="button is-medium is-danger" @click="declineApplicant(application.id)">ไม่ผ่าน</button>
 
@@ -99,6 +100,8 @@ export default {
       itemsPerPage: 10,
       currentPage: 1,
       select_option : 'myApplicant',
+      
+      showModal: false,
     };
   },
   mounted() {

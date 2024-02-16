@@ -1,6 +1,7 @@
 <template>
     <div class="container">
         <div class="columns mt-6">
+            <!--
           <div class="column tap-list is-3 pt-3 pb-3 cardtab">
           <div :class="['select_option', select_option === 'recruiterProfile' ? 'has-background-light' : '']">
             <router-link to="/recruiterProfile">
@@ -8,7 +9,7 @@
             </router-link>
           </div>
           <div :class="['select_option', select_option === 'myjob' ? 'has-background-light' : '']">
-            <router-link to="/recruiterProfile">
+            <router-link to="/recruiterJob">
               <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myjob'">งานที่ประกาศ</p>
             </router-link>
           </div>
@@ -23,9 +24,9 @@
             </router-link>
           </div>
         </div>
-
+-->
             <div class="p-6 card">
-        <h1 class="title">งานที่ประกาศ</h1><div>
+        <h1 class="title">งานที่ประกาศ Components</h1><div>
           <div class="twitter-pop-out-container">
           <button class="button is-primary add" @click="openAddJobModal">เพิ่มงาน</button>
           <div class="modal" :class="{ 'is-active': addJob }">

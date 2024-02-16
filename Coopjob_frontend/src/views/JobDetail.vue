@@ -101,24 +101,11 @@ export default {
   mounted() {
     const jobId = this.$route.params.jobId;
     this.getCompanyJobs(jobId);
-    this.getUser();
     const storedLikedStatus = localStorage.getItem(`jobLikedStatus_${jobId}`);
     this.isJobLiked = storedLikedStatus === 'true'; // หรือทำเงื่อนไขตามความเหมาะสม
   },
   methods: {
-    getUser() {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      axios.get("http://localhost:3000/user/me", config).then((res) => {
 
-        this.user = res.data;
-        console.log("App.vue", this.user)
-      });
-    },
     getCompanyJobs(jobId) {
       axios.get(`http://localhost:3000/recruiter/getJobDetail/${jobId}`)
         .then((response) => {

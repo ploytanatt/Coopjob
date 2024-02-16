@@ -8,18 +8,15 @@
         alt=""
       />
 
-      <div class="field has-addons">
+<div class="field has-addons">
   <p class="control has-icons-left">
-    <input class="input" type="text" placeholder="ชื่อตำแหน่งงาน" v-model="address">
+    <input class="input" type="text" placeholder="ชื่อตำแหน่งงาน" v-model="searchKeyword">
     <span class="icon is-small is-left">
-      <!-- ตัวอย่างใช้ Font Awesome -->
       <i class="fas fa-search"></i>
     </span>
   </p>
-  <a class="pagination-next" @click="goToJobsearch">ค้นหางาน</a>
+  <router-link class="pagination-next" :to="{ path: '/jobsearch', query: { searchKeyword: searchKeyword }}">ค้นหางาน</router-link>
 </div>
-
-
       <!-- Companies Section -->
       <div class="columns is-multiline">
         <div class="column is-3" v-for="company in paginatedCompanies" :key="company.job_id">
@@ -128,8 +125,6 @@
     </li>
   </ul>
 </nav>
-
-
     </div>
     <footer class="footer">
       <div class="content has-text-centered">
@@ -151,6 +146,7 @@ export default {
       currentPageCompanies: 1,
       currentPageJobs: 1,
       activeTab: 'all',
+      searchKeyword:''
     };
   },
   computed: {
@@ -178,7 +174,7 @@ export default {
     this.getCompanies();
     this.getJobs();
   },
-  methods: {
+methods: {
     getCompanies() {
       axios
         .get("http://localhost:3000/recruiter/getRecruiter")
@@ -240,6 +236,9 @@ export default {
       return [];
     }
   },
+  clearSearch() {
+      this.searchInput.value = "";
+    },
   parseLocation(location) {
     try {
       return JSON.parse(location);

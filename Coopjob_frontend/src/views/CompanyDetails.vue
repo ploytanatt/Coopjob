@@ -30,7 +30,14 @@
                   <span>{{ company.description }}</span>        
               </div>
               <div class="card-video_iframe">
-                <div class="video_iframe" v-html="company.company_video"></div>
+                <iframe 
+                  :src="'https://www.youtube.com/embed/' + getVideoId(company.company_video)"
+                  width="560" 
+                  height="315" 
+                  frameborder="0" 
+                  allowfullscreen
+                  v-if="company.company_video"
+                />
 
             </div>
             </div>
@@ -227,6 +234,16 @@ getCompanyJobs(companyId) {
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
         return date.toLocaleDateString('th-TH', options);
     },
+    getVideoId(url) {
+      const regExp = /^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#&?]*).*/;
+      const match = url.match(regExp);
+      if (match && match[2].length === 11) {
+        return match[2];
+      } else {
+        // Handle invalid YouTube URL
+        return 'invalid_video_id';
+      }
+    }
   },
 };
 </script>

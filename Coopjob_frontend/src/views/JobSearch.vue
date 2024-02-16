@@ -6,40 +6,31 @@
         <div class="column is-3">
           <div class="searchtab">
             <div class="field">
-              
+
               <div class="control">
                 <label class="radio">
-                  <input type="radio" name="jobType" v-model="selectedJobType" @change="filterJobs"> ฝึกงาน
+                  <input value="internship" type="radio" name="jobType" v-model="selectedJobType">
+                  ฝึกงาน
                 </label>
                 <label class="radio">
-                  <input type="radio" name="jobType" v-model="selectedJobType" @change="filterJobs"> สหกิจศึกษา
+                  <input value="cooperative" type="radio" name="jobType" v-model="selectedJobType">
+                  สหกิจศึกษา
                 </label>
               </div>
-
               
             </div>
 
             <div class="field">
-            <label class="label">ชื่องาน</label>
-            <div class="control">
-              <input class="input" type="text" v-model="address" />
-            </div>
-          </div>
-
+                <label class="label">ค้นหาชื่องาน</label>
+                <div class="control">
+                  <input class="input" type="text" v-model="searchKeyword"/>
+                </div>
+              </div>
           <div class="field">
             <label class="label">ประเภทงาน</label>
-          <div class="control">
-            <div class="select">
-              <select v-model="selectedLocation" @change="loadLocationData">
-                <option value="">ทุกจังหวัด</option>
-                <option v-for="province in locations" :key="province.id" :value="province.id">
-                  {{ province.name_th }}
-                </option>
-              </select>
-            </div>
-          </div>
+  
         </div>
-          <multiselect v-model="position_type"  placeholder="ค้นหาหรือพิมพ์เพื่อเพิ่มประเภท" label="title" track-by="title" :options="options" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+          <multiselect v-model="selectedPosition_type"  placeholder="ค้นหาหรือพิมพ์เพื่อเพิ่มประเภท" label="title" track-by="title" :options="options" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
           <div class="field">
             <label class="label">สถานที่ทำงาน</label>
           <div class="control">
@@ -53,7 +44,8 @@
             </div>
           </div>
         </div>
-            <button  class="button is-success">ค้นหา</button>
+        <button class="button is-success" @click="filterJobs">ค้นหา</button>
+
       <button class="button ml-2 is-danger" @click="clearFilters" >ยกเลิก</button>
           </div>
         </div>
@@ -62,7 +54,10 @@
         <!-- Job section -->
         <div class="column is-6">
           <div class="rows">
+            <p>ผลการค้นหา ({{ filteredJobs.length }})</p>
             <div v-for="job in filteredJobs" :key="job.job_id" class="column" @click="goToJobDetails(job.job_id)">
+     
+            
               <div class="card">
                 <div class="card-content">
                   <div class="media">
@@ -84,18 +79,8 @@
                 </div>
               </div>
             </div>
-            <!-- Pagination Controls for Jobs -->
-            <nav class="pagination" role="navigation" aria-label="pagination">
-              <a class="pagination-previous" @click="currentPageJobs = Math.max(1, currentPageJobs - 1)" :disabled="currentPageJobs === 1">Previous</a>
-              <a class="pagination-next" @click="currentPageJobs = Math.min(totalPagesJobs, currentPageJobs + 1)" :disabled="currentPageJobs === totalPagesJobs || jobs.length === 0">Next page</a>
-              <ul class="pagination-list">
-                <li v-for="page in totalPagesJobs" :key="page">
-                  <a class="pagination-link" @click="currentPageJobs = page" :class="{ 'is-current': currentPageJobs === page }">
-                    {{ page }}
-                  </a>
-                </li>
-              </ul>
-            </nav>
+          
+
           </div>
         </div>
 
@@ -122,41 +107,28 @@
       return {
         companies: [],
         jobs: [],
-        perPage: 4,
+        filteredJobs:[],
         currentPageCompanies: 1,
         currentPageJobs: 1,
         activeTab: 'all',
         locations: jsonData,
         options: JobtypeJson,
         position_type:[],
+        searchKeyword: this.$route.query.searchKeyword || '',
+        selectedPosition_type:[],
+        selectedJobType: '',
+        selectedLocation: '',
+        selectedProvince: '',
       };
     },
-    computed: {
-      filteredJobs() {
-      return this.jobs.filter(job => job.status === 'open' && (this.activeTab === 'all' || job.job_type === this.activeTab));
-    },
-      paginatedCompanies() {
-        const start = (this.currentPageCompanies - 1) * this.perPage;
-        const end = start + this.perPage;
-        return this.companies.slice(start, end);
-      },
-      totalPagesCompanies() {
-        return Math.ceil(this.companies.length / this.perPage);
-      },
-      paginatedJobs() {
-        const start = (this.currentPageJobs - 1) * this.perPage;
-        const end = start + this.perPage;
-        return this.jobs.slice(start, end);
-      },
-      totalPagesJobs() {
-        return Math.ceil(this.jobs.length / this.perPage);
-      },
-    },
-    created() {
+
+    mounted() {
       this.getCompanies();
       this.getJobs();
+      
     },
     methods: {
+
       getCompanies() {
         axios
           .get("http://localhost:3000/recruiter/getRecruiter")
@@ -186,11 +158,12 @@
               company: this.companies.find(company => company.user_id === job.user_id)
             };
           });
+          this.filteredJobs = this.jobs
         })
         .catch((error) => {
           console.log(error);
         });
-    },
+      },
       imagePath(companyProfileImage) {
         if (companyProfileImage) {
           return "http://localhost:3000" + companyProfileImage.replace(/\\/g, '/').replace('static', '');
@@ -198,7 +171,28 @@
           return "https://bulma.io/images/placeholders/640x360.png";
         }
       },
-      goToCompanyDetails(companyId) {
+      loadLocationData() {
+    if (this.selectedLocation) {
+      this.selectedProvince = this.locations.find(location => location.id === this.selectedLocation).name_th || {};
+    }
+    else {
+      this.selectedProvince = {};
+    }
+  },
+      filterJobs() {
+         this.filteredJobs = this.jobs.filter(job =>
+            job.status === 'open' &&
+            (this.selectedPosition_type.length === 0 || job.position_type && this.selectedPosition_type.some(type => job.position_type.includes(type.title))) &&
+            (this.activeTab === 'all' || job.job_type === this.activeTab) &&
+            (this.selectedJobType === '' || job.job_type === this.selectedJobType) && // กรองตามประเภทงานที่เลือก
+            (this.selectedProvince === '' || job.company.location.includes(this.selectedProvince)) &&// กรองตามสถานที่ทำงานที่เลือก
+            job.job_title.toLowerCase().includes(this.searchKeyword.toLowerCase())
+
+          );
+         
+        },
+
+        goToCompanyDetails(companyId) {
         this.$router.push("/company/" + companyId);
       },
       goToJobDetails(jobId) {
@@ -225,10 +219,10 @@
     },
     clearFilters() {
     this.selectedJobType = "";
-    this.address = "";
-    this.position_type = [];
+    this.searchKeyword = "";
+    this.selectedPosition_type = [];
     this.selectedLocation = "";
-    this.currentPageJobs = 1;
+    
     // เรียก filterJobs เพื่อทำการกรองข้อมูล
     this.filterJobs();
   },
@@ -241,9 +235,9 @@
       return `${option.name} (${option.id})`;
     },
     addTag(newTag) {
-      // ฟังก์ชันที่ถูกเรียกเมื่อมีการเพิ่มแท็กใหม่
+
       console.log("Added new tag:", newTag);
-      this.position_type.push({ title: newTag });
+      this.selectedPosition_type.push({ title: newTag });
     },
     },
   };
