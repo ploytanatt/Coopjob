@@ -39,11 +39,12 @@
                     </div>
                 </div>
                 <!-- หน้าต่างแสดงให้เลือกคะแนนดาว -->
-                <div id="reviewPopup" v-if="selectedJobId !== null"
-                    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 999;">
-                    <div
-                        style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%;">
-                        <h2>ให้คะแนน</h2>
+                <!-- หน้าต่างแสดงให้เลือกคะแนนดาว -->
+                <div id="reviewPopup" v-if="selectedJobId !== null">
+                    <div class="reviewPopup-inner">
+                        <div class="reviewPopup-header">
+                            <h2>ให้คะแนน</h2>
+                        </div>
                         <div class="stars">
                             <!-- สร้างดาวให้เลือก -->
                             <span v-for="n in 5" :key="n" @click="selectRating(n)"
@@ -54,7 +55,9 @@
                             <textarea name="" id="comment" cols="30" rows="10"></textarea>
                         </div>
                         <!-- ปุ่ม submit สำหรับส่งคะแนน -->
-                        <button @click="submitReview">Submit</button>
+                        <div class="reviewPopup-footer">
+                            <button @click="submitReview">Submit</button>
+                        </div>
                     </div>
                 </div>
 
@@ -397,6 +400,83 @@ export default {
 .yellow {
     color: yellow;
 }
+
+/* CSS สำหรับหน้าต่างแสดงให้เลือกคะแนนดาว */
+#reviewPopup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.reviewPopup-inner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 500px;
+}
+.reviewPopup-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.stars {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.stars span {
+    font-size: 24px;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.3s;
+}
+
+.stars span.yellow {
+    color: gold;
+}
+
+.comment textarea {
+    width: 100%;
+    height: 100px;
+    resize: vertical;
+    margin-bottom: 20px;
+}
+
+.reviewPopup-footer {
+    text-align: center;
+}
+
+.reviewPopup-footer button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.reviewPopup-footer button:hover {
+    background-color: #45a049;
+}
+
+@media screen and (max-width: 600px) {
+    .reviewPopup-inner {
+        width: 90%;
+    }
+}
 </style>
 
   
+
+
