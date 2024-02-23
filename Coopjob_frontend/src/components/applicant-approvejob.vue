@@ -57,8 +57,9 @@
                         </div>
                         <!-- ปุ่ม submit สำหรับส่งคะแนน -->
                         <div class="reviewPopup-footer">
-                            <button @click="submitReview">Submit</button>
+                            <button id="submitReviewButton" @click="submitReview">Submit</button>
                         </div>
+
                     </div>
                 </div>
 
@@ -326,40 +327,69 @@ export default {
 
 
         showReviewPopup(jobId) {
-    this.selectedJobId = jobId;
+            this.selectedJobId = jobId;
 
-    // Check review history before showing the popup
-    this.checkReviewHistory(jobId);
-},
-
-checkReviewHistory(jobId) {
-    const token = localStorage.getItem('token');
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`,
+            // Check review history before showing the popup
+            this.checkReviewHistory(jobId);
         },
-    };
 
-    axios.get(`http://localhost:3000/application/checkReviewHistory?jobId=${jobId}`, config)
-        .then((res) => {
-            const reviewHistory = res.data;
+        checkReviewHistory(jobId) {
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            };
 
-            if (reviewHistory.length > 0) {
-                // If review history exists, populate the popup with rating and comment
-                const { rating, comment } = reviewHistory[0];
-                this.selectedRating = rating;
-                document.getElementById('comment').value = comment;
-            }
+            axios.get(`http://localhost:3000/application/checkReviewHistory?jobId=${jobId}`, config)
+                .then((res) => {
+                    const reviewHistory = res.data;
 
-            // Show the review popup
-            document.getElementById('reviewPopup').style.display = 'block';
-        })
-        .catch((error) => {
-            console.error(error);
-            // If error occurs, still show the review popup
-            document.getElementById('reviewPopup').style.display = 'block';
-        });
-},
+                    if (reviewHistory.length > 0) {
+                        // If review history exists, populate the popup with rating and comment
+                        const { rating, comment } = reviewHistory[0];
+                        this.selectedRating = rating;
+                        document.getElementById('comment').value = comment;
+
+                        // Disable the stars so they cannot be clicked
+                        const stars = document.querySelectorAll('.stars span');
+                        stars.forEach(star => {
+                            star.style.pointerEvents = 'none';
+                        });
+
+                        // Disable the textarea so it cannot be edited
+                        document.getElementById('comment').disabled = true;
+
+                        // Hide the submit button since the user has already reviewed this job
+                        document.getElementById('submitReviewButton').style.display = 'none';
+
+                        // Change the header text to display review history
+                document.querySelector('.reviewPopup-header h2').innerText = 'ประวัติการรีวิว';
+                    } else {
+                        // Show the submit button if there is no review history
+                        document.getElementById('submitReviewButton').style.display = 'block';
+
+                        // Enable the stars for rating
+                        const stars = document.querySelectorAll('.stars span');
+                        stars.forEach(star => {
+                            star.style.pointerEvents = 'auto';
+                        });
+
+                        // Enable the textarea for comment
+                        document.getElementById('comment').disabled = false;
+                    }
+
+                    // Show the review popup
+                    document.getElementById('reviewPopup').style.display = 'block';
+                })
+                .catch((error) => {
+                    console.error(error);
+                    // If error occurs, still show the review popup
+                    document.getElementById('reviewPopup').style.display = 'block';
+                });
+        },
+
+
 
         closeReviewPopup() {
             this.selectedJobId = null; // ล้างค่า selectedJobId เพื่อซ่อนป็อปอัพ
