@@ -44,6 +44,7 @@
                     <div class="reviewPopup-inner">
                         <div class="reviewPopup-header">
                             <h2>ให้คะแนน</h2>
+                            <button class="close-button" @click="closeReviewPopup">×</button>
                         </div>
                         <div class="stars">
                             <!-- สร้างดาวให้เลือก -->
@@ -329,6 +330,10 @@ export default {
             // เปิดหน้าต่างให้คะแนนดาว
             document.getElementById('reviewPopup').style.display = 'block';
         },
+        closeReviewPopup() {
+        this.selectedJobId = null; // ล้างค่า selectedJobId เพื่อซ่อนป็อปอัพ
+        this.selectedRating = null; // ล้างค่า selectedRating
+    },
         // ส่งคะแนนดาว
         selectRating(rating) {
             this.selectedRating = rating;
@@ -429,6 +434,25 @@ export default {
     margin-bottom: 20px;
 }
 
+.reviewPopup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #888;
+}
+
+.close-button:hover {
+    color: #555;
+}
+
+
 .stars {
     text-align: center;
     margin-bottom: 20px;
@@ -450,6 +474,7 @@ export default {
     height: 100px;
     resize: vertical;
     margin-bottom: 20px;
+    border: 1px solid #ccc; /* เพิ่ม border */
 }
 
 .reviewPopup-footer {
