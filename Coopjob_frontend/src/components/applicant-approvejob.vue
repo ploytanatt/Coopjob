@@ -326,14 +326,45 @@ export default {
 
 
         showReviewPopup(jobId) {
-            this.selectedJobId = jobId;
-            // เปิดหน้าต่างให้คะแนนดาว
-            document.getElementById('reviewPopup').style.display = 'block';
+    this.selectedJobId = jobId;
+
+    // Check review history before showing the popup
+    this.checkReviewHistory(jobId);
+},
+
+checkReviewHistory(jobId) {
+    const token = localStorage.getItem('token');
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
         },
+    };
+
+    axios.get(`http://localhost:3000/application/checkReviewHistory?jobId=${jobId}`, config)
+        .then((res) => {
+            const reviewHistory = res.data;
+
+            if (reviewHistory.length > 0) {
+                // If review history exists, populate the popup with rating and comment
+                const { rating, comment } = reviewHistory[0];
+                this.selectedRating = rating;
+                document.getElementById('comment').value = comment;
+            }
+
+            // Show the review popup
+            document.getElementById('reviewPopup').style.display = 'block';
+        })
+        .catch((error) => {
+            console.error(error);
+            // If error occurs, still show the review popup
+            document.getElementById('reviewPopup').style.display = 'block';
+        });
+},
+
         closeReviewPopup() {
-        this.selectedJobId = null; // ล้างค่า selectedJobId เพื่อซ่อนป็อปอัพ
-        this.selectedRating = null; // ล้างค่า selectedRating
-    },
+            this.selectedJobId = null; // ล้างค่า selectedJobId เพื่อซ่อนป็อปอัพ
+            this.selectedRating = null; // ล้างค่า selectedRating
+        },
         // ส่งคะแนนดาว
         selectRating(rating) {
             this.selectedRating = rating;
@@ -429,6 +460,7 @@ export default {
     width: 80%;
     max-width: 500px;
 }
+
 .reviewPopup-header {
     text-align: center;
     margin-bottom: 20px;
@@ -474,7 +506,8 @@ export default {
     height: 100px;
     resize: vertical;
     margin-bottom: 20px;
-    border: 1px solid #ccc; /* เพิ่ม border */
+    border: 1px solid #ccc;
+    /* เพิ่ม border */
 }
 
 .reviewPopup-footer {
