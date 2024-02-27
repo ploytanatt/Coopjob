@@ -120,7 +120,7 @@ export default {
       }
     },
     cancel() {
-      this.$router.push('/recruiterJob');
+      this.$router.push('/MyJobs');
     },
   },
   validations: {
