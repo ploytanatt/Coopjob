@@ -4,8 +4,9 @@ const router = express.Router();
 const Joi = require('joi');
 const bcrypt = require('bcrypt');
 const { generateToken } = require("../utils/token");
+const { v4: uuidv4 } = require('uuid');
 const { isLoggedIn } = require("../middleware");
-
+const multer = require('multer');
 //สมัครงาน
 router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
   try {
@@ -36,8 +37,6 @@ router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-
-
 
 
 // Get job applications for a specific user with additional details ใหม่
@@ -81,9 +80,6 @@ router.get('/getJobApplications', isLoggedIn, async (req, res) => {
 
 });
 
-
-
-
 router.put('/cancelJob/:applicationId', isLoggedIn, async (req, res) => {
   const { status } = req.body;
   const applicationId = req.params.applicationId;
@@ -98,6 +94,19 @@ router.put('/cancelJob/:applicationId', isLoggedIn, async (req, res) => {
 
 
 // Get job applications for a specific recruiter
+router.get('/getApplication/:applicationId', isLoggedIn, async (req, res) => {
+  const applicationId = req.params.applicationId;
+  try {
+    // ดึงข้อมูลแอพลิเคชันโดยใช้ applicationId
+    const applications = await pool.query('SELECT * FROM student_jobs WHERE student_job_id = ?', [applicationId]);
+    res.json(applications);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Get job applications for all recruiter
 router.get('/getApplications', isLoggedIn, async (req, res) => {
   const recruiterId = req.user.user_id;
   try {
@@ -124,12 +133,28 @@ router.get('/getApplications', isLoggedIn, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-router.put('/updateStatus/:applicationId', isLoggedIn, async (req, res) => {
+
+// ตั้งค่า multer upload
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'static/coop302/'); 
+    },
+    filename: function (req, file, cb) {
+      const uniqueFileName = `${uuidv4().slice(0, 4)}-${file.originalname}`;
+      cb(null, uniqueFileName); // กำหนดชื่อไฟล์เก็บในโฟลเดอร์เป็นชื่อที่ไม่ซ้ำกัน
+    }
+  }),
+});
+
+router.put('/updateStatus/:applicationId', isLoggedIn, upload.single('coopfile'), async (req, res) => {
   const applicationId = req.params.applicationId;
   const { status } = req.body;
+  const filePath = req.file.path;
   try {
-    await pool.query('UPDATE student_jobs SET status = ? WHERE student_job_id = ?', [status, applicationId]);
-    res.json({ message: 'Update application status successful' });
+    await pool.query('UPDATE student_jobs SET status = ?, coop302 = ? WHERE student_job_id = ?', [status, filePath, applicationId]);
+    res.json({ message: 'อัพโหลดไฟล์สำเร็จ' });
+    console.log("update job apllication successfuly")
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });

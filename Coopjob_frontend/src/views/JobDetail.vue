@@ -22,6 +22,8 @@
         </button>-->
 
         <!-- ปุ่ม Like  เปี่ลยนสีที่ปุ่ม-->
+
+      
         <button class="button mr-2" @click="favoriteJob(jobs[0].job_id)"
           :class="{ 'is-danger': isJobLiked, 'is-dark': !isJobLiked }" v-show="user.role === 'applicant'">
           <font-awesome-icon icon="heart" />

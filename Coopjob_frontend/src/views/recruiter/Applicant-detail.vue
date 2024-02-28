@@ -6,8 +6,13 @@
             <div class="columns is-multiline  ml-6 mt-1">
               <p class="column is-12">ตำแน่งงาน: </p>
             </div>
+            
           </div>
-          <div class="column  mt-6"><button class="button is-primary" @click="showModal = true">Accept</button></div>
+
+          <div class="columns is-2 ml-6 mt-6"  v-for="application in applications" :key="application.student_job_id">
+        <button class="button is-primary" @click="showModal = true"  :disabled="application.status === 'approve'" >Accept</button>
+      </div>
+          
         </div>
       
           <div class=" applicant_info">
@@ -45,20 +50,18 @@
     </div>
     <div class="preview-pdf">
       <iframe :src="imagePath(applicationJob.resume)" type="application/pdf" class="pdf" v-if="select_option === 'resume'" />
-            <iframe :src="imagePath(applicationJob.transript)" type="application/pdf" class="pdf" v-if="select_option === 'transcript'" />
-            <iframe :src="imagePath(applicationJob.portfolio)" type="application/pdf" class="pdf" v-if="select_option === 'portfolio'" />
-         
+      <iframe :src="imagePath(applicationJob.transript)" type="application/pdf" class="pdf" v-if="select_option === 'transcript'" />
+      <iframe :src="imagePath(applicationJob.portfolio)" type="application/pdf" class="pdf" v-if="select_option === 'portfolio'" />
     </div>
-
-    
-
         <!-- Modal Content -->
-        
         <div class="modal" :class="{ 'is-active': showModal }">
           <div class="modal-background"></div>
           <div class="modal-card">
+            
             <header class="modal-card-head">
-              <p class="modal-card-title">หากต้องการรับผู้สมัครประเภทสหกิจศึกษา กรุณาทำตามขั้นตอนการรับสมัครเพิ่มเติมดังนี้</p>
+              
+              <p class="modal-card-title"> กรุณาทำตามขั้นตอนการรับสมัครดังนี้</p>
+              
               <button class="delete" aria-label="close" @click="showModal = false"></button>
             </header>
             <section class="modal-card-body">
@@ -81,7 +84,7 @@
                 <h2>2.ทำการกรอกข้อมูลลงในแบบฟอร์มและอัพโหลดไฟล์ลงในช่องด้านล่าง</h2>
                 <div class="file has-name">
                   <label class="file-label">
-                    <input class="file-input" type="file" name="coop302">
+                    <input class="file-input" type="file" ref="fileInput" accept=".pdf" @change="handleFileUpload($event)" />
                     <span class="file-cta">
                       <span class="file-icon">
                         <i class="fa-sharp fa-solid fa-upload"></i>
@@ -90,8 +93,8 @@
                         Choose a file…
                       </span>
                     </span>
-                    <span class="file-name">   
-                    </span>
+                    <span class="file-name">{{ file ? file.name : 'No file selected' }}</span>
+
                   </label>
                 </div>
               </div>
@@ -103,11 +106,12 @@
             </div>
             </section>
             <footer class="modal-card-foot">
-              <button class="button is-success" @click="showModal = false">Submit</button>
+              
+              <button class="button is-medium is-success" @click="acceptApplicant(applicationUserId, file)">ผ่าน</button>
               <button class="button" @click="showModal = false">Cancel</button>
             </footer>
           </div>
-          <button class="delete" aria-label="close" @click="showModal = false"></button>
+          
         </div>
       </div>
       
@@ -122,18 +126,39 @@ export default {
   
   data() {
     return {
+      applications: [],
       applicationJob: [],
       select_option:'resume',
       showModal: false,
+      file:'',
+      applicationUserId:'',
     };
   },
-  
   mounted() {
-    // Get application details
     const applicationId = this.$route.params.applicationId;
+    
+    this.getApplication(applicationId);
     this.getApplicationDetails(applicationId);
   },
   methods: {
+    
+    getApplication(applicationId) {
+      this.isLoading = true;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      axios
+        .get(`http://localhost:3000/application/getApplication/${applicationId}`, config)
+        .then((response) => {
+          this.applications = response.data[0];      
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
     getApplicationDetails(applicationId) {
       const token = localStorage.getItem("token");
       const config = {
@@ -145,73 +170,91 @@ export default {
         .get(`http://localhost:3000/application/getApplicationDetails/${applicationId}`, config)
         .then((response) => {
           this.applicationJob = response.data[0];
+          this.applicationUserId = applicationId;
         })
         .catch((error) => {
           console.error(error);
         });
     },
-      imagePath(resume) {
+    imagePath(resume) {
       if (resume) {
           return "http://localhost:3000/" + resume.replace(/\\/g, '/').replace('static', '');
       } else {
           return "https://bulma.io/images/placeholders/640x360.png";
       }
-      },
-    acceptApplicant(applicationJob) {
-      const token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    const status = 'approve'
-      axios.put(
-      `http://localhost:3000/application/updateStatus/${applicationJob}`,
-      { status },
-      config
-      )
-      .then((res) => {
-        Swal.fire(res.data.message, "", "success");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
     },
-
-downloadFile(url) {
-  fetch(url)
-    .then(response => response.blob())
-    .then(blob => {
-      const url = window.URL.createObjectURL(new Blob([blob]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'coop302.pdf'); // ตั้งชื่อไฟล์ที่จะโหลด
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-    });
-},
-
-    declineApplicant(applicationJob) {
-      const token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    const status = 'reject'
-      axios.put(
-      `http://localhost:3000/application/updateStatus/${applicationJob}`,
-      { status },
-      config
-      )
-      .then((res) => {
-        Swal.fire(res.data.message, "", "success");
+    acceptApplicant(applicationJob, file) {
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        };
+        const filess = this.$refs.fileInput.files[0];
+        const formData = new FormData();
+        formData.append('coopfile', filess); 
+        formData.append('status', 'approve'); 
+        if (!file) {
+          this.errors = ["Please select a file to upload."];
+          return;
+        }
+        axios.put(
+          `http://localhost:3000/application/updateStatus/${applicationJob}`,
+          formData,
+          config
+        )
+        .then((res) => {
+          Swal.fire({
+        title: res.data.message,
+        icon: "success",
       })
-      .catch((error) => {
-        console.error(error);
-      });
+      this.showModal = false;
+      this.getApplication(this.applicationUserId);
+        })
+        .catch((error) => {
+          Swal.fire(error);
+        });
     },
+   //   declineApplicant(applicationJob) {
+   //   const token = localStorage.getItem("token");
+   //   const config = {
+   //     headers: {
+   //       Authorization: `Bearer ${token}`,
+   //     },
+   //   };
+   //   const status = "reject";
+   //   axios
+   //     .put(
+   //       `http://localhost:3000/application/updateStatus/${applicationJob}`,
+   //       { status },
+   //       config
+   //     )
+   //     .then((res) => {
+   //       Swal.fire(res.data.message, "", "success");
+   //       this.getApplications(); // โหลดข้อมูลใหม่หลังจากปฏิเสธ
+   //     })
+   //     .catch((error) => {
+   //       console.error(error);
+   //     });
+   // },
+
+    downloadFile(url) {
+      fetch(url)
+        .then(response => response.blob())
+        .then(blob => {
+          const url = window.URL.createObjectURL(new Blob([blob]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'coop302.pdf'); // ตั้งชื่อไฟล์ที่จะโหลด
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode.removeChild(link);
+        });
+    },
+    handleFileUpload(event) {
+      this.file = event.target.files[0]; // เซ็ตค่าของ file เมื่อมีการเปลี่ยนแปลงไฟล์
+    }, 
   },
 };
 

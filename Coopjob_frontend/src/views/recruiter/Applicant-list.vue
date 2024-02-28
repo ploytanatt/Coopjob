@@ -26,9 +26,8 @@
 
       
       <div class="p-6 card">
-            <h1 class="title">รายชื่อผู่ที่มาสมัครงาน</h1>
-
-           
+            <h1 class="title">รายชื่อผู้ที่มาสมัครงาน</h1>
+        
             <div class="column is-12" >
       <!-- Filter Dropdown -->
       <div class="field">
@@ -51,23 +50,27 @@
       </div>
 
       <!-- Applications List -->
-      <div v-for="application in computedPaginatedApplications" :key="application.id">
+      <div v-for="application in computedPaginatedApplications" :key="application.user_id">
         <div class="card px-5 py-3" v-if="application.status !== 'canceled'">
           <div class="pt-3" style="border-top: 0.5px solid gray;">
             <div class="columns p-4" @click="viewApplicationDetail(application.id)">
               <div class="column">
-                <p class="is-size-5 has-text-weight-bold">id: {{ application.id }}</p>
+                <i class="fa-regular fa-star"></i>
+                
               </div>
               <div class="column">
-                <p class="is-size-5 has-text-weight-bold">ตำแหน่ง: {{ application.position }}</p>
+                <p class="is-size-5 has-text-weight-bold">{{ application.position }}</p>
               </div>
               <div class="column">
                 <p class="is-size-5 has-text-weight-bold">สถานะ: {{ application.status }}</p>
               </div>
             </div>
            
-            <button v-show="application.status === 'pending'" class="button is-medium is-success" @click="acceptApplicant(application.id)">ผ่าน</button>
-            <button v-show="application.status === 'pending'" class="button is-medium is-danger" @click="declineApplicant(application.id)">ไม่ผ่าน</button>
+           
+             <!-- 
+              <button v-show="application.status === 'pending'" class="button is-medium is-danger" @click="declineApplicant(application.id)">ไม่ผ่าน</button>
+             -->
+           
 
           </div>
           <div style="display: flex; flex-direction: row; justify-content: flex-end;"></div>
@@ -129,28 +132,6 @@ export default {
     },
     viewApplicationDetail(applicationId) {
       this.$router.push("/applicantDetail/" + applicationId);
-    },
-    acceptApplicant(applicationJob) {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      const status = "approve";
-      axios
-        .put(
-          `http://localhost:3000/application/updateStatus/${applicationJob}`,
-          { status },
-          config
-        )
-        .then((res) => {
-          Swal.fire(res.data.message, "", "success");
-          this.getApplications(); // โหลดข้อมูลใหม่หลังจากอนุมัติ
-        })
-        .catch((error) => {
-          console.error(error);
-        });
     },
     declineApplicant(applicationJob) {
       const token = localStorage.getItem("token");
