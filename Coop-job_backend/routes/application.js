@@ -262,27 +262,16 @@ router.delete('/cancelFavoriteJob/:jobId', isLoggedIn, async (req, res) => {
 });
 
 //รีพอร์ตงาน
-// Add this to your backend routes
 router.post('/sendReport', isLoggedIn, async (req, res) => {
   console.log('Received a POST request to /application/sendReport', req.body);
   try {
     const { job_id, user_id, title, description } = req.body;
 
-    // Set job_id based on title
-    const updatedJobId = job_id;
-
     // Save the report details to the database or perform any necessary actions ใส่ now()เพื่อให้เอาวันที่ปัจจุบันมา
     const query = `INSERT INTO report_company (user_id, job_id, title, description, created_at) VALUES (?, ?, ?, ?, NOW())`;
 
-    // ใช้ pool.query แทน connection.query
-    pool.query(query, [user_id, job_id, title, description], (error, results, fields) => {
-      if (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Server error' });
-      } else {
-        res.json({ message: 'Report submitted successfully' });
-      }
-    });
+    pool.query(query, [user_id, job_id, title, description])
+    res.json({ message: 'Report submitted successfully' });;
 
   } catch (error) {
     console.error(error);

@@ -39,7 +39,6 @@
                     </div>
                 </div>
                 <!-- หน้าต่างแสดงให้เลือกคะแนนดาว -->
-                <!-- หน้าต่างแสดงให้เลือกคะแนนดาว -->
                 <div id="reviewPopup" v-if="selectedJobId !== null">
                     <div class="reviewPopup-inner">
                         <div class="reviewPopup-header">
@@ -209,8 +208,8 @@ export default {
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: result.value.errorMessage,
+                        title: 'Cancel',
+                        
                     });
                 }
             })();
@@ -476,6 +475,7 @@ export default {
 
 /* CSS สำหรับหน้าต่างแสดงให้เลือกคะแนนดาว */
 #reviewPopup {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;

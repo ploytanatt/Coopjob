@@ -31,7 +31,7 @@
         <button class="button is-success mr-2" v-show="user.role === 'applicant'" @click="applyToJob(jobs[0].job_id)">
           ยื่นสมัคร
         </button>
-        <button class="button is-danger" v-show="user.role === 'applicant'" @click="showReportPopup">
+        <button class="button is-danger" v-show="user.role === 'applicant'" @click="showReportPopup(jobs[0].job_id)">
           รายงาน
         </button>
       </div>
@@ -200,62 +200,72 @@ export default {
       }
     },
 
-    showReportPopup() {
-      Swal.fire({
-        title: 'Report',
-        html:
-          '<div>' +
-          '<label for="report-title">Title: </label>' +
-          '<input type="hidden" id="report-title" class="swal2-input">' +
-          '<label><input type="radio" name="report-option" value="job" checked> Job </label>' +
-          '<label><input type="radio" name="report-option" value="company"> Company </label>' +
-          '</div><br>' +
-          '<label for="report-description">Description:</label><br>' +
-          '<textarea id="report-description" class="swal2-input" placeholder="Description"></textarea>',
-        showCancelButton: true,
-        confirmButtonText: 'Submit Report',
-        cancelButtonText: 'Cancel',
-        showLoaderOnConfirm: true,
-        preConfirm: () => {
-          const reportOption = document.querySelector('input[name="report-option"]:checked').value;
-          const title = (reportOption === 'job') ? 'Job' : 'Company'; // Set title based on report-option
-          const description = document.getElementById('report-description').value;
+    showReportPopup(jobId) {
+            this.selectedJobId = jobId;
+            (async () => {
+                const result = await Swal.fire({
+                    title: 'Report',
+                    html:
+                        '<div>' +
+                        '<label for="report-title">Title: </label>' +
+                        '<input type="hidden" id="report-title" class="swal2-input">' +
+                        '<label><input type="radio" name="report-option" value="job" checked> Job </label>' +
+                        '<label><input type="radio" name="report-option" value="company"> Company </label>' +
+                        '</div><br>' +
+                        '<label for="report-description">Description:</label><br>' +
+                        '<textarea id="report-description" class="swal2-input" placeholder="Description"></textarea>',
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit Report',
+                    cancelButtonText: 'Cancel',
+                    showLoaderOnConfirm: true,
+                    preConfirm: async () => {
+                        const reportOption = document.querySelector('input[name="report-option"]:checked').value;
+                        const title = (reportOption === 'job') ? 'Job' : 'Company'; // Set title based on report-option
+                        const description = document.getElementById('report-description').value;
 
-          const token = localStorage.getItem('token');
-          const config = {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          };
+                        const token = localStorage.getItem('token');
+                        const config = {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        };
 
-          const data = {
-            job_id: this.jobs[0].job_id, // ส่ง job_id ไปทุกครั้งไม่ว่า option จะเป็น 'job' หรือ 'company'
-            user_id: this.user.user_id,
-            title,
-            description,
-          };
+                        const data = {
+                            job_id: this.selectedJobId,
+                            user_id: this.user.user_id,
+                            title,
+                            description,
+                        };
 
-          // Send the report data to the backend
-          axios.post('http://localhost:3000/application/sendReport', data, config)
-            .then((res) => {
-              console.log(res.data.message);
-              Swal.fire({
-                title: 'Report submitted successfully',
-                icon: 'success',
-              });
-            })
-            .catch((error) => {
-              console.error(error);
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to submit report. Please try again later.',
-              });
-            });
+                        try {
+                            const res = await axios.post('http://localhost:3000/application/sendReport', data, config);
+                            console.log(res.data.message);
+                            return { success: true };
+                        } catch (error) {
+                            console.error(error);
+                            return {
+                                success: false,
+                                errorMessage: 'Failed to submit report. Please try again later.',
+                            };
+                        }
+                    },
+                });
+
+                if (result.isConfirmed && result.value.success) {
+                    Swal.fire({
+                        title: 'Report submitted successfully',
+                        icon: 'success',
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Cancel',
+                        
+                    });
+                }
+            })();
         },
 
-      });
-    },
 
     favoriteJob(jobId) {
       const token = localStorage.getItem("token");
