@@ -5,7 +5,7 @@
                 <div class="pt-3" style="border-top: 0.5px solid gray">
                     <div class="columns p-4">
                         <div class="column">
-                            <img :src="application.company.profile_image" alt="Company Logo"
+                            <img :src="imagePath(application.company.profile_image)" alt="Company Logo"
                                 style="max-width: 100px; max-height: 100px;">
                         </div>
                         <div class="column">
@@ -87,6 +87,13 @@ export default {
         console.log(this.applications); // ล็อกแอปพลิเคชันเพื่อตรวจสอบโครงสร้าง
     },
     methods: {
+        imagePath(companyProfileImage) {
+            if (companyProfileImage) {
+                return "http://localhost:3000" + companyProfileImage.replace(/\\/g, '/').replace('static', '');
+            } else {
+                return "https://bulma.io/images/placeholders/640x360.png";
+            }
+        },
         gotobenefit(companyName, job_id) {
             this.$router.push({
                 path: "/benefitReport",
@@ -364,7 +371,7 @@ export default {
                         document.getElementById('submitReviewButton').style.display = 'none';
 
                         // Change the header text to display review history
-                document.querySelector('.reviewPopup-header h2').innerText = 'ประวัติการรีวิว';
+                        document.querySelector('.reviewPopup-header h2').innerText = 'ประวัติการรีวิว';
                     } else {
                         // Show the submit button if there is no review history
                         document.getElementById('submitReviewButton').style.display = 'block';

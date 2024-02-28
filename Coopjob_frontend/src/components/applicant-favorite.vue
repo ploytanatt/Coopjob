@@ -16,8 +16,8 @@
             </div>
             <div class="column">
               <!-- เพิ่มปุ่มดูรายละเอียด -->
-              <button class="button is-info">
-                <router-link :to="'/company/' + likedJob.job_id">ดูรายละเอียด</router-link>
+              <button class="button is-primary">
+                <router-link :to="'/job/' + likedJob.job_id" class="has-text-white">ดูรายละเอียด</router-link>
               </button>
             </div>
           </div>

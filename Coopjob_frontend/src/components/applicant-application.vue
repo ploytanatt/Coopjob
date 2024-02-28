@@ -5,7 +5,7 @@
         <div class="pt-3" style="border-top: 0.5px solid gray">
           <div class="columns p-4">
             <div class="column">
-              <img :src="application.company.profile_image" alt="Company Logo"
+              <img :src="imagePath(application.company.profile_image)" alt="Company Logo"
                 style="max-width: 100px; max-height: 100px;">
             </div>
             <!--
@@ -50,6 +50,13 @@ export default {
     this.getJobApplications();
   },
   methods: {
+    imagePath(companyProfileImage) {
+      if (companyProfileImage) {
+        return "http://localhost:3000" + companyProfileImage.replace(/\\/g, '/').replace('static', '');
+      } else {
+        return "https://bulma.io/images/placeholders/640x360.png";
+      }
+    },
     getJobApplications() {
       const token = localStorage.getItem("token");
       const config = {
