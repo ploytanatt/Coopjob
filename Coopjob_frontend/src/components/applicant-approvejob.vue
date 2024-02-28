@@ -38,6 +38,31 @@
                         </button>
                     </div>
                 </div>
+                <!-- หน้าต่างแสดงให้เลือกคะแนนดาว -->
+                <!-- หน้าต่างแสดงให้เลือกคะแนนดาว -->
+                <div id="reviewPopup" v-if="selectedJobId !== null">
+                    <div class="reviewPopup-inner">
+                        <div class="reviewPopup-header">
+                            <h2>ให้คะแนน</h2>
+                            <button class="close-button" @click="closeReviewPopup">×</button>
+                        </div>
+                        <div class="stars">
+                            <!-- สร้างดาวให้เลือก -->
+                            <span v-for="n in 5" :key="n" @click="selectRating(n)"
+                                :class="{ yellow: n <= selectedRating }">★</span>
+                        </div>
+                        <h3>ความคิดเห็นเพิ่มเติม</h3>
+                        <div class="comment">
+                            <textarea name="" id="comment" cols="30" rows="10"></textarea>
+                        </div>
+                        <!-- ปุ่ม submit สำหรับส่งคะแนน -->
+                        <div class="reviewPopup-footer">
+                            <button id="submitReviewButton" @click="submitReview">Submit</button>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -51,6 +76,7 @@ export default {
             applications: [],
             user: [],
             selectedJobId: null, // เพิ่ม property ใหม่
+            selectedRating: null, // เพิ่ม property เก็บคะแนนดาวที่เลือก
         };
     },
     mounted() {
@@ -300,168 +326,130 @@ export default {
         },
 
 
-        /*showReviewPopup(jobId) {
-            /*window.addEventListener('DOMContentLoaded', () => {
-                
-            })
-            Swal.fire({
-                title: 'ให้คะแนนและเขียนรีวิว',
-                html:
-                    '<div>' +
-                    '<div style="margin-bottom: 10px;">' +
-                    '<label for="rating">ให้คะแนน:</label><br>' +
-                    '<span class="star" data-value="1"><i class="fas fa-star"></i></span>' +
-                    '<span class="star" data-value="2"><i class="fas fa-star"></i></span>' +
-                    '<span class="star" data-value="3"><i class="fas fa-star"></i></span>' +
-                    '<span class="star" data-value="4"><i class="fas fa-star"></i></span>' +
-                    '<span class="star" data-value="5"><i class="fas fa-star"></i></span>' +
-                    '<font-awesome-icon icon="heart" />'+
-                    '<input type="hidden" id="rating">' +
-                    '</div>' +
-                    '<div style="margin-bottom: 10px;">' +
-                    '<label for="comment">เขียนคอมเม้น:</label>' +
-                    '<textarea id="comment" class="swal2-input"></textarea>' +
-                    '</div>' +
-                    '</div>',
-                showCancelButton: true,
-                confirmButtonText: 'Submit Review',
-                cancelButtonText: 'Cancel',
-                showLoaderOnConfirm: true,
-                didRender: () => {
-                    // เพิ่ม event listener เมื่อป๊อปอัพถูกแสดง
-                    const stars = document.querySelectorAll('.star');
-                    stars.forEach(star => {
-                        star.addEventListener('click', () => {
-                            const value = star.getAttribute('data-value');
-                            document.getElementById('rating').value = value;
-                            stars.forEach(s => {
-                                if (s.getAttribute('data-value') <= value) {
-                                    s.classList.add('selected');
-                                } else {
-                                    s.classList.remove('selected');
-                                }
-                            });
-                        });
-                    });
-                },
-                preConfirm: () => {
-                    const rating = document.getElementById('rating').value;
-                    const comment = document.getElementById('comment').value;
-
-                    const token = localStorage.getItem('token');
-                    const config = {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    };
-
-                    const data = {
-                        job_id: jobId,
-                        user_id: this.user.user_id,
-                        rating,
-                        comment,
-                    };
-
-                    // Send the review data to the backend
-                    return axios.post('http://localhost:3000/application/sendReview', data, config)
-                        .then((res) => {
-                            console.log(res.data.message);
-                            return {
-                                success: true,
-                            };
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                            return {
-                                success: false,
-                                errorMessage: 'Failed to submit review. Please try again later.',
-                            };
-                        });
-                },
-            }).then((result) => {
-                if (result.success) {
-                    Swal.fire({
-                        title: 'Review submitted successfully',
-                        icon: 'success',
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: result.errorMessage,
-                    });
-                }
-            });
-        },*/
-
         showReviewPopup(jobId) {
-            Swal.fire({
-                title: 'ให้คะแนนและรีวิว',
-                html:
-                    `<div>
-                <label for="rating">เลือกคะแนน (1-5):</label>
-                <select id="rating" class="swal2-input">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
-                <label for="comment">ความคิดเห็น:</label>
-                <textarea id="comment" class="swal2-input" placeholder="แสดงความคิดเห็นของคุณ"></textarea>
-            </div>`,
-                showCancelButton: true,
-                confirmButtonText: 'Submit',
-                cancelButtonText: 'Cancel',
-                showLoaderOnConfirm: true,
-                preConfirm: () => {
-                    const rating = document.getElementById('rating').value;
-                    const comment = document.getElementById('comment').value;
+            this.selectedJobId = jobId;
 
-                    const token = localStorage.getItem('token');
-                    const config = {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    };
+            // Check review history before showing the popup
+            this.checkReviewHistory(jobId);
+        },
 
-                    const data = {
-                        job_id: jobId,
-                        user_id: this.user.user_id,
-                        rating: rating,
-                        comment: comment,
-                    };
-
-                    return axios.post('http://localhost:3000/application/sendReview', data, config)
-                        .then((res) => {
-                            console.log(res.data.message);
-                            return { success: true }; // Return success status
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                            return {
-                                success: false,
-                                errorMessage: 'Failed to submit review. Please try again later.',
-                            };
-                        });
+        checkReviewHistory(jobId) {
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 },
+            };
 
-            }).then((result) => {
-                if (result.value.success) {
+            axios.get(`http://localhost:3000/application/checkReviewHistory?jobId=${jobId}`, config)
+                .then((res) => {
+                    const reviewHistory = res.data;
+
+                    if (reviewHistory.length > 0) {
+                        // If review history exists, populate the popup with rating and comment
+                        const { rating, comment } = reviewHistory[0];
+                        this.selectedRating = rating;
+                        document.getElementById('comment').value = comment;
+
+                        // Disable the stars so they cannot be clicked
+                        const stars = document.querySelectorAll('.stars span');
+                        stars.forEach(star => {
+                            star.style.pointerEvents = 'none';
+                        });
+
+                        // Disable the textarea so it cannot be edited
+                        document.getElementById('comment').disabled = true;
+
+                        // Hide the submit button since the user has already reviewed this job
+                        document.getElementById('submitReviewButton').style.display = 'none';
+
+                        // Change the header text to display review history
+                document.querySelector('.reviewPopup-header h2').innerText = 'ประวัติการรีวิว';
+                    } else {
+                        // Show the submit button if there is no review history
+                        document.getElementById('submitReviewButton').style.display = 'block';
+
+                        // Enable the stars for rating
+                        const stars = document.querySelectorAll('.stars span');
+                        stars.forEach(star => {
+                            star.style.pointerEvents = 'auto';
+                        });
+
+                        // Enable the textarea for comment
+                        document.getElementById('comment').disabled = false;
+                    }
+
+                    // Show the review popup
+                    document.getElementById('reviewPopup').style.display = 'block';
+                })
+                .catch((error) => {
+                    console.error(error);
+                    // If error occurs, still show the review popup
+                    document.getElementById('reviewPopup').style.display = 'block';
+                });
+        },
+
+
+
+        closeReviewPopup() {
+            this.selectedJobId = null; // ล้างค่า selectedJobId เพื่อซ่อนป็อปอัพ
+            this.selectedRating = null; // ล้างค่า selectedRating
+        },
+        // ส่งคะแนนดาว
+        selectRating(rating) {
+            this.selectedRating = rating;
+        },
+        // ส่งคะแนนดาว
+        // ส่งคะแนนดาว
+        submitReview() {
+            // ตรวจสอบว่าคะแนนถูกเลือกหรือไม่
+            if (!this.selectedRating) {
+                // ถ้าไม่มีคะแนนที่ถูกเลือก
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Please select a rating',
+                    text: 'Please select a rating before submitting the review.',
+                });
+                return;
+            }
+
+            // ถ้ามีคะแนนที่ถูกเลือก
+            const comment = document.getElementById('comment').value;
+
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+
+            const data = {
+                job_id: this.selectedJobId,
+                rating: this.selectedRating,
+                comment: comment,
+            };
+
+            // ส่งข้อมูลรีวิวไปยังฐานข้อมูล
+            axios.post('http://localhost:3000/application/sendReview', data, config)
+                .then((res) => {
+                    console.log(res.data.message);
+                    // แสดงแจ้งเตือนเมื่อสำเร็จ
                     Swal.fire({
                         title: 'Review submitted successfully',
                         icon: 'success',
                     });
-                } else {
+                    document.getElementById('reviewPopup').style.display = 'none';
+                })
+                .catch((error) => {
+                    console.error(error);
+                    // แสดงข้อผิดพลาดเมื่อไม่สำเร็จ
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: result.value.errorMessage,
+                        text: 'Failed to submit review. Please try again later.',
                     });
-                }
-            });
-
-
+                    document.getElementById('reviewPopup').style.display = 'none';
+                });
         },
 
 
@@ -473,5 +461,110 @@ export default {
     },
 };
 </script>
-<style scoped></style>
+<style scoped>
+/* สีเหลืองสำหรับดาวที่ถูกเลือก */
+.yellow {
+    color: yellow;
+}
+
+/* CSS สำหรับหน้าต่างแสดงให้เลือกคะแนนดาว */
+#reviewPopup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.reviewPopup-inner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 500px;
+}
+
+.reviewPopup-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.reviewPopup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #888;
+}
+
+.close-button:hover {
+    color: #555;
+}
+
+
+.stars {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.stars span {
+    font-size: 24px;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.3s;
+}
+
+.stars span.yellow {
+    color: gold;
+}
+
+.comment textarea {
+    width: 100%;
+    height: 100px;
+    resize: vertical;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    /* เพิ่ม border */
+}
+
+.reviewPopup-footer {
+    text-align: center;
+}
+
+.reviewPopup-footer button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.reviewPopup-footer button:hover {
+    background-color: #45a049;
+}
+
+@media screen and (max-width: 600px) {
+    .reviewPopup-inner {
+        width: 90%;
+    }
+}
+</style>
+
   
+
+

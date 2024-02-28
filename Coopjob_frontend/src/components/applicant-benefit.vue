@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 card">
+  <div class="p-6 card" id="benefit_form">
     <h1 class="title">แบบฟอร์มค่าแรงและสวัสดิการ</h1>
 
     <div class="field">
@@ -74,10 +74,63 @@ export default {
       description: '',
       salary: 0,
       benefit: '',
+      existingBenefitData: null,
     };
   },
 
+  mounted() {
+    // เรียกใช้งาน checkBenefitHistory เมื่อ component ถูกโหลด
+    this.checkBenefitHistory(this.job_id);
+  },
+
   methods: {
+    async checkBenefitHistory(jobId) {
+      try {
+        const token = localStorage.getItem('token');
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const response = await axios.get(`http://localhost:3000/application/checkBenefitHistory?jobId=${jobId}`, config);
+
+        if (response.data.benefitHistory) {
+          const benefitData = response.data.benefitHistory;
+          // ทำอะไรกับข้อมูลที่ได้รับ เช่น alert หรือแสดงบนหน้าเว็บ
+          console.log('Benefit History:', benefitData);
+          // ตัวอย่างการแสดงข้อมูลใน Alert
+          Swal.fire({
+            title: 'คุณกรอกข้อมูลค่าแรงและสวัสดิการเรียบร้อยแล้ว',
+            html: `
+            <p>ข้อมูลของคุณ:</p>
+            <ul>
+              <li>ชื่อบริษัท: ${benefitData[0].company_name}</li>
+              <li>ตำแหน่ง: ${benefitData[0].position}</li>
+              <li>คำอธิบาย: ${benefitData[0].description}</li>
+              <li>ค่าตอบแทน: ${benefitData[0].salary}</li>
+              <li>สวัสดิการ: ${benefitData[0].benefit}</li>
+            </ul>
+          `,
+            icon: 'info',
+            confirmButtonText: 'OK'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.$router.push('/MyJobs');
+            }
+          });
+
+
+          document.getElementById('benefit_form').style.display = 'none';
+        } else {
+          console.log('No benefit information found.');
+        }
+      } catch (error) {
+        console.error(error);
+        // Handle error
+      }
+    },
+
     addBenefit() {
       const token = localStorage.getItem("token");
       const config = {
@@ -108,9 +161,8 @@ export default {
               showConfirmButton: message,
             });
 
-            //กลับไปยังหน้าเดิม
             this.$router.push('/MyJobs');
-            
+
           })
           .catch((error) => {
             if (error.response) {
@@ -120,7 +172,7 @@ export default {
       }
     },
     cancel() {
-      this.$router.push('/recruiterJob');
+      this.$router.push('/MyJobs');
     },
   },
   validations: {
