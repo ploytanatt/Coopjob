@@ -334,6 +334,31 @@ router.post("/addBenefitReport", isLoggedIn, async (req, res) => {
   }
 });
 
+router.get('/checkBenefitHistory', isLoggedIn, async (req, res) => {
+  try {
+    const { jobId } = req.query;
+    const userId = req.user.user_id;
+
+    // Check if the user has filled out benefit information for this job
+    const [benefitHistory] = await pool.query(
+      'SELECT * FROM benefit_reports WHERE job_id = ? AND user_id = ?',
+      [jobId, userId]
+    );
+
+    // Check if benefitHistory exists
+    if (benefitHistory.length > 0) {
+      res.json({ benefitHistory });
+    } else {
+      res.json({ message: 'No benefit information found.' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+
 
 /*ให้คะแนนบริษัท*/
 // Route for submitting a review
