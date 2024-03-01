@@ -428,5 +428,32 @@ router.get('/checkReviewHistory', isLoggedIn, async (req, res) => {
 });
 
 
+// Route เพื่อดึงข้อมูล student_jobs จากฐานข้อมูล // เน้น coop302
+router.get('/getStudentJobs', isLoggedIn, async (req, res) => {
+  const userId = req.user.user_id;
+  const jobId = req.query.job_id; // รับค่า jobId จาก query parameter ที่ส่งมาจาก frontend
+  try {
+    const [results] = await pool.query(`
+      SELECT *
+      FROM student_jobs
+      WHERE student_id = ? AND job_id = ?
+    `, [userId, jobId]);
+    
+    const data = results.map((row) => {
+      return {
+        job_id: row.job_id,
+        student_id: row.student_id,
+        datetime: row.datetime,
+        coop302: row.coop302,
+      };
+    });
+    res.json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
 module.exports = router;
 

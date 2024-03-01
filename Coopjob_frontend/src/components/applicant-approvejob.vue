@@ -30,7 +30,8 @@
                             @click="gotobenefit(application.company.company_name, application.job.job_id)">
                             กรอกค่าแรงและสวัสดิการ
                         </button>
-                        <button class="button is-light">
+                        <button class="button is-light"
+                            @click="gotofilecoop(application.job.job_id)">
                             ดูใบตอบรับ
                         </button>
                         <button class="button is-info" @click="showReviewPopup(application.job.job_id)">
@@ -98,6 +99,16 @@ export default {
                 path: "/benefitReport",
                 query: {
                     companyName,
+                    job_id,
+                },
+            });
+            this.closeAddJobModal();
+        },
+
+        gotofilecoop(job_id) {
+            this.$router.push({
+                path: "/coopFile",
+                query: {
                     job_id,
                 },
             });
