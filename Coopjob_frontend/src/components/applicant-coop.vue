@@ -1,14 +1,13 @@
 <template>
   <div class="p-6 card">
     <h1 class="title">coop.302 file</h1>
-    <!--<p>User ID: {{ userId }}</p>
-    <p>Job ID: {{ jobId }}</p>-->
     <div v-if="studentJobs.length > 0">
       <div v-for="studentJob in studentJobs" :key="studentJob.job_id">
-        <!--<p>Student ID: {{ studentJob.student_id }}</p>
-        <p>Coop302 Path {{studentJob.coop302}}</p>-->
-        <!-- iframe เพื่อแสดงตัวอย่างไฟล์ PDF -->
-        <iframe :src="imagePath(studentJob.coop302)" class="preview-pdf"></iframe>
+        <button class="button is-primary mb-1" @click="downloadFile(imagePath(studentJob.coop302))">
+          Download PDF
+        </button>
+        <!-- เช็คหากไม่ใช่หน้าจอโทรศัพท์ให้แสดง iframe -->
+        <iframe :src="imagePath(studentJob.coop302)" class="preview-pdf" v-if="$mq !== 'phone'"></iframe>
       </div>
     </div>
   </div>
@@ -82,6 +81,20 @@ export default {
 
         return "https://bulma.io/images/placeholders/640x360.png";
       }
+    },
+
+    downloadFile(url) {
+      fetch(url)
+        .then(response => response.blob())
+        .then(blob => {
+          const url = window.URL.createObjectURL(new Blob([blob]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'coop302fromcompany.pdf'); // ตั้งชื่อไฟล์ที่จะโหลด
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode.removeChild(link);
+        });
     },
   }
 };
