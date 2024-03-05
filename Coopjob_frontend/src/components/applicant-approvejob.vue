@@ -30,7 +30,8 @@
                             @click="gotobenefit(application.company.company_name, application.job.job_id)">
                             กรอกค่าแรงและสวัสดิการ
                         </button>
-                        <button class="button is-light">
+                        <button class="button is-light"
+                            @click="gotofilecoop(application.job.job_id)">
                             ดูใบตอบรับ
                         </button>
                         <button class="button is-info" @click="showReviewPopup(application.job.job_id)">
@@ -38,7 +39,6 @@
                         </button>
                     </div>
                 </div>
-                <!-- หน้าต่างแสดงให้เลือกคะแนนดาว -->
                 <!-- หน้าต่างแสดงให้เลือกคะแนนดาว -->
                 <div id="reviewPopup" v-if="selectedJobId !== null">
                     <div class="reviewPopup-inner">
@@ -99,6 +99,16 @@ export default {
                 path: "/benefitReport",
                 query: {
                     companyName,
+                    job_id,
+                },
+            });
+            this.closeAddJobModal();
+        },
+
+        gotofilecoop(job_id) {
+            this.$router.push({
+                path: "/coopFile",
+                query: {
                     job_id,
                 },
             });
@@ -209,8 +219,8 @@ export default {
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: result.value.errorMessage,
+                        title: 'Cancel',
+                        
                     });
                 }
             })();
@@ -476,6 +486,7 @@ export default {
 
 /* CSS สำหรับหน้าต่างแสดงให้เลือกคะแนนดาว */
 #reviewPopup {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;

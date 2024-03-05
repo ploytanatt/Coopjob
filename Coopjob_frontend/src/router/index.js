@@ -107,6 +107,12 @@ const routes = [
     meta: { login: true },
     component: () => import('../components/applicant-benefit.vue')
   },
+  {
+    path: '/coopFile',
+    name: 'coopFile',
+    meta: { login: true },
+    component: () => import('../components/applicant-coop.vue')
+  },
 
   {
     path: '/jobsearch',

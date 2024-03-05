@@ -262,27 +262,16 @@ router.delete('/cancelFavoriteJob/:jobId', isLoggedIn, async (req, res) => {
 });
 
 //รีพอร์ตงาน
-// Add this to your backend routes
 router.post('/sendReport', isLoggedIn, async (req, res) => {
   console.log('Received a POST request to /application/sendReport', req.body);
   try {
     const { job_id, user_id, title, description } = req.body;
 
-    // Set job_id based on title
-    const updatedJobId = job_id;
-
     // Save the report details to the database or perform any necessary actions ใส่ now()เพื่อให้เอาวันที่ปัจจุบันมา
     const query = `INSERT INTO report_company (user_id, job_id, title, description, created_at) VALUES (?, ?, ?, ?, NOW())`;
 
-    // ใช้ pool.query แทน connection.query
-    pool.query(query, [user_id, job_id, title, description], (error, results, fields) => {
-      if (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Server error' });
-      } else {
-        res.json({ message: 'Report submitted successfully' });
-      }
-    });
+    pool.query(query, [user_id, job_id, title, description])
+    res.json({ message: 'Report submitted successfully' });;
 
   } catch (error) {
     console.error(error);
@@ -432,6 +421,33 @@ router.get('/checkReviewHistory', isLoggedIn, async (req, res) => {
     );
 
     res.json(reviewHistory);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+// Route เพื่อดึงข้อมูล student_jobs จากฐานข้อมูล // เน้น coop302
+router.get('/getStudentJobs', isLoggedIn, async (req, res) => {
+  const userId = req.user.user_id;
+  const jobId = req.query.job_id; // รับค่า jobId จาก query parameter ที่ส่งมาจาก frontend
+  try {
+    const [results] = await pool.query(`
+      SELECT *
+      FROM student_jobs
+      WHERE student_id = ? AND job_id = ?
+    `, [userId, jobId]);
+    
+    const data = results.map((row) => {
+      return {
+        job_id: row.job_id,
+        student_id: row.student_id,
+        datetime: row.datetime,
+        coop302: row.coop302,
+      };
+    });
+    res.json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
