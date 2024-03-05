@@ -62,72 +62,65 @@
       </div>
      
 <div class="detail" v-for="job in filteredJobs" :key="job.job_id">
+
   <div v-show="job.create_type==='form'">
   <div class="job-detail">
     <div class="columns">
       <div class="column">
-        <p class="is-size-6 has-text-weight-bold">วันที่ประกาศ:{{ job.title }} {{ formatDate(job.date_posted) }} </p>
-        <p>ชื่องาน: {{ job.job_title }}</p>
-          <p>คำอธิบาย: {{ job.description }}</p>
-          <p>รูปแบบการทำงาน: {{ job.job_type }}</p>
-          <p>ค่าตอบแทน: {{ job.salary }}</p>
-          <p>จำนวนที่รับ: {{ job.quantity }}</p>
-          <p>คุณสมบัติผู้สมัคร: {{ job.specification }}</p>
-          <p>ตำแหน่ง: {{ job.job_position }}</p>
-          <p>สวัสดิการ: {{ job.benefit}}</p>
-
-          <p>GPA: {{ job.gpa }}</p>
-          <p>Internship Duration: {{ job.internship_duration }} months</p>
+       
+        <p class="is-size-6 has-text-weight-bold">{{ job.job_title }}</p>
+          <p>รูปแบบงาน: {{ job.job_type }}</p>
           <p v-if="job.job_type==='cooperative'">Project Name: {{ job.project_name }}</p>
           <span>ประเภทงาน: </span>
           <span v-for="(type, index) in parsePositionType(job.position_type)" :key="index" class="tag is-medium">{{ type.title }} </span>
-          <p>status: {{ job.status }}</p>
+          <p >วันที่ประกาศ:{{ job.title }} {{ formatDate(job.date_posted) }} </p>
+          <p>จำนวนคนที่มาสมัคร</p>
       </div>
       <div class="columns">
         <div class="column">
-        <v-switch v-model="job.status">
-        </v-switch>
-      </div>
-      <div class="column">
-        <button class="button is-danger is-pulled-right" @click="confirmDeleteJob(job.job_id)">ลบงาน</button>
+         
+         
+          <input :id="'switchRtlExample-' + job.job_id" type="checkbox" name="switchRtlExample" class="switch is-rtl is-rounded is-success is-pulled-right" :checked="job.status === 'open'" @change="updateJobStatus(job)">
+            <label :for="'switchRtlExample-' + job.job_id">{{ job.status === 'open' ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร' }}</label>
+        
+        <div class="column">
+          <button class="button is-info is-pulled-right is-fullwidth  mb-2" @click="editJob(job.job_id)">แก้ไขข้อมูล</button>
+        </div>
+        <div class="column ">
+          <button class="button is-danger is-pulled-right   is-fullwidth mb-2" @click="confirmDeleteJob(job.job_id)">ลบงาน</button>
+        </div>
       </div>
     </div>
-    </div>
-    
-    <div class="columns">
-      <div class="column">
-        <button class="button is-info" @click="editJob(job.job_id)">แก้ไขงาน</button>
-
-      </div>
     </div>
   </div>
 </div>
+
   <div v-show="job.create_type==='upload'">
+    
   <div class="job-detail">
     <div class="columns">
       <div class="column">
         <p class="is-size-6 has-text-weight-bold">วันที่ประกาศ:{{ job.title }} {{ formatDate(job.date_posted) }} </p>
-        <p >ชื่องาน: {{ job.job_title }}</p>
-        <p>คำอธิบาย : {{ job.description }}</p>
-      </div>
-      <div class="column">
-      <button class="button is-warning is-pulled-right" @click="toggleJobStatus">
-          {{ isJobOpen ? 'ปิดรับสมัคร' : 'เปิดรับสมัคร' }}
-        </button>
-        <button class="button is-danger is-pulled-right" @click="confirmDeleteJob(job.job_id)">ลบงาน</button>
+        <p class="is-size-6 has-text-weight-bold">{{ job.job_title }}</p>
 
-      </div>
-    </div>
-    <div class="columns">
-      <div class="column">
         <img :src="imagePath(job.job_upload_file)" class="jobUpload">
+      
       </div>
-    
+      <div class="columns">
+        <div class="column">
+         
+         
+          <input :id="'switchRtlExample-' + job.job_id" type="checkbox" name="switchRtlExample" class="switch is-rtl is-rounded is-success is-pulled-right" :checked="job.status === 'open'" @change="updateJobStatus(job)">
+            <label :for="'switchRtlExample-' + job.job_id">{{ job.status === 'open' ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร' }}</label>
+        
+        <div class="column">
+          <button class="button is-info is-pulled-right is-fullwidth  mb-2" @click="editJob(job.job_id)">แก้ไขข้อมูล</button>
+        </div>
+        <div class="column ">
+          <button class="button is-danger is-pulled-right   is-fullwidth mb-2" @click="confirmDeleteJob(job.job_id)">ลบงาน</button>
+        </div>
+      </div>
     </div>
-    <div class="columns">
-      <div class="column">
-        <button class="button is-info" @click="editJob(job.job_id)">แก้ไขงาน</button>
-      </div>
     </div>
     </div>
   </div>
@@ -154,6 +147,7 @@ export default {
       select_option : 'myjob',
       isJobOpen: true,
       activeTab: 'form',
+      model: true,
     };
   },
   mounted() {
@@ -263,12 +257,43 @@ export default {
         .catch((error) => {
           Swal.fire("เกิดข้อผิดพลาด", error.message, "error");
         });
-    }
+    },
+    updateJobStatus(job) {
+    const newStatus = job.status === 'open' ? 'close' : 'open';
+    job.status = newStatus; // อัพเดตสถานะในข้อมูล Vue
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = { status: newStatus };
+    axios.put(`http://localhost:3000/recruiter/updateJobStatus/${job.job_id}`, data, config)
+      .then(response => {
+        Swal.fire("อัพเดตสถานะงานสำเร็จ", "", "success");
+        console.log('Job status updated successfully', response.data);
+
+      })
+      .catch(error => {
+        Swal.fire("เกิดข้อผิดพลาดในการอัพเดตสถานะงาน", error.message, "error");
+        console.error('Error updating job status:', error);
+
+      });
   },
+
+  jobStatusColor(status) {
+    return status === 'open' ? 'green' : 'red'; // สีเขียวสำหรับสถานะเปิดและสีแดงสำหรับสถานะปิด
+  },
+
+  },
+
 };
 </script>
 
 <style scoped>
+.toggle{
+  background-color: bisque;
+}
 .select_option {
     cursor: pointer;
 }

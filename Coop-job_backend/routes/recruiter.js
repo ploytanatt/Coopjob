@@ -277,8 +277,6 @@ router.post("/addJobByUpload", isLoggedIn, upload.single("job_upload_file"), asy
   }
 });
 
-
-
 router.post("/addJob", isLoggedIn, async (req, res) => {
   try {
     // ตรวจสอบความถูกต้องของข้อมูลที่รับเข้ามาs
@@ -386,6 +384,33 @@ const updateJobSchema = Joi.object({
   qualifications: Joi.string().required(),
   internship_duration: Joi.number().min(0).required(),
 });
+const updateJobStatusSchema = Joi.object({
+  status: Joi.string().valid('open', 'close').required(),
+});
+router.put('/updateJobStatus/:jobId', isLoggedIn, async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const { error, value } = updateJobStatusSchema.validate(req.body, { abortEarly: false });
+    if (error) {
+      return res.status(400).json({ message: error.details.map((detail) => detail.message) });
+    }
+    const {
+      status,
+    } = value;
+  
+    await pool.query(
+      'UPDATE jobs SET status = ? WHERE job_id = ?',
+      [status, jobId]
+    );
+    
+  
+    res.status(200).json({ message: 'Job status updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 router.put('/updateJob/:jobId', isLoggedIn, async (req, res) => {
   try {
