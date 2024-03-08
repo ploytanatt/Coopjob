@@ -1,9 +1,5 @@
 <template>
-  <div class="p-6 card">
-
-     
-
-      
+  <div class="p-6 card">    
       <div class="card-content">
         <button v-show="!modify_profile" class="button is-small mb-3 is-info" @click="modify_profile = !modify_profile" >แก้ไข</button>
       <fieldset :disabled="!modify_profile">
@@ -68,7 +64,7 @@
                   <label class="file-label">
                     <button class="button is-dark">
                       <span class="icon is-large">
-                        <font-awesome-icon :icon="['fas', 'camera']" />
+                        <i class="fa-regular fa-camera"></i>
                       </span>
                     </button>
                   </label>
@@ -90,7 +86,7 @@
                 <label class="file-label">
                   <button class="button is-dark">
                     <span class="icon is-large">
-                      <font-awesome-icon :icon="['fas', 'camera']" />
+                      <i class="fa-regular fa-camera"></i>
                     </span>
                   </button>
                 </label>

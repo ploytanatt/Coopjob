@@ -7,6 +7,7 @@ const { generateToken } = require("../utils/token");
 const { v4: uuidv4 } = require('uuid');
 const { isLoggedIn } = require("../middleware");
 const multer = require('multer');
+const { json } = require('body-parser');
 //สมัครงาน
 router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
   try {
@@ -105,6 +106,27 @@ router.get('/getApplication/:applicationId', isLoggedIn, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+// Get all applications and student details for a specific Job
+router.get('/getApplicationByJob/:jobId', isLoggedIn, async (req, res) => {
+  const jobId = req.params.jobId;
+  try {
+    const [applications] = await pool.query(`
+      SELECT sj.*, st.* , js.*
+      FROM student_jobs sj
+      JOIN students st ON sj.student_id = st.user_id
+      JOIN jobs js ON js.job_id = sj.job_id
+      WHERE sj.job_id = ?
+    `, [jobId]);
+    res.json(applications);
+    console.log("getApplicationByJob with student details success");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
 
 // Get job applications for all recruiter
 router.get('/getApplications', isLoggedIn, async (req, res) => {

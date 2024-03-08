@@ -14,7 +14,7 @@
         </ul>
       
       <div v-show="activeTab === 'applicant'">
-        <h2 class="subtitle">สมัครสมาชิกสำหรับผู้สมัคร</h2>
+        <h2 class="subtitle">เข้าสู่ระบบสำหรับผู้สมัคร</h2>
         <form @submit.prevent="signinApplicant">
           <div class="field">
             <label class="label">Email</label>
@@ -44,7 +44,7 @@
         </form>
       </div>
       <div v-show="activeTab === 'recruiter'" >
-        <h2 class="subtitle">สมัครสมาชิกสำหรับบริษัท</h2>
+        <h2 class="subtitle">เข้าสู่ระบบสำหรับบริษัท</h2>
         <form @submit.prevent="signinRecruiter">
           <div class="field">
             <label class="label">Email</label>

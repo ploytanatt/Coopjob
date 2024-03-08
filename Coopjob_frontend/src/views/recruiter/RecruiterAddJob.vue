@@ -39,11 +39,6 @@
       <p v-if="$v.description.$error" class="help is-danger">โปรดกรอกคำอธิบาย</p>
     </div>
 
-
-
-
-
-
     <div class="columns">
       <div class="column is-6">
         <div class="field">

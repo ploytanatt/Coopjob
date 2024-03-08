@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container  is-widescreen">
       <div class="columns mt-6">
         <div class="column tap-list is-3 pt-3 pb-3 cardtab">
           <div :class="['select_option', select_option === 'recruiterProfile' ? 'has-background-light' : '']">
@@ -28,7 +28,7 @@
     </div>
 </template>
 <script lang="ts">
-import recruiterProfile from '@/components/company/recruiter-profile.vue';
+import recruiterProfile from '@/components/recruiter/recruiter-profile.vue';
 export default ({
     components: {
      recruiterProfile,

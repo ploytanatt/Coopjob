@@ -1,6 +1,6 @@
 <template>
-  <div class="main-content">
-    <div class="container">
+  <div class="">
+    <div class="">
       <img
         id="suggest"
         class="is-rounded"
@@ -252,6 +252,7 @@ methods: {
 </script>
 
 <style scoped>
+
 .main-content {
   background-color: #F5F8FA;
   padding: 2rem;

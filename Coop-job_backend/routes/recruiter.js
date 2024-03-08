@@ -245,25 +245,16 @@ router.post("/addJobByUpload", isLoggedIn, upload.single("job_upload_file"), asy
     }
 
     const { job_title, website, status, create_type, description, internship_duration } = value;
-
-    // เพิ่มข้อมูลวันที่
     const datePosted = new Date(); // เวลาปัจจุบัน
-
-    // ดึงไฟล์ที่อัปโหลด
     const uploadedFile = req.file;
-
-    // ตรวจสอบไฟล์ที่อัปโหลด
     if (!uploadedFile) {
       return res.status(400).json({ message: "กรุณาอัปโหลดไฟล์" });
     }
 
-    // ตั้งชื่อไฟล์ใหม่
     const newFileName = `job-upload-${uploadedFile.filename}`;
-    // ย้ายไฟล์ไปที่โฟลเดอร์ปลายทาง
     const newFilePath = path.join(uploadedFile.destination, newFileName);
     fs.renameSync(uploadedFile.path, newFilePath);
 
-    // เพิ่มข้อมูลลงในฐานข้อมูล
     await pool.query(
       'INSERT INTO jobs (user_id, job_title, job_upload_file, status, create_type, description, internship_duration, date_posted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [req.user.user_id, job_title, newFilePath, status, create_type, description, internship_duration, datePosted]
@@ -375,15 +366,7 @@ router.get("/getJobDetails/:job_id", isLoggedIn, async (req, res) => {
   }
 });
 
-const updateJobSchema = Joi.object({
-  title: Joi.string().required(),
-  location: Joi.string().required(),
-  salary: Joi.number().min(0).required(),
-  status: Joi.string().valid('open', 'close').required(),
-  description: Joi.string().required(),
-  qualifications: Joi.string().required(),
-  internship_duration: Joi.number().min(0).required(),
-});
+
 const updateJobStatusSchema = Joi.object({
   status: Joi.string().valid('open', 'close').required(),
 });
@@ -411,34 +394,82 @@ router.put('/updateJobStatus/:jobId', isLoggedIn, async (req, res) => {
   }
 });
 
-
-router.put('/updateJob/:jobId', isLoggedIn, async (req, res) => {
+router.put('/updateJob/:jobId', isLoggedIn, upload.single('job_upload_file'), async (req, res) => {
   try {
     const { jobId } = req.params;
-    const { error, value } = updateJobSchema.validate(req.body, { abortEarly: false });
-    if (error) {
-      return res.status(400).json({ message: error.details.map((detail) => detail.message) });
+    if (!jobId) {
+      return res.status(400).json({ message: 'Job ID is missing' });
     }
-    const {
-      title,
-      salary,
-      status,
-      description,
-      qualifications,
-      internship_duration,
-    } = value;
-  
+
+    const { job_type, project_name, job_title, description, job_position, position_type, quantity, gpa, salary, benefit, specification, internship_duration, status } = req.body;
+
+
     await pool.query(
-      'UPDATE jobs SET title = ?, location = ?, salary = ?, status = ?, description = ?, qualifications = ?, internship_duration = ? WHERE job_id = ?',
-      [title, location, salary, status, description, qualifications, internship_duration, jobId]
+      'UPDATE jobs SET job_type = ?, project_name = ?, job_title = ?, description = ?, job_position = ?, position_type = ?, quantity = ?, gpa = ?, salary = ?, benefit = ?, specification = ?, internship_duration = ?, status = ? WHERE job_id = ?',
+      [job_type, project_name, job_title, description, job_position, position_type, quantity, gpa, salary, benefit, specification, internship_duration, status, jobId]
     );
-  
+
+    res.status(200).json({ message: 'Job updated successfully' });
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+router.put('/updateUploadJob/:jobId', isLoggedIn, upload.single('job_upload_file'), async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    if (!jobId) {
+      return res.status(400).json({ message: 'Job ID is missing' });
+    }
+
+    const [existingJob] = await pool.query('SELECT job_upload_file FROM jobs WHERE job_id = ?', [jobId]);
+    const existingFilePath = existingJob[0].job_upload_file;
+
+    const uploadedFile = req.file;
+    let newFilePath = existingFilePath;
+
+    if (uploadedFile) {
+      const newFileName = `job-upload-${uploadedFile.filename}`;
+      newFilePath = path.join(uploadedFile.destination, newFileName);
+      fs.renameSync(uploadedFile.path, newFilePath);
+    }
+
+    const { job_type, project_name, job_title, description, job_position, position_type, quantity, gpa, salary, benefit, specification, internship_duration, status } = req.body;
+
+    await pool.query(
+      'UPDATE jobs SET job_type = ?, project_name = ?, job_title = ?, description = ?, job_position = ?, position_type = ?, quantity = ?, gpa = ?, salary = ?, benefit = ?, specification = ?, internship_duration = ?, status = ?, job_upload_file = ? WHERE job_id = ?',
+      [job_type, project_name, job_title, description, job_position, position_type, quantity, gpa, salary, benefit, specification, internship_duration, status, newFilePath, jobId]
+    );
+
     res.status(200).json({ message: 'Job updated successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
+//router.put('/updateJob/:jobId', isLoggedIn, async (req, res) => {
+//  try {
+//    const { jobId } = req.params;
+//    console.log(req.body)
+//    
+//    const { job_type, project_name, job_title, description, job_position, position_type, quantity, gpa, salary, benefit, specification, internship_duration, job_upload_file, status } = req.body;
+//    const filePath  = req.body.job_upload_file;
+//await pool.query(
+//  'UPDATE jobs SET job_type = ?, project_name = ?, job_title = ?, description = ?, job_position = ?, position_type = ?, quantity = ?, gpa = ?, salary = ?, benefit = ?, specification = ?, internship_duration = ?, status = ?, job_upload_file WHERE job_id = ?',
+//  [job_type, project_name, job_title, description, job_position, position_type, quantity, gpa, salary, benefit, specification, internship_duration, status,filePath, jobId]
+//);
+//
+//    res.status(200).json({ message: 'Job updated successfully' });
+//    
+//  } catch (error) {
+//    console.error(error);
+//    res.status(500).json({ message: 'Internal server error' });
+//  }
+//});
 
 // change email
 router.post('/changeEmail', isLoggedIn, async (req, res) => {

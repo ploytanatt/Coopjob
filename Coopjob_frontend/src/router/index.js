@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-
+import jobListingUpload from "@/components/recruiter/job-listing-upload.vue"
+import jobListFormVue from "@/components/recruiter/job-listing-form.vue"
+import applicationEachJob from "@/components/recruiter/application-eachjob.vue"
 Vue.use(VueRouter)
 
 const routes = [
@@ -57,7 +59,7 @@ const routes = [
     path: '/recruiterAddJob',
     name: 'recruiterAddJob',
     meta: { login: true },
-    component: () => import('../views/recruiter/RcruiterAddJob.vue')
+    component: () => import('../views/recruiter/RecruiterAddJob.vue')
   },
   {
     path: '/recruiterAddJobByUpload',
@@ -70,6 +72,12 @@ const routes = [
     name: 'RecruiterJobEdit',
     meta: { login: true },
     component: () => import('../views/recruiter/RecruiterJobEdit.vue')
+  },
+  {
+    path: '/edit-uploadjob/:jobId',
+    name: 'RecruiterJobEdit',
+    meta: { login: true },
+    component: () => import('../views/recruiter/RecruiterJobUploadEdit .vue')
   },
     {
     path: '/recruiterAccount',
@@ -96,6 +104,12 @@ const routes = [
     component: () => import('../views/recruiter/Applicant-list.vue')
   },
   {
+    path: '/getApplicationByJob/:jobId',
+    name: 'applicantListJob',
+    meta: { login: true, title:'คนที่มายื่นสมัคร'},
+    component: applicationEachJob
+  },
+  {
     path: '/applicantDetail/:applicationId',
     name: 'applicantDetail',
     meta: { login: true },
@@ -119,6 +133,36 @@ const routes = [
     name: 'jobsearch',
     meta: {title: 'บริษัท'},
     component: () => import('../views/JobSearch.vue')
+  },
+  {
+    path: '/job-listing-form',
+    name: 'job-listing-form',
+    meta: {title: ''},
+    component:jobListFormVue
+  },
+  {
+    path: '/job-listing-upload',
+    name: 'job-listing-upload',
+    meta: {title: ''},
+    component:jobListingUpload
+  },
+  {
+    path: '/adminSignin',
+    name: 'admin-signin',
+    meta: {title: 'admin เข้าสู่ระบบ'},
+    component: () => import('../views/admin/AdminSignIn.vue')
+  },
+  {
+    path: '/adminOverview',
+    name: 'adminOverview',
+    meta: {title: 'Overview'},
+    component: () => import('../views/admin/DashboardPage.vue')
+  },
+  {
+    path: '/studentList',
+    name: 'studentList',
+    meta: {title: 'รายชื่อนักศึกษา'},
+    component: () => import('../views/admin/StudentList.vue')
   },
 ]
 

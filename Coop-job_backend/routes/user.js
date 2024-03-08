@@ -43,8 +43,10 @@ router.post("/signin", async (req, res, next) => {
           await pool.query('INSERT INTO students (user_id, email) VALUES (?, ?)',[user.user_id, email]);
         }else if (user.role === 'recruiter') {
           await pool.query('INSERT INTO companies (user_id, email) VALUES (?, ?)', [user.user_id, email]);
-        
       }
+      else if (user.role === 'admin') {
+        await pool.query('INSERT INTO admin (user_id, email) VALUES (?, ?)', [user.user_id, email]);
+    }
     }
     conn.commit();
     res.status(200).json({ token: token });
