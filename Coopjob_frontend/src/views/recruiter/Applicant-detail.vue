@@ -1,15 +1,15 @@
 <template>
   <div class="w3-light-grey">
       <div class="card">
-        <div class="columns">
+        <div class="columns" v-for="application in applications" :key="application.student_job_id">
           <div class="column is-2 job_position mt-6">
             <div class="columns is-multiline  ml-6 mt-1">
-              <p class="column is-12">ตำแน่งงาน: </p>
+              <p class="column is-12">ตำแน่งงาน:{{ jobName }} {{  getApplicationByJob(application.job_id) }}</p>
             </div>
             
           </div>
 
-          <div class="columns is-2 ml-6 mt-6"  v-for="application in applications" :key="application.student_job_id">
+          <div class="columns is-2 ml-6 mt-6"  >
         <button class="button is-primary" @click="showModal = true"  :disabled="application.status === 'approve'" >Accept</button>
       </div>
           
@@ -127,21 +127,43 @@ export default {
   data() {
     return {
       applications: [],
+      applicationss: [],
       applicationJob: [],
       select_option:'resume',
       showModal: false,
       file:'',
       applicationUserId:'',
+      applicationsByJob:[],
+      jobName:''
     };
   },
   mounted() {
     const applicationId = this.$route.params.applicationId;
-    
+
     this.getApplication(applicationId);
     this.getApplicationDetails(applicationId);
+    this.getApplications();
   },
   methods: {
-    
+    getApplications() {
+      this.isLoading = true;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      axios
+        .get("http://localhost:3000/application/getApplications", config)
+        .then((response) => {
+          this.applicationss = response.data;
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          console.error(error);
+          this.isLoading = false;
+        });
+    },
     getApplication(applicationId) {
       this.isLoading = true;
       const token = localStorage.getItem("token");
@@ -154,6 +176,23 @@ export default {
         .get(`http://localhost:3000/application/getApplication/${applicationId}`, config)
         .then((response) => {
           this.applications = response.data[0];      
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    getApplicationByJob(jobId) {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      axios
+        .get(`http://localhost:3000/application/getApplicationByJob/${jobId}`, config)
+        .then((response) => {
+          this.applicationsByJob = response.data;
+          this.jobName = response.data[0].job_title
         })
         .catch((error) => {
           console.error(error);

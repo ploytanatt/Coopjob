@@ -98,7 +98,45 @@ export default {
             if (this.$route.path !== '/studentList') {
                 this.$router.push('/studentList');
             }
-        }
+        },
+        gotoCompanyList(){
+            if (this.$route.path !== '/companyList') {
+                this.$router.push('/companyList');
+            }
+        },
+        gotoJobList(){
+            if (this.$route.path !== '/jobList') {
+                this.$router.push('/jobList');
+            }
+        },
+        gotoReportList(){
+            if (this.$route.path !== '/reportList') {
+                this.$router.push('/reportList');
+            }
+        },
+        gotoApplicationList(){
+            if (this.$route.path !== '/applicationList') {
+                this.$router.push('/applicationList');
+            }
+        },
+        gotoBenefitResult(){
+            if (this.$route.path !== '/BenefitResult') {
+                this.$router.push('/BenefitResult');
+            }
+        },
+        gotoCompanyRating(){
+            if (this.$route.path !== '/CompanyRating') {
+                this.$router.push('/CompanyRating');
+            }
+        },
+        gotoAdminAccountSetting(){
+            if (this.$route.path !== '/AdminAccountSetting') {
+                this.$router.push('/AdminAccountSetting');
+            }
+        },
+        signOut(){
+           
+        },
     },
 
 }
@@ -110,6 +148,7 @@ export default {
 .menu{
     padding: 1rem;
     background-color: #363740;
+    
 }
 .menu-label{
     color: wheat;

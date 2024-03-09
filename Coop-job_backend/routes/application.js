@@ -116,6 +116,7 @@ router.get('/getApplicationByJob/:jobId', isLoggedIn, async (req, res) => {
       FROM student_jobs sj
       JOIN students st ON sj.student_id = st.user_id
       JOIN jobs js ON js.job_id = sj.job_id
+      
       WHERE sj.job_id = ?
     `, [jobId]);
     res.json(applications);
@@ -142,6 +143,7 @@ router.get('/getApplications', isLoggedIn, async (req, res) => {
     const applications = results.map((row) => {
       return {
         id: row.student_job_id,
+        job_id:row.job_id,
         studentName: row.student_name,
         position: row.job_title,
         applicationDate: row.application_date,

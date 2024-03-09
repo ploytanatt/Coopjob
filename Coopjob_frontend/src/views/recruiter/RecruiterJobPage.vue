@@ -1,29 +1,8 @@
 <template>
-    <div class="container">
-        <div class="columns mt-6">
-          <div class="column tap-list is-3 pt-3 pb-3 cardtab">
-          <div :class="['select_option', select_option === 'recruiterProfile' ? 'has-background-light' : '']">
-            <router-link to="/recruiterProfile">
-              <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'recruiterProfile'">ข้อมูลบริษัท</p>
-            </router-link>
-          </div>
-          <div :class="['select_option', select_option === 'myjob' ? 'has-background-light' : '']">
-            <router-link to="/recruiterProfile">
-              <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myjob'">งานที่ประกาศ</p>
-            </router-link>
-          </div>
-          <div :class="['select_option', select_option === 'myApplicant' ? 'has-background-light' : '']">
-            <router-link to="/applicantList">
-              <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myApplicant'">คนที่มายื่นสมัคร</p>
-            </router-link>
-            </div>
-          <div :class="['select_option', select_option === 'myAccount' ? 'has-background-light' : '']">
-            <router-link to="/recruiterAccount">
-              <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myAccount'">ตั้งค่าบัญชีผู้ใช้</p>
-            </router-link>
-          </div>
-        </div>
-
+    <div >
+        <div class="columns">
+      <recruiterSideMenu></recruiterSideMenu>
+ 
        <div class="p-6 card">
         <h1 class="title">งานที่ประกาศ</h1><div>
           <div class="twitter-pop-out-container">
@@ -66,24 +45,28 @@
   </div>
   </div>
   </div>
+        </div>
+
   </div>
-  </div>
+
 </template>
 <script>
 import jobListFormVue from "@/components/recruiter/job-listing-form.vue"
 import jobListingUpload from "@/components/recruiter/job-listing-upload.vue"
 import applicationEachJob from "@/components/recruiter/application-eachjob.vue"
+import recruiterSideMenu from '@/components/recruiter/recruiter-side-menu.vue';
 export default {
   components: {
     jobListFormVue,
     jobListingUpload,
-    applicationEachJob
+    applicationEachJob,
+    recruiterSideMenu
   },
   data() {
     return {
       jobs: [],
       addJob: false,
-      select_option : 'myjob',
+      select_option : 'jobpage',
       isJobOpen: true,
       activeTab: 'form',
       model: true,
@@ -128,6 +111,8 @@ export default {
 .card {
   width: 100%;
   background-color: #eeeeee;
+
+  
 }
 .add{
     margin-left: 1rem;

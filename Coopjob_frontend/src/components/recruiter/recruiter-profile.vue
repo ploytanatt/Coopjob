@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 card">    
+  <div class="card">    
       <div class="card-content">
         <button v-show="!modify_profile" class="button is-small mb-3 is-info" @click="modify_profile = !modify_profile" >แก้ไข</button>
       <fieldset :disabled="!modify_profile">
@@ -155,48 +155,24 @@
     </div>
   </div>
 </div>
-
       </div>
       <label class="label">แก้ไขที่อยู่</label>
-      <div class="columns">
-        
-        <div class="column is-3">
-        <div class="field">
-         
-          <div class="control">
-            <div class="select">
+      <div class="select">
               <select v-model="selectedLocation" @change="loadLocationData">
           <option value="">จังหวัด</option>
           <option v-for="province in locations" :key="province.id" :value="province.id">
             {{ province.name_th }}
           </option>
-        </select>
-
-        
+        </select>       
             </div>
-          </div>
-        </div>
-        </div>
-     
-      <div class="column is-3">
-        <div class="field" v-if="selectedProvince">
-      
-            <div class="control">
-              <div class="select">
+            <div class="select">
                 <select v-model="selectedAmphure2" @change="loadAmphureData" >
                   <option value="">อำเภอ</option>
                   <option v-for="amphure in selectedProvince.amphure" :key="amphure.id" :value="amphure.id">
                     {{amphure.name_th}}
                   </option>
                 </select>
-              </div>
             </div>
-          </div>
-      </div>
-  
-      <div class="column is-3">
-      <div class="field" v-if="selectedAmphure">
-          <div class="control">
             <div class="select">
               <select v-model="selectedTambon2"  @change="loadTambonData">
                 <option value="">ตำบล  - รหัสไปรษณี</option>
@@ -205,10 +181,7 @@
                 </option>
               </select>
             </div>
-          </div>
-        </div>
-      </div>
-  </div>
+
       <div>
         <label class="label">คำอธิบาย</label>
         <textarea class="textarea" v-model="$v.description.$model" :class="{ 'is-danger': $v.description.$error }"></textarea>
@@ -580,9 +553,8 @@ combineData() {
   border-radius: 25px;
 }
 .cover_image {
- /* ทำให้ภาพเต็มความกว้างของ div */
-/* ทำให้ภาพเต็มความสูงของ div */
-  object-fit: cover; /* ปรับขนาดภาพให้พอดีกับขนาดของ div โดยไม่เกี่ยวข้องกับสัดส่วนของภาพ */
+  height: 400px;
+
   border-radius: 10px; /* สามารถปรับค่า border-radius ตามที่ต้องการ */
 }
 

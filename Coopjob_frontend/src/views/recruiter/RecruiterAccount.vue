@@ -1,35 +1,12 @@
 <template>
-  <div class="container">
-      <div class="columns mt-6">
-        <div class="column tap-list is-3 pt-3 pb-3 cardtab">
-        <div :class="['select_option', select_option === 'recruiterProfile' ? 'has-background-light' : '']">
-          <router-link to="/recruiterProfile">
-            <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'recruiterProfile'">ข้อมูลบริษัท</p>
-          </router-link>
-        </div>
-        <div :class="['select_option', select_option === 'myjob' ? 'has-background-light' : '']">
-          <router-link to="/recruiterJob">
-            <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myjob'">งานที่ประกาศ</p>
-          </router-link>
-        </div>
-        <div :class="['select_option', select_option === 'myApplicant' ? 'has-background-light' : '']">
-            <router-link to="/applicantList">
-              <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myApplicant'">คนที่มายื่นสมัคร</p>
-            </router-link>
-            </div>
-        <div :class="['select_option', select_option === 'myAccount' ? 'has-background-light' : '']">
-          <router-link to="/recruiterAccount">
-            <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myAccount'">ตั้งค่าบัญชีผู้ใช้</p>
-          </router-link>
-        </div>
-      </div>
-     
+<div>
+  
+
+      <div class="columns">
+        <recruiterSideMenu></recruiterSideMenu>
           <div class="p-6 card">
             <h1 class="title">ตั้งค่าบัญชีผู้ใช้</h1>
-
-           
             <div class="email_password">
-              
             <div class="column is-12" >
                 <div class="field">
                   <label class="label">อีเมล</label>
@@ -38,23 +15,16 @@
                   </div>
                 </div>
               </div>
-  
             <div class="column is-12">
             <div class="field">
                   <label class="label">รหัสผ่านของคุณ</label>
-                
                     <div class="control">
                       <input class="input" type="password" v-model.trim="check_password_Email"/>
                     </div>
-            
                 </div>
-                
                 </div>
-                
-              
             <button class="button changeEmail ml-3 is-info" @click="changeEmail()">เปลี่ยนอีเมล</button>
           </div>
-
           <div class="email_password">
               <div class="column is-12" >
                   <div class="field">
@@ -94,16 +64,14 @@
               <button class="button changeEmail ml-3 is-info" @click="changePassword()">เปลี่ยนรหัสผ่าน</button>
             </div>
         </div>
-
-
-
           </div>
-  </div>
+        </div>
 </template>
 <script>
 import axios from "axios";
 import { minLength, sameAs  } from "vuelidate/lib/validators";
 import Swal from "sweetalert2";
+import recruiterSideMenu from '@/components/recruiter/recruiter-side-menu.vue';
 function complexPassword(value) {
   if (!(value.match(/[a-z]/) && value.match(/[A-Z]/) && value.match(/[0-9]/))) {
     return false;
@@ -111,6 +79,9 @@ function complexPassword(value) {
   return true;
 }
 export default {
+  components: {
+    recruiterSideMenu
+  },
 data() {
   return {
     select_option : 'myAccount',
@@ -298,10 +269,9 @@ validations: {
 </script>
 
 <style scoped>
-
-
-
-
+.columns{
+  background-color: #cbcbcb;
+}
 .card {
   width: 100%;
   background-color: #eeeeee;
@@ -327,6 +297,7 @@ background-color: #4a83cadc !important;
 }
 
 .email_password{
+  
   width: 60%;
   background-color: #ffffff;
   margin-bottom: 1rem;

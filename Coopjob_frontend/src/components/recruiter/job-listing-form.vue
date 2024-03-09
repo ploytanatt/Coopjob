@@ -11,7 +11,8 @@
               <span>ประเภทงาน: </span>
               <span v-for="(type, index) in parsePositionType(job.position_type)" :key="index" class="tag is-medium">{{ type.title }} </span>
               <p >วันที่ประกาศ:{{ job.title }} {{ formatDate(job.date_posted) }} </p>
-              <button @click="openApplicaionList(job.job_id)">ดูคนที่มาสมัคร</button>
+
+              <a  class="is-underlined has-text-weight-bold"  @click="openApplicaionList(job.job_id)">จำนวนคนที่มาสมัคร {{ countApplications(job.job_id) }} คน</a>
           </div>
           <div class="columns">
             <div class="column">
@@ -48,10 +49,13 @@ export default {
       isJobOpen: true,
       activeTab: 'form',
       viewApplicationlist:false,
+      applicationsByJob:[],
+      applications:[],
     };
   },
   mounted() {
     this.getJobs();
+    this.getApplications()
   },
   computed: {
     filteredJobs() {
@@ -92,6 +96,30 @@ export default {
           console.log(error);
         });
     },
+    countApplications(jobId) {
+      return this.applications.filter(applicant => applicant.job_id === jobId).length;
+    },
+    getApplications() {
+      this.isLoading = true;
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      axios
+        .get("http://localhost:3000/application/getApplications", config)
+        .then((response) => {
+          this.applications = response.data;
+          
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          console.error(error);
+          this.isLoading = false;
+        });
+    },
+
     //แสดงผลเฉพาะวันที่จากสตริง
     formatDate(dateString) {
         const date = new Date(dateString);

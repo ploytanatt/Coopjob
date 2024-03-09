@@ -1,31 +1,11 @@
 <template>
-  <div class="container">
-      <div class="columns mt-6">
-        <div class="column tap-list is-3 pt-3 pb-3 cardtab">
-        <div :class="['select_option', select_option === 'recruiterProfile' ? 'has-background-light' : '']">
-          <router-link to="/recruiterProfile">
-            <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'recruiterProfile'">ข้อมูลบริษัท</p>
-          </router-link>
-        </div>
-        <div :class="['select_option', select_option === 'myjob' ? 'has-background-light' : '']">
-          <router-link to="/recruiterJob">
-            <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myjob'">งานที่ประกาศ</p>
-          </router-link>
-        </div>
-        <div :class="['select_option', select_option === 'myApplicant' ? 'has-background-light' : '']">
-            <router-link to="/applicantList">
-              <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myApplicant'">คนที่มายื่นสมัคร</p>
-            </router-link>
-            </div>
-        <div :class="['select_option', select_option === 'myAccount' ? 'has-background-light' : '']">
-          <router-link to="/recruiterAccount">
-            <p class="has-text-centered has-text-black is-size-5 p-3" @click="select_option = 'myAccount'">ตั้งค่าบัญชีผู้ใช้</p>
-          </router-link>
-        </div>
-      </div>
+  
 
-      
-      <div class="p-6 card">
+        <div class="columns">
+      <recruiterSideMenu></recruiterSideMenu>
+     
+        
+        <div class="p-6 card">
             <h1 class="title">รายชื่อผู้ที่มาสมัครงาน</h1>
         
             <div class="column is-12" >
@@ -45,37 +25,39 @@
       </div>
         </div>
       <!-- Loading Spinner -->
-      <div v-if="isLoading" class="loading-spinner">
-        Loading...
-      </div>
+
+      <p class="is-size-3">จำนวนผู้สมัครทั้งหมด : {{  computedPaginatedApplications.length }}</p>
+      <div class="table">
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+          <thead>
+            <tr>
+              <th>ชื่องาน</th>
+              <th>ชื่อ-นามสกุล</th>
+              <th>ชื่องาน</th>
+              <th>สถานะ</th>
+              <th>วันที่สมัคร</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="application in computedPaginatedApplications" :key="application.user_id">
+              <td>{{ application.position }}</td>
+           
+            
+
+              <td>
+ 
+            </td>
+     
+            </tr>
+          </tbody>
+        </table>
+        </div>
+
+
 
       <!-- Applications List -->
-      <div v-for="application in computedPaginatedApplications" :key="application.user_id">
-        <div class="card px-5 py-3" v-if="application.status !== 'canceled'">
-          <div class="pt-3" style="border-top: 0.5px solid gray;">
-            <div class="columns p-4" @click="viewApplicationDetail(application.id)">
-              <div class="column">
-                <i class="fa-regular fa-star"></i>
-                
-              </div>
-              <div class="column">
-                <p class="is-size-5 has-text-weight-bold">{{ application.position }}</p>
-              </div>
-              <div class="column">
-                <p class="is-size-5 has-text-weight-bold">สถานะ: {{ application.status }}</p>
-              </div>
-            </div>
-           
-           
-             <!-- 
-              <button v-show="application.status === 'pending'" class="button is-medium is-danger" @click="declineApplicant(application.id)">ไม่ผ่าน</button>
-             -->
-           
 
-          </div>
-          <div style="display: flex; flex-direction: row; justify-content: flex-end;"></div>
-        </div>
-      </div>
 
       <!-- Pagination -->
       <div class="pagination">
@@ -86,15 +68,21 @@
 
 
         </div>
-      </div>
-  </div>
+        </div>
+    
+
+
 </template>
 
 <script>
 import axios from "axios";
 import Swal from "sweetalert2";
-
+import recruiterSideMenu from '@/components/recruiter/recruiter-side-menu.vue';
 export default {
+  components: {
+
+     recruiterSideMenu
+    },
   data() {
     return {
       applications: [],
