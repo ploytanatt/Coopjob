@@ -18,37 +18,37 @@
             </li>
             <li>
               <a @click="gotoStudentList">
-                <i class="fa-light fa-users"></i>
+                <i class="fa-sharp fa-solid fa-building-memo"></i>
                 <span class="menu-text">รายชื่อบริษัท</span>
               </a>
             </li>
             <li>
               <a @click="gotoStudentList">
-                <i class="fa-light fa-users"></i>
+                <i class="fa-light fa-clipboard-list"></i>
                 <span class="menu-text">งานทั้งหมด</span>
               </a>
             </li>
             <li>
               <a @click="gotoStudentList">
-                <i class="fa-light fa-users"></i>
+                <i class="fa-regular fa-circle-exclamation"></i>
                 <span class="menu-text">คำร้องเรียน</span>
               </a>
             </li>
             <li>
               <a @click="gotoStudentList">
-                <i class="fa-light fa-users"></i>
+                <i class="fa-sharp fa-light fa-rectangle-history"></i>
                 <span class="menu-text">ผลการสมัครของนักศึกษา</span>
               </a>
             </li>
             <li>
               <a @click="gotoStudentList">
-                <i class="fa-light fa-users"></i>
+                <i class="fa-solid fa-file-invoice-dollar"></i>
                 <span class="menu-text">สรุปค่าแรงและสวัสดิการ</span>
               </a>
             </li>
             <li>
               <a @click="gotoStudentList">
-                <i class="fa-light fa-users"></i>
+                <i class="fa-regular fa-star"></i>
                 <span class="menu-text">รีวิวของบริษัท</span>
               </a>
             </li>
@@ -57,13 +57,13 @@
             <ul class="menu-list">
                 <li>
               <a @click="gotoStudentList">
-                <i class="fa-light fa-users"></i>
+                <i class="fa-regular fa-gear"></i>
                 <span class="menu-text">Account</span>
               </a>
             </li>
             <li>
               <a @click="gotoStudentList">
-                <i class="fa-light fa-users"></i>
+                <i class="fa-solid fa-right-from-bracket"></i>
                 <span class="menu-text">Sign Out</span>
               </a>
             </li>
