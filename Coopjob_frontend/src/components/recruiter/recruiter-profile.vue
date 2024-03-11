@@ -1,6 +1,7 @@
 <template>
 
       <div class="container card-content">
+        
         <button v-show="!modify_profile" class="button is-small mb-3 is-info" @click="modify_profile = !modify_profile" ><i class="fa-regular fa-pen-to-square"> แก้ไข</i></button>
       <fieldset :disabled="!modify_profile">
         <label class="label">ผู้ติดต่อ</label>
@@ -292,7 +293,6 @@ watch: {
     selectedLocation: 'combineData',
     selectedAmphure2: 'combineData',
     selectedTambon2: 'combineData'
-    // ... add more properties as needed
   },
   methods: {
 

@@ -1,30 +1,8 @@
 <template>
-  <div class="container">
-    <div class="columns mt-6">
-      <div class="column has-background-light is-3 pt-3 pb-3 tabcard">
-        <div
-          :class="['select_option', select_option === 'user_profile' ? ['has-background-link', 'has-text-white'] : '']">
-          <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'user_profile'">User Profile
-          </p>
-        </div>
-        <div :class="['select_option', select_option === 'resume' ? ['has-background-link', 'has-text-white'] : '']">
-          <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'resume'">Resume</p>
-        </div>
-        <div
-          :class="['select_option', select_option === 'transcript' ? ['has-background-link', 'has-text-white'] : '']">
-          <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'transcript'">transcript</p>
-        </div>
-        <div
-          :class="['select_option', select_option === 'portfolio' ? ['has-background-link', 'has-text-white'] : '']">
-          <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'portfolio'">portfolio</p>
-        </div>
-        <div :class="['select_option', select_option === 'preview' ? ['has-background-link', 'has-text-white'] : '']">
-          <p class="has-text-centered is-size-5 p-3 " @click="select_option = 'preview'">ตัวอย่างใบสมัคร</p>
-        </div>
-      </div>
 
-      
-      <div class="p-6 card">
+    <div class="columns">
+      <applicantSideMenu></applicantSideMenu>
+      <div class="column">
         <applicantProfile v-if="select_option === 'user_profile'"></applicantProfile>
       <UploadResume v-if="select_option === 'resume'"></UploadResume>
       <UploadTranscript v-if="select_option === 'transcript'"></UploadTranscript>
@@ -33,7 +11,7 @@
       </div>
 
     </div>
-  </div>
+ 
 </template>
 
 <script>
@@ -42,6 +20,7 @@ import UploadResume from '@/components/applicant/upload-resume.vue';
 import UploadTranscript from '@/components/applicant/upload-transcript.vue';
 import UploadPortfolio from '@/components/applicant/upload-portfolio.vue';
 import applicantPreview from '@/components/applicant/applicant-preview.vue';
+import applicantSideMenu from '@/components/applicant/applicant-side-menu.vue';
 import axios from "@/plugins/axios";
 export default {
   components: {
@@ -50,6 +29,7 @@ export default {
     UploadTranscript,
     UploadPortfolio,
     applicantPreview,
+    applicantSideMenu
 
   },
   data() {

@@ -1,8 +1,9 @@
 <template>
-  <div class="p-6 card" style="background-color: #393E46;">
-      <div class="card">
-        <div class="columns mt-0">
-          <div class="tabs is-boxed column p-6">
+  <div class="columns ">
+    <applicantSideMenu></applicantSideMenu>
+      <div class="">
+        
+          <div class="tabs is-boxed column ">
               <div class="column">
                 <div class="columns is-multiline ml-6 mt-1">
                   <p class="column is-12">ชื่อ-นามสกุล: {{ firstName }} {{lastName }}</p>
@@ -16,17 +17,20 @@
                 </div>
               </div>
             <UploadResume></UploadResume>
-          </div>
+       
           </div>
         </div>
       </div>
 </template>
 <script>
 import UploadResume from "@/components/applicant/upload-resume.vue";
+import applicantSideMenu from '@/components/applicant/applicant-side-menu.vue';
 import axios from "@/plugins/axios";
 export default {
   components: {
     UploadResume,
+    applicantSideMenu
+
   },
   data() {
     return {

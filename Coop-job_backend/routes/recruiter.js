@@ -137,7 +137,6 @@ const upload = multer({
 });
 
 
-
 router.post("/editProfile", isLoggedIn, upload.fields([{ name: "profile_image", maxCount: 1 }, { name: "cover_image", maxCount: 1 }]), async (req, res) => {
   try {
     //const { error } = profileEditSchema.validate(req.body);

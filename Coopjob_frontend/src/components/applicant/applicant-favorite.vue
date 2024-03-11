@@ -1,6 +1,9 @@
 <template>
-  <div>
-    <div v-for="likedJob in likedJobs" :key="likedJob.job_id">
+
+  <div class="columns">
+    <applicantSideMenu></applicantSideMenu>
+    <div class="">
+      <div v-for="likedJob in likedJobs" :key="likedJob.job_id">
       <div class="card px-5 py-3">
         <div class="pt-3" style="border-top: 0.5px solid gray">
           <div class="columns p-4">
@@ -24,12 +27,19 @@
         </div>
       </div>
     </div>
+    </div>
+
   </div>
+
 </template>
 
 <script>
 import axios from "axios";
+import applicantSideMenu from '@/components/applicant/applicant-side-menu.vue';
 export default {
+  components: {
+     applicantSideMenu
+    },
   data() {
     return {
       likedJobs: [],

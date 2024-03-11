@@ -1,9 +1,13 @@
 <template>
-  <div>
+  <div class="columns ">
+    <applicantSideMenu></applicantSideMenu>
+    รายงาน
     <div v-for="report in reports" :key="report.report_id">
+     
       <div class="card px-5 py-3">
         <div class="pt-3" style="border-top: 0.5px solid gray">
           <div class="columns p-4">
+            
             <!--
              <div class="column">
                <p class="is-size-5 has-text-weight-bold"> Report ID: {{ report.report_id }} </p>
@@ -31,7 +35,11 @@
  
 <script>
 import axios from "axios";
+import applicantSideMenu from '@/components/applicant/applicant-side-menu.vue';
 export default {
+  components: {
+    applicantSideMenu
+  },
   data() {
     return {
       reports: [],

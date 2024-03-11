@@ -29,7 +29,7 @@ router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
 
     // ตรวจสอบว่า user_id นี้เคยสมัคร job_id นี้แล้วหรือไม่ (รวมถึงสถานะ 'cancelled' ถ้าเกิดว่า ยกเลิกแล้วให้สมัครใหม่ได้)
     const [existingApplication] = await pool.query(
-      'SELECT * FROM applications WHERE job_id = ? AND student_id = ? AND status != "canceled"',
+      'SELECT * FROM applications WHERE job_id = ? AND student_id = ? AND application_status != "canceled"',
       [job_id, user_id]
     );
 
@@ -42,7 +42,7 @@ router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
 
     // ถ้ายังไม่มีการสมัคร
     const [result] = await pool.query(
-      'INSERT INTO applications (job_id, student_id, status, datetime) VALUES (?, ?, ?, now())',
+      'INSERT INTO applications (job_id, student_id, application_status, datetime) VALUES (?, ?, ?, now())',
       [job_id, user_id, 'pending']
     );
 
@@ -54,53 +54,34 @@ router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
 });
 
 
-// Get job applications for a specific user with additional details ใหม่
+// Get job applications for a specific user with additional details //แสดงรายการงานที่สมัคร
 router.get('/getJobApplications', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-        SELECT ja.application_id, ja.student_id, ja.status, ja.datetime, j.job_id, j.job_title AS job_title, j.job_position, c.company_id, c.company_name, c.profile_image
+        SELECT ja.*, j.*, c.*
         FROM applications ja
         INNER JOIN jobs j ON ja.job_id = j.job_id
         LEFT JOIN companies c ON j.user_id = c.user_id
         WHERE ja.student_id = ?
     `, [userId]);
 
-    console.log(results); // ล็อกผลลัพธ์เพื่อตรวจสอบโครงสร้าง
+    console.log(results);
 
-    const jobApplications = results.map((row) => {
-        return {
-            application_id: row.application_id,
-            student_id: row.student_id,
-            status: row.status,
-            datetime: row.datetime,
-            job: {
-                job_id: row.job_id,
-                title: row.job_title,
-                job_position: row.job_position,
-            },
-            company: {
-                company_id: row.company_id,
-                company_name: row.company_name,
-                profile_image: row.profile_image,
-            },
-        };
-    });
-
-    res.json(jobApplications);
-} catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-}
-
+    res.json(results);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
+  }
 });
 
+//ยกเลิกการสมัครงาน
 router.put('/cancelJob/:applicationId', isLoggedIn, async (req, res) => {
-  const { status } = req.body;
+  const { application_status } = req.body;
   const applicationId = req.params.applicationId;
   try {
-    await pool.query('UPDATE applications SET status = ? WHERE application_id = ?', [status, applicationId]);
-    res.json({ message: 'Cancel job application successful' });
+    await pool.query('UPDATE applications SET application_status = ? WHERE application_id = ?', [application_status, applicationId]);
+    res.json({ message: 'ยกเลิกการสมัครงานเรียบร้อย' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
@@ -108,7 +89,7 @@ router.put('/cancelJob/:applicationId', isLoggedIn, async (req, res) => {
 });
 
 
-// Get job applications for a specific recruiter
+// Get job applications for a specific recruiter // ใบสมัครทั้งหมดของบริษัทนั้นๆ
 router.get('/getApplication/:applicationId', isLoggedIn, async (req, res) => {
   const applicationId = req.params.applicationId;
   try {
@@ -121,7 +102,7 @@ router.get('/getApplication/:applicationId', isLoggedIn, async (req, res) => {
   }
 });
 
-// Get all applications and student details for a specific Job
+// List ใบสมัครแบบเจาะจงเฉพาะงานนั้นๆ
 router.get('/getApplicationByJob/:jobId', isLoggedIn, async (req, res) => {
   const jobId = req.params.jobId;
   try {
@@ -162,13 +143,13 @@ router.get('/getApplications', isLoggedIn, async (req, res) => {
 });
 
 
-
+//ตอบรับการสมัครงาน, อัพโหลดไฟล์ coop
 router.put('/updateStatus/:applicationId', isLoggedIn, upload.single('coopfile'), async (req, res) => {
   const applicationId = req.params.applicationId;
-  const { status } = req.body;
+  const { application_status } = req.body;
   const filePath = req.file.path;
   try {
-    await pool.query('UPDATE applications SET status = ?, coop302 = ? WHERE application_id = ?', [status, filePath, applicationId]);
+    await pool.query('UPDATE applications SET application_status = ?, coop302 = ? WHERE application_id = ?', [application_status, filePath, applicationId]);
     res.json({ message: 'อัพโหลดไฟล์สำเร็จ' });
     console.log("update job apllication successfuly")
   } catch (error) {
@@ -177,6 +158,7 @@ router.put('/updateStatus/:applicationId', isLoggedIn, upload.single('coopfile')
   }
 });
 
+//ดูรายละเอียดของผู้สมัคร
 router.get('/getApplicationDetails/:applicationId', async (req, res) => {
   try {
     const applicationId = req.params.applicationId;
@@ -219,6 +201,8 @@ router.post('/sendFavoriteJob/:jobId', isLoggedIn, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+
 
 router.get('/getFavoriteJobs', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
@@ -345,7 +329,6 @@ router.post("/addBenefitReport", isLoggedIn, async (req, res) => {
       benefit,
     } = value;
 
-    // ตัวแปรที่จำเป็นสำหรับ benefit_reports
     const user_id = req.user.user_id;
     const job_id = req.body.job_id; // สมมุติว่ามี property job_id ใน req.body
 
@@ -388,8 +371,6 @@ router.get('/checkBenefitHistory', isLoggedIn, async (req, res) => {
 });
 
 
-
-
 /*ให้คะแนนบริษัท*/
 // Route for submitting a review
 router.post('/sendReview', isLoggedIn, async (req, res) => {
@@ -423,6 +404,7 @@ router.post('/sendReview', isLoggedIn, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 // Route for checking review history for a job
 router.get('/checkReviewHistory', isLoggedIn, async (req, res) => {

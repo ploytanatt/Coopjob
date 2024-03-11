@@ -14,7 +14,7 @@
           </div>
 
           <div class="columns is-2 ml-6 mt-6"  >
-        <button class="button is-primary" @click="showModal = true"  :disabled="application.status === 'approve'" >Accept</button>
+        <button class="button is-primary" @click="showModal = true"  :disabled="application.application_status === 'approve'" >Accept</button>
       </div>
           
         </div>
@@ -237,7 +237,7 @@ export default {
         const filess = this.$refs.fileInput.files[0];
         const formData = new FormData();
         formData.append('coopfile', filess); 
-        formData.append('status', 'approve'); 
+        formData.append('application_status', 'approve'); 
         if (!file) {
           this.errors = ["Please select a file to upload."];
           return;

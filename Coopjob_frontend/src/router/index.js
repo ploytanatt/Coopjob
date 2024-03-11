@@ -3,10 +3,14 @@ import VueRouter from 'vue-router'
 import jobListingUpload from "@/components/recruiter/job-listing-upload.vue"
 import jobListFormVue from "@/components/recruiter/job-listing-form.vue"
 import applicationEachJob from "@/components/recruiter/application-eachjob.vue"
+import applicantPreview from '@/components/applicant/applicant-preview.vue'
+import applicantFavorite from '@/components/applicant/applicant-favorite.vue'
+import applicantReport from '@/components/applicant/applicant-report.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
-
+//ใช้ร่วมกัน
   {
     path: '/',
     name: 'HomePage',
@@ -26,6 +30,26 @@ const routes = [
     component: () => import('../views/SignIn.vue')
   },
   {
+    path: '/company/:companyId',
+    name: 'CompanyDetails',
+    meta: {title: 'บริษัท'},
+    component: () => import('../views/CompanyDetails.vue')
+  },
+  {
+    path: '/job/:jobId',
+    name: 'JobDetails',
+    meta: { title:'ชื่องาน'},
+    component: () => import('../views/JobDetail.vue')
+  },
+  {
+    path: '/jobsearch',
+    name: 'jobsearch',
+    meta: {title: 'บริษัท'},
+    component: () => import('../views/JobSearch.vue')
+  },
+
+  //applicant ผู้สมัคร
+  {
     path: '/applicantProfile',
     name: 'applicantProfile',
     meta: { login: true },
@@ -43,6 +67,45 @@ const routes = [
     meta: { login: true ,title:'งานที่สมัคร'},
     component: () => import('../views/applicant/MyJobsPage.vue')
   },
+  {
+    path: '/MyFavoriteJobs',
+    name: 'MyFavoriteJobs',
+    meta: { login: true ,title:'งานที่สนใจ'},
+    component: applicantFavorite
+  },
+  {
+    path: '/report-history',
+    name: 'report-history',
+    meta: { login: true ,title:'การรายงาน'},
+    component: applicantReport
+  },
+  {
+    path: '/benefitReport',
+    name: 'benefitReport',
+    meta: { login: true },
+    component: () => import('../components/applicant/applicant-benefit.vue')
+  },
+  {
+    path: '/coopFile',
+    name: 'coopFile',
+    meta: { login: true },
+    component: () => import('../components/applicant/applicant-coop.vue')
+  },
+  {
+    path: '/applicantPreview',
+    name: 'applicantPreview',
+    meta: { login: true },
+    component:applicantPreview
+  },
+  {
+    path: '/applicantAccount',
+    name: 'applicantAccount',
+    meta: { login: true },
+    component: () => import('../views/applicant/ApplicantAccount.vue')
+  },
+
+
+  //recruiter ฝั่งบริษัท
   {
     path: '/recruiterProfile',
     name: 'recruiterProfile',
@@ -86,18 +149,6 @@ const routes = [
     component: () => import('../views/recruiter/RecruiterAccount.vue')
   },
   {
-    path: '/company/:companyId',
-    name: 'CompanyDetails',
-    meta: {title: 'บริษัท'},
-    component: () => import('../views/CompanyDetails.vue')
-  },
-  {
-    path: '/job/:jobId',
-    name: 'JobDetails',
-    meta: { title:'ชื่องาน'},
-    component: () => import('../views/JobDetail.vue')
-  },
-  {
     path: '/applicantList',
     name: 'applicantList',
     meta: { login: true, title:'คนที่มายื่นสมัคร'},
@@ -116,25 +167,6 @@ const routes = [
     component: () => import('../views/recruiter/Applicant-detail.vue')
   },
   {
-    path: '/benefitReport',
-    name: 'benefitReport',
-    meta: { login: true },
-    component: () => import('../components/applicant/applicant-benefit.vue')
-  },
-  {
-    path: '/coopFile',
-    name: 'coopFile',
-    meta: { login: true },
-    component: () => import('../components/applicant/applicant-coop.vue')
-  },
-
-  {
-    path: '/jobsearch',
-    name: 'jobsearch',
-    meta: {title: 'บริษัท'},
-    component: () => import('../views/JobSearch.vue')
-  },
-  {
     path: '/job-listing-form',
     name: 'job-listing-form',
     meta: {title: ''},
@@ -146,6 +178,8 @@ const routes = [
     meta: {title: ''},
     component:jobListingUpload
   },
+
+  ///ฝั่งAdmin
   {
     path: '/adminSignin',
     name: 'admin-signin',

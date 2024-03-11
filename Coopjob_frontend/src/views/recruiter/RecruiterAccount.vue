@@ -3,7 +3,11 @@
       <div class="columns">
         <recruiterSideMenu></recruiterSideMenu>
           <div class="column is-10 mt-4">
-            <h1 class="title">ตั้งค่าบัญชีผู้ใช้</h1>
+            <section class="hero is-dark welcome is-small">
+          <div class="hero-body">
+            <p class="is-size-2">ตั้งค่าบัญชีผู้ใช้</p>
+          </div>
+        </section>
             <div class="email_password">
             <div class="column is-12" >
                 <div class="field">

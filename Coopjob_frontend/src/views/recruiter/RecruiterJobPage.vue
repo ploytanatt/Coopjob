@@ -2,18 +2,17 @@
     <div >
         <div class="columns">
       <recruiterSideMenu></recruiterSideMenu>
- 
        <div class="column is-10 mt-4">
-        <h1 class="title">งานที่ประกาศ</h1><div>
+        <section class="hero is-dark welcome is-small">
+          <div class="hero-body">      
+              <p class="is-size-2">งานที่ประกาศ</p>
+          </div>
+        </section>
           <div class="twitter-pop-out-container">
-          <button class="button is-primary add" @click="openAddJobModal"><i class="fa-regular fa-file-plus"> เพิ่มงาน</i></button>
+          <button class="button is-success add mt-4" @click="openAddJobModal"><i class="fa-regular fa-file-plus"> เพิ่มงาน</i></button>
           <div class="modal" :class="{ 'is-active': addJob }">
-            
             <div class="modal-background" @click="closeAddJobModal">
-
-              
             </div>
-  
           <div class="modal-card">
             <header class="modal-card-head">
               <p class="modal-card-title">เลือกวิธีเพิ่มงาน</p>
@@ -42,15 +41,12 @@
           </li>
         </ul>
       </div>
-
-
  <jobListFormVue v-show="activeTab ==='form'"></jobListFormVue>
  <jobListingUpload v-show="activeTab ==='upload'"></jobListingUpload>
 
   </div>
   </div>
   </div>
-        </div>
 
   </div>
 

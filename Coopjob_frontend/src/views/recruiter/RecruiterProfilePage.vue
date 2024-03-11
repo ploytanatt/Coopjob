@@ -1,7 +1,10 @@
 <template>
       <div class="columns">
       <recruiterSideMenu></recruiterSideMenu>
+      <div class="card">
         <recruiterProfile></recruiterProfile>
+      </div>
+   
         </div>
    
 </template>

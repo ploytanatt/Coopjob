@@ -2,7 +2,7 @@
     <div class="columns">
       <recruiterSideMenu></recruiterSideMenu>
       <div class="column is-10 mt-4">
-        <section class="hero is-info welcome is-small">
+        <section class="hero is-dark welcome is-small">
           <div class="hero-body">
             
               <p class="is-size-2">รายชื่อผู้ที่มาสมัครงาน</p>
