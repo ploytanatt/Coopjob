@@ -69,8 +69,8 @@
               </button>
             </th>
             <th>
-              <button class="button is-small is-white" @click="sortApplications('application_datetime')">
-                <span class="has-text-grey">วันที่สมัคร </span>&nbsp;
+              <button class="button is-small is-white" @click="sortApplications('applied_datetime')">
+                <span class="px-5 has-text-grey">วันที่สมัคร </span>&nbsp;
                 <i class="fa-solid fa-angles-up-down"></i>
               </button>
             </th>
@@ -95,8 +95,8 @@
               {{ application.application_status }}
               </span>
               </td>
-              <td class="px-6 pt-5 pb-4">{{ formatDate(application.applied_datetime) }}</td>
-              <td class="px-6 pt-5 pb-4">
+              <td class="pl-6 pt-5 pb-1">{{ formatDate(application.applied_datetime) }}</td>
+              <td class="pl-6 pt-5 pb-1">
                 <button class="button is-info"  @click="viewApplicationDetail(application.application_id)"><i class="fa-regular fa-pen-to-square"> ดูรายละเอียด</i></button>
               </td>
             </tr>
