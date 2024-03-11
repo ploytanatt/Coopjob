@@ -69,10 +69,6 @@ export default {
           console.error(error);
         });
     },
-    /*imagePath(coop302Path) {
-      // สร้าง URL สำหรับไฟล์ PDF จากเส้นทางของไฟล์ใน static directory
-      return `http://localhost:3000/${coop302Path}`;
-    },*/
     imagePath(coop302Path) {
       if (coop302Path) {
 

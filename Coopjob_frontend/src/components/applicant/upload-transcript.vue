@@ -43,11 +43,11 @@
       </div>
       <noInformation v-if="!previewCurrentTranscript"></noInformation>
     </div>
-  </template>
+</template>
     
-  <script>
-  import axios from "@/plugins/axios";
-  import noInformation from "./no-information.vue";
+<script>
+import axios from "@/plugins/axios";
+import noInformation from "@/components/no-information.vue";
   
   export default {
     components: {

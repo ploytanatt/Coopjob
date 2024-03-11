@@ -7,16 +7,12 @@
                 <i class="fa-regular fa-house-blank"></i>
                 <span class="menu-text">ข้อมูลบริษัท</span>
               </a>
-
             </li>
             <li>
-           
               <a :class="{ 'is-active':  menuActiveTab === 'recruiterJob' }" @click="gotoRecruiterJobPage" >
                   <i class="fa-light fa-users"></i>
                 <span class="menu-text">งานที่ประกาศ</span>
-  
               </a>
-        
             </li>
             <li>
               <a :class="{ 'is-active':  menuActiveTab === 'applicantList' }" @click="gotoApplicantList">
@@ -88,6 +84,7 @@ export default {
 padding: 1rem;
   background-color: #363740;
   width: 250px;
+  height: 100vh;
 }
 .menu-label{
   color: wheat;

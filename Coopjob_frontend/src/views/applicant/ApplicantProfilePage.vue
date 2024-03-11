@@ -37,11 +37,11 @@
 </template>
 
 <script>
-import applicantProfile from '@/components/applicant-profile.vue';
-import UploadResume from '@/components/upload-resume.vue';
-import UploadTranscript from '@/components/upload-transcript.vue';
-import UploadPortfolio from '@/components/upload-portfolio.vue';
-import applicantPreview from '@/components/applicant-preview.vue';
+import applicantProfile from '@/components/applicant/applicant-profile.vue';
+import UploadResume from '@/components/applicant/upload-resume.vue';
+import UploadTranscript from '@/components/applicant/upload-transcript.vue';
+import UploadPortfolio from '@/components/applicant/upload-portfolio.vue';
+import applicantPreview from '@/components/applicant/applicant-preview.vue';
 import axios from "@/plugins/axios";
 export default {
   components: {

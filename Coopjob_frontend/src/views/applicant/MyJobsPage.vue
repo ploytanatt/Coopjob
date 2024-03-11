@@ -43,11 +43,11 @@
     </div>
 </template>
 <script lang="ts">
-import applicantApplication from '@/components/applicant-application.vue';
-import applicantApproveJob from '@/components/applicant-approvejob.vue';
-import applicantHistory from '@/components/applicant-history.vue';
-import applicantFavoritejob from '@/components/applicant-favorite.vue';
-import applicantreporthistory from '@/components/applicant-report.vue';
+import applicantApplication from '@/components/applicant/applicant-application.vue';
+import applicantApproveJob from '@/components/applicant/applicant-approvejob.vue';
+import applicantHistory from '@/components/applicant/applicant-history.vue';
+import applicantFavoritejob from '@/components/applicant/applicant-favorite.vue';
+import applicantreporthistory from '@/components/applicant/applicant-report.vue';
 export default ({
     components: {
      applicantHistory,

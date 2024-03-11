@@ -3,22 +3,27 @@
         <div class="columns">
       <recruiterSideMenu></recruiterSideMenu>
  
-       <div class="p-6 card">
+       <div class="column is-10 mt-4">
         <h1 class="title">งานที่ประกาศ</h1><div>
           <div class="twitter-pop-out-container">
-          <button class="button is-primary add" @click="openAddJobModal">เพิ่มงาน</button>
+          <button class="button is-primary add" @click="openAddJobModal"><i class="fa-regular fa-file-plus"> เพิ่มงาน</i></button>
           <div class="modal" :class="{ 'is-active': addJob }">
-            <div class="modal-background" @click="closeAddJobModal"></div>
-            <div class="modal-card">
-              <header class="modal-card-head">
-                <p class="modal-card-title">เลือกวิธีเพิ่มงาน</p>
-                <button class="delete" aria-label="close" @click="closeAddJobModal"></button>
-              </header>
-              <section class="modal-card-body">
-                <button class="button is-primary" @click="goToAddForm">เพิ่มงานแบบกรอกฟอร์ม</button>
-                <button class="button is-info" @click="goToAddFile">เพิ่มงานโดยอัพโหลดไฟล์</button>
-              </section>
+            
+            <div class="modal-background" @click="closeAddJobModal">
+
+              
             </div>
+  
+          <div class="modal-card">
+            <header class="modal-card-head">
+              <p class="modal-card-title">เลือกวิธีเพิ่มงาน</p>
+              <button class="delete" aria-label="close"  @click="closeAddJobModal"></button>
+            </header>
+            <footer class="modal-card-foot">
+              <button class="addjob button is-primary" @click="goToAddForm"><i class="fa-solid fa-pen" aria-hidden="true"> กรอกฟอร์ม</i></button>
+              <button class="addjob button is-info" @click="goToAddFile"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"> อัพโหลดไฟล์</i></button>
+            </footer>
+          </div>
           </div>
           <applicationEachJob v-if="viewApplicationlist"></applicationEachJob>   
       <div class="tabs is-centered is-boxed">
@@ -96,6 +101,13 @@ export default {
 </script>
 
 <style scoped>
+.modal-card{
+  width: 350px;
+}
+.addjob{
+  border-radius: 180px;
+  margin: 0.8rem;
+}
 .toggle{
   background-color: bisque;
 }

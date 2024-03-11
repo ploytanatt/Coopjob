@@ -75,7 +75,7 @@ const routes = [
   },
   {
     path: '/edit-uploadjob/:jobId',
-    name: 'RecruiterJobEdit',
+    name: 'RecruiterJob-uploadEdit',
     meta: { login: true },
     component: () => import('../views/recruiter/RecruiterJobUploadEdit .vue')
   },
@@ -119,13 +119,13 @@ const routes = [
     path: '/benefitReport',
     name: 'benefitReport',
     meta: { login: true },
-    component: () => import('../components/applicant-benefit.vue')
+    component: () => import('../components/applicant/applicant-benefit.vue')
   },
   {
     path: '/coopFile',
     name: 'coopFile',
     meta: { login: true },
-    component: () => import('../components/applicant-coop.vue')
+    component: () => import('../components/applicant/applicant-coop.vue')
   },
 
   {

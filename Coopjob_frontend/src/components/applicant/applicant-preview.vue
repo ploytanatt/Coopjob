@@ -22,7 +22,7 @@
       </div>
 </template>
 <script>
-import UploadResume from "@/components/upload-resume.vue";
+import UploadResume from "@/components/applicant/upload-resume.vue";
 import axios from "@/plugins/axios";
 export default {
   components: {

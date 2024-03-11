@@ -47,7 +47,7 @@
 
 <script>
 import axios from "@/plugins/axios";
-import noInformation from "./no-information.vue";
+import noInformation from "@/components/no-information.vue";
 export default {
   components: {
     noInformation

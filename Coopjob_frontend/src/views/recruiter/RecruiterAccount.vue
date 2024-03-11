@@ -1,10 +1,8 @@
 <template>
 <div>
-  
-
       <div class="columns">
         <recruiterSideMenu></recruiterSideMenu>
-          <div class="p-6 card">
+          <div class="column is-10 mt-4">
             <h1 class="title">ตั้งค่าบัญชีผู้ใช้</h1>
             <div class="email_password">
             <div class="column is-12" >

@@ -1,13 +1,9 @@
 <template>
-    <div class="">
-
       <div class="columns">
       <recruiterSideMenu></recruiterSideMenu>
-     
         <recruiterProfile></recruiterProfile>
-      
         </div>
-    </div>
+   
 </template>
 <script lang="ts">
 import recruiterProfile from '@/components/recruiter/recruiter-profile.vue';

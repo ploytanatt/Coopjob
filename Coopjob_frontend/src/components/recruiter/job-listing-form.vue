@@ -16,11 +16,11 @@
           </div>
           <div class="columns">
             <div class="column">
-              <input :id="'switchRtlExample-' + job.job_id" type="checkbox" name="switchRtlExample" class="switch is-rtl is-rounded is-success is-pulled-right" :checked="job.status === 'open'" @change="updateJobStatus(job)">
-                <label :for="'switchRtlExample-' + job.job_id">{{ job.status === 'open' ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร' }}</label>
+              <input :id="'switchRtlExample-' + job.job_id" type="checkbox" name="switchRtlExample" class="switch is-rtl is-rounded is-success is-pulled-right" :checked="job.job_status === 'open'" @change="updateJobStatus(job)">
+                <label :for="'switchRtlExample-' + job.job_id">{{ job.job_status === 'open' ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร' }}</label>
             
             <div class="column">
-              <button class="button is-info is-pulled-right is-fullwidth  mb-2" @click="editJob(job.job_id)">แก้ไขข้อมูล</button>
+              <button class="button is-info is-pulled-right is-fullwidth  mb-2" @click="editJob(job.job_id)"><i class="fa-regular fa-pen-to-square"> แก้ไขข้อมูล</i></button>
             </div>
             <div class="column ">
               <button class="button is-danger is-pulled-right   is-fullwidth mb-2" @click="confirmDeleteJob(job.job_id)">ลบงาน</button>
@@ -166,15 +166,16 @@ export default {
         });
     },
     updateJobStatus(job) {
-    const newStatus = job.status === 'open' ? 'close' : 'open';
-    job.status = newStatus; // อัพเดตสถานะในข้อมูล Vue
+    const newStatus = job.job_status === 'open' ? 'close' : 'open';
+    job.job_status = newStatus; // อัพเดตสถานะในข้อมูล Vue
     const token = localStorage.getItem("token");
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     };
-    const data = { status: newStatus };
+    console.log(newStatus)
+    const data = { job_status: newStatus };
     axios.put(`http://localhost:3000/recruiter/updateJobStatus/${job.job_id}`, data, config)
       .then(response => {
         Swal.fire("อัพเดตสถานะงานสำเร็จ", "", "success");

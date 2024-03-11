@@ -148,7 +148,8 @@ export default {
 .menu{
     padding: 1rem;
     background-color: #363740;
-    
+    width: 250px;
+    height: 100vh;
 }
 .menu-label{
     color: wheat;

@@ -1,6 +1,10 @@
 <template>
   <div class="w3-light-grey">
+    
       <div class="card">
+        <button class="button is-dark go-back-button"  @click="goback">
+      <i class="fa-solid fa-left-long"></i> 
+    </button>
         <div class="columns" v-for="application in applications" :key="application.student_job_id">
           <div class="column is-2 job_position mt-6">
             <div class="columns is-multiline  ml-6 mt-1">
@@ -294,6 +298,9 @@ export default {
     handleFileUpload(event) {
       this.file = event.target.files[0]; // เซ็ตค่าของ file เมื่อมีการเปลี่ยนแปลงไฟล์
     }, 
+    goback(){
+      this.$router.push("/applicantList");
+    },
   },
 };
 

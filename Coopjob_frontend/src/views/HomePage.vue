@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <div class="">
+    <div class="column is-10 mt-4">
       <img
         id="suggest"
         class="is-rounded"

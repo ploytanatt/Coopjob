@@ -8,6 +8,20 @@ const { v4: uuidv4 } = require('uuid');
 const { isLoggedIn } = require("../middleware");
 const multer = require('multer');
 const { json } = require('body-parser');
+
+// ตั้งค่า multer upload
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'static/coop302/'); 
+    },
+    filename: function (req, file, cb) {
+      const uniqueFileName = `${uuidv4().slice(0, 4)}-${file.originalname}`;
+      cb(null, uniqueFileName); // กำหนดชื่อไฟล์เก็บในโฟลเดอร์เป็นชื่อที่ไม่ซ้ำกัน
+    }
+  }),
+});
+
 //สมัครงาน
 router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
   try {
@@ -15,7 +29,7 @@ router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
 
     // ตรวจสอบว่า user_id นี้เคยสมัคร job_id นี้แล้วหรือไม่ (รวมถึงสถานะ 'cancelled' ถ้าเกิดว่า ยกเลิกแล้วให้สมัครใหม่ได้)
     const [existingApplication] = await pool.query(
-      'SELECT * FROM student_jobs WHERE job_id = ? AND student_id = ? AND status != "canceled"',
+      'SELECT * FROM applications WHERE job_id = ? AND student_id = ? AND status != "canceled"',
       [job_id, user_id]
     );
 
@@ -28,7 +42,7 @@ router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
 
     // ถ้ายังไม่มีการสมัคร
     const [result] = await pool.query(
-      'INSERT INTO student_jobs (job_id, student_id, status, datetime) VALUES (?, ?, ?, now())',
+      'INSERT INTO applications (job_id, student_id, status, datetime) VALUES (?, ?, ?, now())',
       [job_id, user_id, 'pending']
     );
 
@@ -45,8 +59,8 @@ router.get('/getJobApplications', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-        SELECT ja.student_job_id, ja.student_id, ja.status, ja.datetime, j.job_id, j.job_title AS job_title, j.job_position, c.company_id, c.company_name, c.profile_image
-        FROM student_jobs ja
+        SELECT ja.application_id, ja.student_id, ja.status, ja.datetime, j.job_id, j.job_title AS job_title, j.job_position, c.company_id, c.company_name, c.profile_image
+        FROM applications ja
         INNER JOIN jobs j ON ja.job_id = j.job_id
         LEFT JOIN companies c ON j.user_id = c.user_id
         WHERE ja.student_id = ?
@@ -56,7 +70,7 @@ router.get('/getJobApplications', isLoggedIn, async (req, res) => {
 
     const jobApplications = results.map((row) => {
         return {
-            student_job_id: row.student_job_id,
+            application_id: row.application_id,
             student_id: row.student_id,
             status: row.status,
             datetime: row.datetime,
@@ -85,7 +99,7 @@ router.put('/cancelJob/:applicationId', isLoggedIn, async (req, res) => {
   const { status } = req.body;
   const applicationId = req.params.applicationId;
   try {
-    await pool.query('UPDATE student_jobs SET status = ? WHERE student_job_id = ?', [status, applicationId]);
+    await pool.query('UPDATE applications SET status = ? WHERE application_id = ?', [status, applicationId]);
     res.json({ message: 'Cancel job application successful' });
   } catch (error) {
     console.error(error);
@@ -99,7 +113,7 @@ router.get('/getApplication/:applicationId', isLoggedIn, async (req, res) => {
   const applicationId = req.params.applicationId;
   try {
     // ดึงข้อมูลแอพลิเคชันโดยใช้ applicationId
-    const applications = await pool.query('SELECT * FROM student_jobs WHERE student_job_id = ?', [applicationId]);
+    const applications = await pool.query('SELECT * FROM applications WHERE application_id = ?', [applicationId]);
     res.json(applications);
   } catch (error) {
     console.error(error);
@@ -111,15 +125,15 @@ router.get('/getApplication/:applicationId', isLoggedIn, async (req, res) => {
 router.get('/getApplicationByJob/:jobId', isLoggedIn, async (req, res) => {
   const jobId = req.params.jobId;
   try {
-    const [applications] = await pool.query(`
+    const [applicationsByjob] = await pool.query(`
       SELECT sj.*, st.* , js.*
-      FROM student_jobs sj
+      FROM applications sj
       JOIN students st ON sj.student_id = st.user_id
       JOIN jobs js ON js.job_id = sj.job_id
       
       WHERE sj.job_id = ?
     `, [jobId]);
-    res.json(applications);
+    res.json(applicationsByjob);
     console.log("getApplicationByJob with student details success");
   } catch (error) {
     console.error(error);
@@ -134,49 +148,27 @@ router.get('/getApplications', isLoggedIn, async (req, res) => {
   const recruiterId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-    SELECT ja.*, j.job_title as job_title
-    FROM student_jobs ja
-    INNER JOIN jobs j ON ja.job_id = j.job_id
-    WHERE j.user_id = ?
-    
+    SELECT sj.*, st.*, j.*
+    FROM applications sj
+    JOIN students st ON sj.student_id = st.user_id
+    JOIN jobs j ON sj.job_id = j.job_id
+    WHERE j.user_id = ?;
       `, [recruiterId]);
-    const applications = results.map((row) => {
-      return {
-        id: row.student_job_id,
-        job_id:row.job_id,
-        studentName: row.student_name,
-        position: row.job_title,
-        applicationDate: row.application_date,
-        status: row.status,
-      };
-    });
-    // console.log(applications)
-    res.json(applications);
+    res.json(results);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// ตั้งค่า multer upload
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, 'static/coop302/'); 
-    },
-    filename: function (req, file, cb) {
-      const uniqueFileName = `${uuidv4().slice(0, 4)}-${file.originalname}`;
-      cb(null, uniqueFileName); // กำหนดชื่อไฟล์เก็บในโฟลเดอร์เป็นชื่อที่ไม่ซ้ำกัน
-    }
-  }),
-});
+
 
 router.put('/updateStatus/:applicationId', isLoggedIn, upload.single('coopfile'), async (req, res) => {
   const applicationId = req.params.applicationId;
   const { status } = req.body;
   const filePath = req.file.path;
   try {
-    await pool.query('UPDATE student_jobs SET status = ?, coop302 = ? WHERE student_job_id = ?', [status, filePath, applicationId]);
+    await pool.query('UPDATE applications SET status = ?, coop302 = ? WHERE application_id = ?', [status, filePath, applicationId]);
     res.json({ message: 'อัพโหลดไฟล์สำเร็จ' });
     console.log("update job apllication successfuly")
   } catch (error) {
@@ -188,7 +180,7 @@ router.put('/updateStatus/:applicationId', isLoggedIn, upload.single('coopfile')
 router.get('/getApplicationDetails/:applicationId', async (req, res) => {
   try {
     const applicationId = req.params.applicationId;
-    const [applicationResult] = await pool.query('SELECT student_id FROM student_jobs WHERE student_job_id = ?', [applicationId]);
+    const [applicationResult] = await pool.query('SELECT student_id FROM applications WHERE application_id = ?', [applicationId]);
     const userId = applicationResult[0].student_id;
     const [studentResult] = await pool.query('SELECT * FROM students WHERE user_id = ?', [userId]);
     res.json(studentResult);
@@ -452,14 +444,14 @@ router.get('/checkReviewHistory', isLoggedIn, async (req, res) => {
 });
 
 
-// Route เพื่อดึงข้อมูล student_jobs จากฐานข้อมูล // เน้น coop302
+// Route เพื่อดึงข้อมูล applications จากฐานข้อมูล // เน้น coop302
 router.get('/getStudentJobs', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   const jobId = req.query.job_id; // รับค่า jobId จาก query parameter ที่ส่งมาจาก frontend
   try {
     const [results] = await pool.query(`
       SELECT *
-      FROM student_jobs
+      FROM applications
       WHERE student_id = ? AND job_id = ?
     `, [userId, jobId]);
     

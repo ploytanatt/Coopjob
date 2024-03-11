@@ -1,7 +1,7 @@
 <template>
-  <div class="card">    
-      <div class="card-content">
-        <button v-show="!modify_profile" class="button is-small mb-3 is-info" @click="modify_profile = !modify_profile" >แก้ไข</button>
+
+      <div class="container card-content">
+        <button v-show="!modify_profile" class="button is-small mb-3 is-info" @click="modify_profile = !modify_profile" ><i class="fa-regular fa-pen-to-square"> แก้ไข</i></button>
       <fieldset :disabled="!modify_profile">
         <label class="label">ผู้ติดต่อ</label>
           <div class="notification contactperson is-rounded">
@@ -151,7 +151,6 @@
     <div class="control location">
       <span>ตำบล {{ location[2].tambon }} อำเภอ {{ location[1].amphure }} จังหวัด {{ location[0].province }} {{ location[3].zip_code }}</span>
     
-
     </div>
   </div>
 </div>
@@ -215,22 +214,16 @@
                   allowfullscreen
                   v-if="company_video"
                 />
-
           </div>
-        
     </div>
-          </div>
-          
+  </div> 
     </fieldset>
-    <div class="mt-6 modify_profile">
-      <button v-show="!modify_profile" class="button is-medium mt-3 is-info" @click="modify_profile = !modify_profile" >แก้ไข</button>
-      <button v-show="modify_profile" class="button is-medium is-success" @click="saveProfile" :disabled="$v.$error">บันทึก</button>
-      <button v-show="modify_profile" class="button is-medium is-danger" @click="resetProfile">ยกเลิก</button>
-    </div>
+      <div class="mt-6 modify_profile">
+        <button v-show="!modify_profile" class="button is-small mb-3 is-info" @click="modify_profile = !modify_profile" ><i class="fa-regular fa-pen-to-square"> แก้ไข</i></button>
+        <button v-show="modify_profile" class="button is-medium is-success" @click="saveProfile" :disabled="$v.$error">บันทึก</button>
+        <button v-show="modify_profile" class="button is-medium is-danger" @click="resetProfile">ยกเลิก</button>
       </div>
-
-
-  </div>
+      </div>
 </template>
 
 <script>
