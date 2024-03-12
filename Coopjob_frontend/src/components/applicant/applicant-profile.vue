@@ -1,195 +1,185 @@
-
 <template>
-    <div class="">
-        <div class="columns">
-            <div class="column is-9">
-                <section class="hero is-info welcome is-small">
-                    <div class="hero-body">
-                        <div class="container">
-                            <h1 class="title">
-                                Hello, Admin.
-                            </h1>
-                            <h2 class="subtitle">
-                                I hope you are having a great day!
-                            </h2>
-                        </div>
-                    </div>
-                </section>
-
-                <div class="columns">
-                    <div class="column is-4">
-        
-                      <fieldset :disabled="!modify_profile">
-                                      <div class="field is-horizontal">
-                                        <div class="field-label is-normal">
-                                          <label class="label">รหัสนักศึกษา</label>
-                                        </div>
-                                        <div class="field-body">
-                                          <!-- firstName -->
-                                          <div class="field">
-                                            <p class="control">
-                                              <input class="input" type="text" v-model="$v.studentID.$model" :class="{ 'is-danger': $v.studentID.$error }"/>
-                                            </p>
-                                            <template v-if="$v.studentID.$error">
-                                              <p class="help is-danger" v-if="!$v.studentID.required"> โปรดกรอกข้อมูลในช่องนี้</p>
-                                            </template>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div class="field is-horizontal">
-                                        <div class="field-label is-normal">
-                                          <label class="label">ชื่อ</label>
-                                        </div>
-                                        <div class="field-body">
-                                          <!-- firstName -->
-                                          <div class="field">
-                                            <p class="control">
-                                              <input class="input" type="text" v-model="$v.firstName.$model" :class="{ 'is-danger': $v.firstName.$error }"/>
-                                            </p>
-                                            <template v-if="$v.firstName.$error">
-                                              <p class="help is-danger" v-if="!$v.firstName.required"> โปรดกรอกข้อมูลในช่องนี้</p>
-                                            </template>
-                                          </div>
-                                          <!-- lastName -->
-                                          <div class="field">
-                                            <p class="control">
-                                              <input class="input" type="text" v-model="$v.lastName.$model" :class="{ 'is-danger': $v.lastName.$error }" />
-                                            </p>
-                                            <template v-if="$v.lastName.$error">
-                                              <p class="help is-danger" v-if="!$v.lastName.required">โปรดกรอกข้อมูลในช่องนี้</p>
-                                            </template>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <!-- Email -->
-                                      <div class="field is-horizontal">
-                                        <div class="field-label is-normal">
-                                          <label class="label">อีเมล</label>
-                                        </div>
-                                        <div class="field-body">
-                                          <div class="field">
-                                            <div class="control">
-                                              <input v-model="$v.email.$model" :class="{ 'is-danger': $v.email.$error }" class="input" type="text" />
-                                            </div>
-                                            <template v-if="$v.email.$error">
-                                              <p class="help is-danger" v-if="!$v.email.required">โปรดกรอกข้อมูลในช่องนี้</p>
-                                              <p class="help is-danger" v-else-if="!$v.email.email">รูปแบบอีเมลไม่ถูกต้อง</p>
-                                            </template>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <!-- วันเกิด -->
-                                      <div class="field is-horizontal">
-                                        <div class="field-label is-normal">
-                                          <label class="label">วันเกิด</label>
-                                        </div>
-                                        <div class="field-body">
-                                          <div class="field">
-                                            <div class="control">
-                                              <input v-model="$v.birthdate.$model" :class="{ 'is-danger': $v.birthdate.$error }" class="input" type="date" />
-                                            </div>
-                                            <template v-if="$v.birthdate.$error">
-                                              <p class="help is-danger" v-if="!$v.birthdate.required">โปรดกรอกข้อมูลในช่องนี้</p>
-                                            </template>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <!-- เพศ -->
-                                      <div class="field is-horizontal">
-                                        <div class="field-label">
-                                          <label class="label">เพศ</label>
-                                        </div>
-                                        <div class="field-body">
-                                          <div class="field is-narrow">
-                                            <div class="control">
-                                              <label class="radio">
-                                                <input v-model="$v.gender.$model" :class="{ 'is-danger': $v.gender.$error }" value="ชาย" type="radio" />ชาย
-                                              </label>
-                                              <label class="radio">
-                                                <input v-model="$v.gender.$model" :class="{ 'is-danger': $v.gender.$error }" value="หญิง" type="radio"/>หญิง</label>
-                                            </div>
-                                            <template v-if="$v.gender.$error">
-                                              <p class="help is-danger" v-if="!$v.gender.required">โปรดกรอกข้อมูลในช่องนี้</p>
-                                            </template>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <!-- ที่อยู่ -->
-                                      <div class="field is-horizontal">
-                                        <div class="field-label is-normal">
-                                          <label class="label">ที่อยู่</label>
-                                        </div>
-                                        <div class="field-body">
-                                          <div class="field">
-                                            <div class="control">
-                                              <textarea v-model="$v.address.$model" :class="{ 'is-danger': $v.address.$error }" class="textarea" type="text"></textarea>
-                                            </div>
-                                            <template v-if="$v.address.$error">
-                                              <p class="help is-danger" v-if="!$v.address.required">ปรดกรอกข้อมูลในช่องนี้</p>
-                                            </template>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <!-- เบอร์โทรศัพท์ -->
-                                      <div class="field is-horizontal">
-                                        <div class="field-label is-normal">
-                                          <label class="label">เบอร์ติดต่อ</label>
-                                        </div>
-                                        <div class="field-body">
-                                          <div class="field">
-                                            <div class="control">
-                                              <input v-model="$v.phone_number.$model" :class="{ 'is-danger': $v.phone_number.$error }" class="input" type="text"/>
-                                            </div>
-                                            <template v-if="$v.phone_number.$error">
-                                              <p class="help is-danger" v-if="!$v.phone_number.required">โปรดกรอกข้อมูลในช่องนี้</p>
-                                              <p class="help is-danger" v-if="!$v.phone_number.numeric">โปรดกรอกเป็นตัวเลขเท่านั้น</p>
-                                              <p class="help is-danger" v-if="!$v.phone_number.minLength">โปรดกรอกตัวเลข 10 หลัก</p>
-                                              <p class="help is-danger" v-if="!$v.phone_number.maxLength">โปรดกรอกตัวเลข 10 หลัก</p>
-                                            </template>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                        </fieldset>            
-                    </div>
-                    <div class="column is-6">
-                        <div class="card">
-                            <header class="card-header">
-                              <p class="card-header-title">
-                                  Inventory Search
+  <div class="card">
+          <div class="column is-12">
+              <div class="columns">
+                  <div class="column is-5 mt-4">
+                    <div class=" column p-2  card">
+                      <div class="mt-2 modify_profile" style="display: flex; flex-direction: column; align-items: flex-end;" >
+                        <button class="button mb-3 is-info "  v-show="!modify_profile" @click="modify_profile = !modify_profile"><i class="fa-solid fa-pen-to-square mr-1"></i>แก้ไข</button>
+                      </div>
+                      <fieldset :disabled="!modify_profile" class="">
+                        
+                        <!-- รหัสนักศึกษา -->
+                        <div class="field is-horizontal">
+                          <div class="field-label is-normal">
+                            <label class="label">รหัสนักศึกษา</label>
+                          </div>
+                          <div class="field-body">        
+                            <div class="field">
+                              <p class="control">
+                                <input class="input" type="text" v-model="$v.studentID.$model" :class="{ 'is-danger': $v.studentID.$error }"/>
                               </p>
-                              <a href="#" class="card-header-icon" aria-label="more options">
-                                <span class="icon">
-                                  <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                </span>
-                              </a>
-                            </header>
-                            <div class="card-content">
-                                <div class="content">
-                                    <div class="control has-icons-left has-icons-right">
-                                      <input class="input is-large" type="text" placeholder="">
-                                      <span class="icon is-medium is-left">
-                                        <i class="fa fa-search"></i>
-                                      </span>
-                                      <span class="icon is-medium is-right">
-                                        <i class="fa fa-check"></i>
-                                      </span>
-                                    </div>
-                                </div>
+                              <template v-if="$v.studentID.$error">
+                                <p class="help is-danger" v-if="!$v.studentID.required"> โปรดกรอกข้อมูลในช่องนี้</p>
+                              </template>
                             </div>
-              
-
+                          </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <!-- firstName -->
+                        <div class="field is-horizontal">
+                          <div class="field-label is-normal">
+                            <label class="label">ชื่อ</label>
+                          </div>
+                          <div class="field-body ">
+                            <!-- firstName -->
+                            <div class="field">
+                              <p class="control">
+                                <input class="input" type="text" v-model="$v.firstName.$model" :class="{ 'is-danger': $v.firstName.$error }"/>
+                              </p>
+                              <template v-if="$v.firstName.$error">
+                                <p class="help is-danger" v-if="!$v.firstName.required"> โปรดกรอกข้อมูลในช่องนี้</p>
+                              </template>
+                            </div>
+                            <!-- lastName -->
+                            <div class="field">
+                              <p class="control">
+                                <input class="input" type="text" v-model="$v.lastName.$model" :class="{ 'is-danger': $v.lastName.$error }" />
+                              </p>
+                              <template v-if="$v.lastName.$error">
+                                <p class="help is-danger" v-if="!$v.lastName.required">โปรดกรอกข้อมูลในช่องนี้</p>
+                              </template>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Email -->
+                        <div class="field is-horizontal">
+                          <div class="field-label is-normal">
+                            <label class="label">อีเมล</label>
+                          </div>
+                          <div class="field-body">
+                            <div class="field">
+                              <div class="control">
+                                <input v-model="$v.email.$model" :class="{ 'is-danger': $v.email.$error }" class="input" type="text" />
+                              </div>
+                              <template v-if="$v.email.$error">
+                                <p class="help is-danger" v-if="!$v.email.required">โปรดกรอกข้อมูลในช่องนี้</p>
+                                <p class="help is-danger" v-else-if="!$v.email.email">รูปแบบอีเมลไม่ถูกต้อง</p>
+                              </template>
+                            </div>
+                          </div>
+                        </div>
 
-    </div>
+                        <!-- วันเกิด -->
+                        <div class="field is-horizontal">
+                          <div class="field-label is-normal">
+                            <label class="label">วันเกิด</label>
+                          </div>
+                          <div class="field-body">
+                            <div class="field">
+                              <div class="control">
+                                <input v-model="$v.birthdate.$model" :class="{ 'is-danger': $v.birthdate.$error }" class="input" type="date" />
+                              </div>
+                              <template v-if="$v.birthdate.$error">
+                                <p class="help is-danger" v-if="!$v.birthdate.required">โปรดกรอกข้อมูลในช่องนี้</p>
+                              </template>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- เพศ -->
+                        <div class="field is-horizontal">
+                          <div class="field-label">
+                            <label class="label">เพศ</label>
+                          </div>
+                          <div class="field-body">
+                            <div class="field is-narrow">
+                              <div class="control">
+                                <label class="radio">
+                                  <input v-model="$v.gender.$model" :class="{ 'is-danger': $v.gender.$error }" value="ชาย" type="radio" />ชาย
+                                </label>
+                                <label class="radio">
+                                  <input v-model="$v.gender.$model" :class="{ 'is-danger': $v.gender.$error }" value="หญิง" type="radio"/>หญิง</label>
+                              </div>
+                              <template v-if="$v.gender.$error">
+                                <p class="help is-danger" v-if="!$v.gender.required">โปรดกรอกข้อมูลในช่องนี้</p>
+                              </template>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- ที่อยู่ -->
+                        <div class="field is-horizontal">
+                          <div class="field-label is-normal">
+                            <label class="label">ที่อยู่</label>
+                          </div>
+                          <div class="field-body">
+                            <div class="field">
+                              <div class="control">
+                                <textarea v-model="$v.address.$model" :class="{ 'is-danger': $v.address.$error }" class="textarea" type="text"></textarea>
+                              </div>
+                              <template v-if="$v.address.$error">
+                                <p class="help is-danger" v-if="!$v.address.required">ปรดกรอกข้อมูลในช่องนี้</p>
+                              </template>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- เบอร์โทรศัพท์ -->
+                        <div class="field is-horizontal">
+                          <div class="field-label is-normal">
+                            <label class="label">เบอร์ติดต่อ</label>
+                          </div>
+                          <div class="field-body">
+                            <div class="field">
+                              <div class="control">
+                                <input v-model="$v.phone_number.$model" :class="{ 'is-danger': $v.phone_number.$error }" class="input" type="text"/>
+                              </div>
+                              <template v-if="$v.phone_number.$error">
+                                <p class="help is-danger" v-if="!$v.phone_number.required">โปรดกรอกข้อมูลในช่องนี้</p>
+                                <p class="help is-danger" v-if="!$v.phone_number.numeric">โปรดกรอกเป็นตัวเลขเท่านั้น</p>
+                                <p class="help is-danger" v-if="!$v.phone_number.minLength">โปรดกรอกตัวเลข 10 หลัก</p>
+                                <p class="help is-danger" v-if="!$v.phone_number.maxLength">โปรดกรอกตัวเลข 10 หลัก</p>
+                              </template>
+                            </div>
+                          </div>
+                        </div>
+                        
+                      </fieldset>    
+                      <div class="mt-2 modify_profile" >
+                        <button class="button m-3 is-success" v-show="modify_profile" @click="saveProfile" :disabled="$v.$error">บันทึก</button>
+                        <button class="button mb-3 mt-3 is-danger" v-show="modify_profile" @click="resetProfile">ยกเลิก</button>
+                      </div>
+                    </div>      
+                  </div>
+                  <!-- ส่วนของการอัพโหลด -->
+                  <div class="column  mt-4 mr-3">
+                    <div class="card">
+                        <div class="content ">
+                            <div class="tabs  is-boxed  mb-0 ">
+                              <ul class="mt-0 pl-2 pr-2">
+                                <li :class="[select_option === 'resume' ? 'is-active' : '']" @click="select_option = 'resume'">
+                                  <a><span>Resume</span></a>
+                                </li>
+                                <li :class="[select_option === 'transcript' ? 'is-active' : '']" @click="select_option = 'transcript'">
+                                  <a><span>Transcript</span></a>
+                                </li>
+                                <li :class="[select_option === 'portfolio' ? 'is-active' : '']" @click="select_option = 'portfolio'">
+                                  <a><span>Portfolio</span>
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                            <div class="p-2 mt-4">
+                              <uploadResume v-if="select_option === 'resume'" ></uploadResume>
+                              <uploadTranscript v-if="select_option === 'transcript'"></uploadTranscript>
+                              <uploadPortfolio v-if="select_option === 'portfolio'" ></uploadPortfolio>   
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
 </template>
 <script>
 import {
@@ -201,7 +191,15 @@ import {
 } from "vuelidate/lib/validators";
 import axios from "@/plugins/axios";
 import Swal from "sweetalert2";
+import uploadResume from "./upload-resume.vue";
+import uploadPortfolio from "./upload-portfolio.vue";
+import uploadTranscript from "./upload-transcript.vue";
 export default {
+  components:{
+    uploadResume,
+    uploadPortfolio,
+    uploadTranscript
+  },
   data() {
     return {
       firstName: "",
@@ -213,11 +211,15 @@ export default {
       address: "",
       modify_profile: false,
       resume: "",
+      transript:"",
+      portfolio:"",
       studentID: "",
+      select_option:'resume'
     };
   },
   mounted() {
     this.getUserProfile();
+
   },
   methods: {
     getUserProfile() {
@@ -242,7 +244,10 @@ export default {
           this.gender = user[0].gender;
           this.email = user[0].email;
           this.address = user[0].address;
-          this.studentID = user[0].studentID
+          this.studentID = user[0].studentID;
+          this.resume = user[0].resume;
+          this.transript = user[0].transript;
+          this.portfolio = user[0].portfolio;
         });
     },
     saveProfile() {
@@ -326,5 +331,19 @@ export default {
 </script>
 
 <style scoped>
-/* สไตล์ CSS สำหรับฟอร์ม */
+.preview-pdf {
+  width: 100%; 
+  display: flex;
+  justify-content: center; 
+  background-color: #424242;
+}
+
+.pdf {
+  width:80%; 
+  height: 1080px;
+}
+
+.content ul{
+  margin-left: 0;
+}
 </style>

@@ -21,19 +21,19 @@
                 <ul>
                   <li>
                     <a :class="{ 'is-active':  menuActiveTab === 'MyJobs' }" @click="gotoApplicantJobs">
-                      <i class="fa-sharp fa-solid fa-building-memo"></i>
+                      <i class="fa-light fa-clipboard-list"></i>
                       <span class="menu-text">งานที่สมัคร</span>
                     </a>
                   </li>
                   <li>
                     <a :class="{ 'is-active':  menuActiveTab === 'MyFavoriteJobs' }" @click="gotoApplicantFavoriteJobs">
-                      <i class="fa-sharp fa-solid fa-building-memo"></i>
+                      <i class="fa-regular fa-heart"></i>
                       <span class="menu-text">งานที่สนใจ</span>
                     </a>
                   </li>
                   <li>
                     <a :class="{ 'is-active':  menuActiveTab === 'report-history' }" @click="gotoRecruiterReportHistory">
-                      <i class="fa-sharp fa-solid fa-building-memo"></i>
+                      <i class="fa-regular fa-circle-exclamation"></i>
                       <span class="menu-text">การรายงาน</span>
                     </a>
                   </li>
@@ -115,7 +115,7 @@ export default {
 }
 .menu{
 padding: 1rem;
-  background-color: #4f8592;
+  background-color: #698a8d;
   width: 250px;
   height: 100vh;
 }
@@ -139,7 +139,7 @@ display: flex;
 align-items: center;
 }
 .is-active {
-background-color: #74f699;
+background-color: #28ee60;
 }
 .menu-list a:hover {
   color: #d2d2d2;

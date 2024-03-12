@@ -42,7 +42,7 @@ router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
 
     // ถ้ายังไม่มีการสมัคร
     const [result] = await pool.query(
-      'INSERT INTO applications (job_id, student_id, application_status, datetime) VALUES (?, ?, ?, now())',
+      'INSERT INTO applications (job_id, student_id, application_status, applied_datetime) VALUES (?, ?, ?, now())',
       [job_id, user_id, 'pending']
     );
 

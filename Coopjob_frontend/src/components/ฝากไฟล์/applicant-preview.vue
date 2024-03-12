@@ -1,13 +1,13 @@
 <template>
-  <div class="columns">
+  <div class="columns ">
     <applicantSideMenu></applicantSideMenu>
-    <div class="column ">
-      <div class="columns">
-        <div class="column is-3  mt-4">
-  
-          <div class="job-card card">
+    <div class="card">
+    <div class="columns">
+                  <div class="column mt-4">
+                 
+                      <div class="job-card">
                         <div class="job-card-header">
-                          <span class="job-date">Applied Jobs</span>
+                          <span class="job-title">Applied Jobs</span>
                           <span class="job-date">วว/ดด/ปปปป</span>
                         </div>
                         <hr>
@@ -17,8 +17,7 @@
                         </div>
                       </div>
 
-
-                      <div class="job-card card">
+                      <div class="job-card">
                         <div class="job-card-body">
                           <div class="column">
                         <div class="field">
@@ -51,11 +50,9 @@
                       </div>
                 </div>
 
-          </div>
-      
-
-                 <!-- ส่วนของการอัพโหลด -->
-                   <div class="column is-7 mt-4 mr-3">
+      </div>
+                                    <!-- ส่วนของการอัพโหลด  -->
+                <div class="column mt-4 mr-3">
                     <div class="card">
                         <div class="content ">
                             <div class="tabs  is-boxed  mb-0 ">
@@ -75,16 +72,19 @@
                             <div class="p-2 mt-4">
                                   <uploadResume v-if="select_option === 'resume'" ></uploadResume>
                               <uploadTranscript v-if="select_option === 'transcript'"></uploadTranscript>
-                              <uploadPortfolio v-if="select_option === 'portfolio'" ></uploadPortfolio>     
+                              <uploadPortfolio v-if="select_option === 'portfolio'" ></uploadPortfolio>   
+                         
+    
                                 </div>
                         </div>
                       </div>
                   </div>
-                   
-                   
-      </div>
+
+
     </div>
-    </div>
+              </div>
+            </div>
+    
 </template>
 <script>
 import UploadResume from "@/components/applicant/upload-resume.vue";
@@ -128,18 +128,15 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 .card{}
 .job-card {
-  background-color: #F8F8FD;
+  background-color: #f9f9f9;
   border-radius: 6px;
   padding: 16px;
-  box-shadow: 0 2px 4px #0000002d;
-  margin-left: 16px;
-  margin-right: 16px;
-  margin-bottom: 16px; 
-  width: 380px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px; /* Adjust as needed */
+  width: 343px; /* Adjust as needed */
 }
 
 .job-card-header {
@@ -181,19 +178,5 @@ hr {
   background-color: #ddd; /* Adjust as needed */
   margin-bottom: 8px; /* Adjust as needed */
 }
-.preview-pdf {
-  width: 100%; 
-  display: flex;
-  justify-content: center; 
-  background-color: #424242;
-}
 
-.pdf {
-  width:80%; 
-  height: 1080px;
-}
-
-.content ul{
-  margin-left: 0;
-}
 </style>

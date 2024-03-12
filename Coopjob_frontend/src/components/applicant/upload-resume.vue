@@ -1,13 +1,17 @@
 <template>
   <div>
-  <div class="upload_content mt-6" v-if="isEdit">
+    <div>
+        <button class="button mb-3 is-info" @click="isEdit = true"><i class="fa-solid fa-pen-to-square mr-1"></i>Edit</button>
+    </div>
+    
+  <div class="upload_content mt-3 ml-3" v-if="isEdit">
     <div class="columns mb-3">
       <div class="file is-info has-name">
         <label class="file-label">
           <input class="file-input" type="file" ref="fileInput" accept=".pdf" @change="handleFileChange($event)"/>
           <span class="file-cta">
             <span class="file-icon">
-              <i class="fas fa-upload"></i>
+              <i class="fa-regular fa-upload"></i>
             </span>
             <span class="file-label"> Choose a {{ upload_category }} </span>
           </span>
@@ -23,6 +27,7 @@
         Cancel
       </button>
     </div>
+    
     <div v-if="errors.length > 0">
       <div class="has-text-danger" v-for="(error, index) in errors" :key="index">
         <h1>{{ error }}</h1>
@@ -34,13 +39,13 @@
       <iframe :src="previewNewResume" type="application/pdf" class="preview-pdf" />
     </div>
   </div>
-  <div v-if="isEdit === false & role === 'applicant'"
-        style="display: flex; flex-direction: column; align-items: flex-end;">
-        <button class="button mb-3 mt-3 is-info" @click="isEdit = true">Edit</button>
-    </div>
-    <div v-show="isEdit === false && previewCurrentResume" class="pre-review">  
+
+
+
+    <div v-show="!previewNewResume && previewCurrentResume" class="pre-review">  
       <iframe :src="imagePath(previewCurrentResume)" class="preview-pdf"/>
   </div>
+
   <noInformation v-if="!previewCurrentResume"></noInformation>
   </div>
 </template>
@@ -48,6 +53,7 @@
 <script>
 import axios from "@/plugins/axios";
 import noInformation from "@/components/no-information.vue";
+import Swal from "sweetalert2";
 export default {
   components: {
     noInformation
@@ -83,6 +89,7 @@ export default {
       //console.log("getappProfile",user[0].resume)
      if(user[0].resume){
       this.previewCurrentResume = user[0].resume.replace(/\\/g, '/').replace('static', '');
+      
      }
     
      this.role = user[0].role;
@@ -132,24 +139,26 @@ export default {
       }
       const formData = new FormData();
       formData.append("resume", file);
-      // Send the file to the server
-      axios
-        .post("http://localhost:3000/applicant/uploadResume", formData, config)
+      axios.post("http://localhost:3000/applicant/uploadResume", formData, config)
         .then((response) => {
-          // Handle successful upload
-          if(response.data.filePath){
+          if(response.data.filePath) {
             this.previewCurrentResume = response.data.filePath.replace(/\\/g, '/').replace('static', '');
           }
           this.file.isUploaded = true;
           this.isEdit = false;
-          console.log('testset',response); 
+          this.previewNewResume = null;
+          // บังคับให้ Vue อัพเดทหน้าจอ
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "แก้ไขข้อมูลสำเร็จ",
+            showConfirmButton: false,
+          });
+          this.$forceUpdate();
         })
         .catch((error) => {
-          // Handle upload error
           console.log(error);
-          this.errors = [
-            "Failed to upload the file. Please try again later.",
-          ];
+          this.errors = ["Failed to upload the file. Please try again later."];
         });
     },
   },

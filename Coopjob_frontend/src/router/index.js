@@ -50,6 +50,12 @@ const routes = [
 
   //applicant ผู้สมัคร
   {
+    path: '/MyJobsPage',
+    name: 'MyJobsPage',
+    meta: { login: true },
+    component: () => import('../views/applicant/MyJobsPage.vue')
+  },
+  {
     path: '/applicantProfile',
     name: 'applicantProfile',
     meta: { login: true },
@@ -65,7 +71,7 @@ const routes = [
     path: '/MyJobs',
     name: 'MyJobs',
     meta: { login: true ,title:'งานที่สมัคร'},
-    component: () => import('../views/applicant/MyJobsPage.vue')
+    component: () => import('@/components/applicant/applicant-application.vue')
   },
   {
     path: '/MyFavoriteJobs',
