@@ -19,7 +19,7 @@
             </div>
             <div class="column">
               <!-- เพิ่มปุ่มดูรายละเอียด -->
-              <button class="button is-primary">
+              <button class="button is-info">
                 <router-link :to="'/job/' + likedJob.job_id" class="has-text-white">ดูรายละเอียด</router-link>
               </button>
             </div>

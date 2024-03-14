@@ -50,10 +50,10 @@ const routes = [
 
   //applicant ผู้สมัคร
   {
-    path: '/MyJobsPage',
-    name: 'MyJobsPage',
+    path: '/myApproveJob',
+    name: 'myApproveJob',
     meta: { login: true },
-    component: () => import('../views/applicant/MyJobsPage.vue')
+    component: () => import('@/components/applicant/applicant-approvejob.vue')
   },
   {
     path: '/applicantProfile',
@@ -62,16 +62,10 @@ const routes = [
     component: () => import('../views/applicant/ApplicantProfilePage.vue')
   },
   {
-    path: '/applicantAccount',
-    name: 'applicantAccount',
-    meta: { login: true },
-    component: () => import('../views/applicant/ApplicantAccount.vue')
-  },
-  {
-    path: '/MyJobs',
-    name: 'MyJobs',
+    path: '/MyJobsPage',
+    name: 'MyJobsPage',
     meta: { login: true ,title:'งานที่สมัคร'},
-    component: () => import('@/components/applicant/applicant-application.vue')
+    component: () => import('../views/applicant/MyJobsPage.vue')
   },
   {
     path: '/MyFavoriteJobs',

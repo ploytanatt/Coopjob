@@ -50,10 +50,7 @@
                       </div>
                       </div>
                 </div>
-
           </div>
-      
-
                  <!-- ส่วนของการอัพโหลด -->
                    <div class="column is-7 mt-4 mr-3">
                     <div class="card">

@@ -5,9 +5,9 @@
         <section class="hero is-dark welcome is-small">
           <div class="hero-body">
             
-              <p class="is-size-2">รายชื่อผู้ที่มาสมัครงาน</p>
+              <p class="is-size-2">งานที่สมัคร</p>
               <p class="is-size-3">
-                จำนวนผู้สมัครทั้งหมด : {{ }} คน
+                จำนวนงานที่สมัครทั้งหมด : {{ }}
               </p>
 
             
@@ -17,9 +17,11 @@
           <div class="field-body filter_searchbox field is-grouped  is-grouped-right ">
               <div class="filter_search select is-small">
                 <select v-model="selectedStatus">
-                  <option value="approve">Approve</option>
-                  <option value="reject">Reject</option>
+                  <option value="">สถานะ</option>
                   <option value="pending">Pending</option>
+                  <option value="approve">Approve</option>
+                  <option value="Declined">Declined</option>
+                  <option value="canceled">canceled</option>
                 </select>
               </div>
               <div class="filter_search control has-icons-left">
@@ -39,11 +41,16 @@
               <th>#</th>
             <th class="">
               <button class="button is-small is-white" @click="sortApplications('job_title')">
+                <span class="has-text-grey">ชื่อบริษัท </span>&nbsp;
+                <i class="fa-solid fa-angles-up-down"></i>
+              </button>
+            </th>
+            <th class="">
+              <button class="button is-small is-white" @click="sortApplications('job_title')">
                 <span class="has-text-grey">ชื่องาน </span>&nbsp;
                 <i class="fa-solid fa-angles-up-down"></i>
               </button>
             </th>
-            <th>Company Name</th>
             <th>
               <button class="button is-small is-white" @click="sortApplications('job_type')">
                 <span class="has-text-grey">รูปแบบงาน </span>&nbsp;
@@ -75,36 +82,47 @@
 
           </thead>
           <tbody>
-            <tr v-for="application in filteredApplications" :key="application.application_id">
+            <tr v-for="(application, index) in computedFilteredApplications" :key="application.application_id">
+
               <td>{{ index + 1 }}</td>
               <td>
+                <router-link :to="'/company/' + application.user_id">
               <img :src="imagePath(application.profile_image)" alt="Company Logo"
-                style="max-width: 100px; max-height: 100px;">
-                {{ application.company_name }}
+                class="CompanyLogo">
+                
+                  <p>{{ application.company_name }}</p>
+              </router-link>
             </td>
-              <td class="pl-5 pt-5 pb-1">{{ application.job_title }}</td>
+              <td class="pl-5 pt-5 pb-1"><router-link :to="'/job/' + application.job_id" >{{ application.job_title }}</router-link></td>
               <td class="pl-5 pt-5 pb-1">{{ application.job_type }}</td>
               <td class="pl-5 pt-5 pb-1">{{ application.email }}</td>
-              <td class="pl-5 pt-5 pb-1">{{ application.firstName }} {{ application.lastName }}</td>
+
               <td class="pl-5 pt-5 pb-1">
                 <span :class="{
                 'tag': true, 
                 'is-warning': application.application_status === 'pending', 
                 'is-success': application.application_status === 'approve', 
-                'is-danger': application.application_status === 'declined' || application.application_status === 'canceled'
+                'is-danger': application.application_status === 'declined',
+                'is-info': application.application_status === 'canceled', 
               }">
               {{ application.application_status }}
               </span>
               </td>
               <td class="pl-6 pt-5 pb-1">{{ formatDate(application.applied_datetime) }}</td>
               <td class="pl-6 pt-5 pb-1">
-                <button class="button is-info"  @click="viewApplicationDetail(application.application_id)"><i class="fa-regular fa-pen-to-square"> ดูรายละเอียด</i></button>
+                <button class="button is-info">
+                <router-link :to="'/job/' + application.job_id" class="has-text-white">ดูรายละเอียดงาน</router-link>
+                </button>
+                <button class="button mx-4 mb-4 is-danger"
+                    @click="cancelApplication(application.application_id)">ยกเลิกการสมัคร</button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
+
+
     <div class="columns">
       <div class="column">
         <div class="is-flex is-align-items-center">
@@ -146,7 +164,7 @@
         </nav>
       </div>
     </div>
-      </div>
+  </div>
 
 
 </div>
@@ -163,18 +181,58 @@ export default {
     return {
       applications: [],
       currentFilter: 'all',
-      selectedStatus:''
+      selectedStatus:'',
+      itemsPerPage: 10,
+      currentPage: 1,
+      sortKey: 'job_title',
+      sortOrder: 'desc',
+
+      searchText:'',
     };
   },
   computed: {
-    filteredApplications() {
-      if (this.currentFilter === 'all') {
-        return this.applications
-      } else {
-        return this.applications.filter(app => app.application_status === this.currentFilter)
+    computedFilteredApplications() {
+      let filtered = this.applications;
+
+      // Filter by status
+      if (this.selectedStatus) {
+        filtered = filtered.filter(
+          application => application.application_status === this.selectedStatus
+        );
       }
+
+      // Filter by search text
+      if (this.searchText) {
+        filtered = filtered.filter(application =>
+          application.job_title.toLowerCase().includes(this.searchText.toLowerCase())
+        );
+      }
+
+      // Apply sorting
+      return filtered.sort((a, b) => {
+        let result = 0;
+        if (a[this.sortKey] < b[this.sortKey]) {
+          result = -1;
+        } else if (a[this.sortKey] > b[this.sortKey]) {
+          result = 1;
+        }
+        return this.sortOrder === 'asc' ? result : -result;
+      });
     },
-    // Add computed properties for counts of each status
+    // Other computed properties...
+    computedPaginatedApplications() {
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+      return this.computedFilteredApplications.slice(startIndex, endIndex);
+    },
+    totalPages() {
+      return Math.ceil(
+        this.computedFilteredApplications.length / this.itemsPerPage
+      );
+    },
+    totalApplicationsCount() {
+    return this.applications.length;
+  },
   },
   mounted() {
     this.getJobApplications();
@@ -210,9 +268,9 @@ export default {
           Authorization: `Bearer ${token}`,
         },
       };
-      const status = 'canceled'
+      const application_status = 'canceled'
       axios
-        .put(`http://localhost:3000/application/cancelJob/${applicationId}`, { status },
+        .put(`http://localhost:3000/application/cancelJob/${applicationId}`, { application_status },
 
           config
         )
@@ -228,10 +286,30 @@ export default {
     formatDate(date) {
       return new Date(date).toLocaleDateString()
     },
-
-  setFilter(filter) {
-      this.currentFilter = filter
+    setFilter(filter) {
+        this.currentFilter = filter
+    },
+    goToPage(page) {
+    this.currentPage = page;
+  },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    sortApplications(key) {
+    if (this.sortKey === key) {
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortKey = key;
+      this.sortOrder = 'asc';
     }
+  },
   
   },
   filters: {
@@ -243,4 +321,14 @@ export default {
   },
 };
 </script>
-<style scoped></style>
+<style scoped>
+.CompanyLogo{
+  width: 50px;
+  border: 1px solid rgb(240, 240, 240);
+  border-radius: 5px;
+  transition: width 0.3s ease-in-out;
+}
+.CompanyLogo:hover{
+  width: 80px;
+}
+</style>

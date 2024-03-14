@@ -1,92 +1,227 @@
 <template>
-    <div>
-        <div v-for="application in applications" :key="application.student_job_id">
-            <div class="card px-5 py-3" v-if="application.status === 'approve'">
-                <div class="pt-3" style="border-top: 0.5px solid gray">
-                    <div class="columns p-4">
-                        <div class="column">
-                            <img :src="imagePath(application.company.profile_image)" alt="Company Logo"
-                                style="max-width: 100px; max-height: 100px;">
+    <div class="columns">
+       <applicantSideMenu></applicantSideMenu>
+       <div class="columns">
+        <div v-for="application in applications" :key="application.application_id">
+            <div class="px-5 py-3 column" v-if="application.application_status === 'approve'">
+                <div class="column is-12">         
+                    <h3 class="title is-4">วันที่ : {{ formatDate(application.applied_datetime) }}</h3>
+                    <div class="box">
+                        <div class="media">
+                            <div class="media-left">
+                            <div class="">
+                                <figure class="image">
+                                    <router-link :to="'/company/' + application.user_id">
+                                        <img :src="imagePath(application.profile_image)" alt="Company Logo" class="CompanyLogo">
+                                    </router-link>
+                                </figure>
+                            </div>
+                            </div>
+                            <div class="media-content">
+                                <p class="is-size-5 has-text-weight-bold"> ชื่อบริษัท: <router-link :to="'/company/' + application.user_id">{{ application.company_name }}</router-link> </p>
+                                <p class="is-size-5 has-text-weight-bold"> ชื่องาน: <router-link :to="'/job/' + application.job_id" >{{ application.job_title }}</router-link></p>
+                            </div>
                         </div>
-                        <div class="column">
-                            <p class="is-size-5 has-text-weight-bold"> ชื่อบริษัท: {{ application.company.company_name }}
-                            </p>
-                            <p class="is-size-5 has-text-weight-bold"> ชื่องาน: {{ application.job.title }}</p>
+                        <div class="card mt-3 p-3 option">
+                            <div class="buttons">
+                                <button class="button is-danger" @click="showReportModal(application.job_id)">รายงาน</button>
+                                <button class="button is-primary"
+                                    @click="showBenefitModal(application.job_id)">
+                                    กรอกค่าแรงและสวัสดิการ
+                                </button>
+                                <button class="button is-light" @click="gotofilecoop(application.job_id)">ดูใบตอบรับ</button>
+                                <button class="button is-info" @click="openReviewModal(application.job_id)"><i class="fa-regular fa-star"></i>ให้คะแนน</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="columns p-4">
-                        <div class="column">
-                            <p class="is-size-5 has-text-weight-bold"> ตำแหน่ง: {{ application.job.job_position }} </p>
-                        </div>
-                        <div class="column">
-                            <p class="is-size-5 has-text-weight-bold"> สถานะ: {{ application.status }}</p>
-                        </div>
-                    </div>
-                    <div class="buttons mt-3">
-                        <button class="button is-danger" @click="showReportPopup(application.job.job_id)">
-                            รายงาน
-                        </button>
-                        <button class="button is-primary"
-                            @click="gotobenefit(application.company.company_name, application.job.job_id)">
-                            กรอกค่าแรงและสวัสดิการ
-                        </button>
-                        <button class="button is-light"
-                            @click="gotofilecoop(application.job.job_id)">
-                            ดูใบตอบรับ
-                        </button>
-                        <button class="button is-info" @click="showReviewPopup(application.job.job_id)">
-                            ให้คะแนน
-                        </button>
                     </div>
                 </div>
-                <!-- หน้าต่างแสดงให้เลือกคะแนนดาว -->
-                <div id="reviewPopup" v-if="selectedJobId !== null">
-                    <div class="reviewPopup-inner">
-                        <div class="reviewPopup-header">
-                            <h2>ให้คะแนน</h2>
-                            <button class="close-button" @click="closeReviewPopup">×</button>
-                        </div>
-                        <div class="stars">
-                            <!-- สร้างดาวให้เลือก -->
-                            <span v-for="n in 5" :key="n" @click="selectRating(n)"
-                                :class="{ yellow: n <= selectedRating }">★</span>
-                        </div>
-                        <h3>ความคิดเห็นเพิ่มเติม</h3>
-                        <div class="comment">
-                            <textarea name="" id="comment" cols="30" rows="10"></textarea>
-                        </div>
-                        <!-- ปุ่ม submit สำหรับส่งคะแนน -->
-                        <div class="reviewPopup-footer">
-                            <button id="submitReviewButton" @click="submitReview">Submit</button>
-                        </div>
-
-                    </div>
+                <div class="">             
+                </div> 
+        </div>
+            <!-- Report Modal -->
+            
+            <div class="modal" :class="{ 'is-active': isReportModalActive }">
+                <div class="modal-background" @click="closeReportModal">
                 </div>
-
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                    <p class="modal-card-title"></p>
+                    <button class="delete" aria-label="close"  @click="closeReportModal"></button>
+                    </header>
+                    <section class="modal-card-body">        
+                        <div class="field">
+                            <label class="label">Report Type:</label>
+                            <div class="control">
+                            <label class="radio"><input type="radio" value="job" v-model="reportOptions">Job</label>
+                            <label class="radio"><input type="radio" value="company" v-model="reportOptions">Company</label>
+                            <label class="radio"><input type="radio" value="mentor" v-model="reportOptions">Mentor</label>
+                            <label class="radio"><input type="radio" value="work" v-model="reportOptions">Work</label>
+                            <label class="radio"><input type="radio" value="other" v-model="reportOptions">Other</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Description:</label>
+                            <div class="control">
+                                <textarea class="textarea" placeholder="Description" v-model="reportDescription"></textarea>
+                            </div>
+                        </div>
+                    </section>
+                    <footer class="modal-card-foot">
+                        <button class="button is-success" @click="submitReport()" >Submit Report</button>
+                        <button class="button" @click="closeReportModal">Cancel</button>
+                    </footer>
+                </div>
             </div>
         </div>
+        
+        <!--Benefit Modal -->
+        <div class="modal" :class="{'is-active': showBenefitForm}">
+        <div class="modal-background" @click="showBenefitForm = false"></div>
+        <div class="modal-card  card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">แบบฟอร์มค่าแรงและสวัสดิการ</p>
+            <button class="delete" aria-label="close" @click="showBenefitForm = false"></button>
+          </header>
+          <section class="modal-card-body">
+            <!-- Form Fields -->
+            <div class="field">
+            <label class="label">ชื่อบริษัท</label>
+            <div class="control">
+                <input class="input" type="text" v-model="$v.company_name.$model" />
+            </div>
+            <p v-if="$v.company_name.$error" class="help is-danger">โปรดกรอกชื่อบริษัท</p>
+            </div>
+
+            <div class="field">
+            <label class="label">ตำแหน่ง</label>
+            <div class="control">
+                <input class="input" type="text" v-model="$v.job_position.$model" />
+            </div>
+            <p v-if="$v.job_position.$error" class="help is-danger">โปรดกรอกตำแหน่ง</p>
+            </div>
+
+            <div class="field">
+            <label class="label">คำอธิบาย</label>
+            <div class="control">
+                <textarea class="textarea" v-model="$v.description.$model"></textarea>
+            </div>
+            <p v-if="$v.description.$error" class="help is-danger">โปรดกรอกคำอธิบาย</p>
+            </div>
+
+            <div class="field">
+            <label class="label">ค่าตอบแทน</label>
+            <div class="control">
+                <div class="field has-addons">
+                <div class="control">
+                    <input class="input" type="number" v-model="$v.salary.$model" />
+                </div>
+                <div class="control">
+                    <a class="button is-static">บาท/วัน</a>
+                </div>
+                </div>
+            </div>
+            <p v-if="$v.salary.$error" class="help is-danger">โปรดกรอกค่าตอบแทน</p>
+            </div>
+
+            <div class="field">
+            <label class="label">สวัสดิการ</label>
+            <div class="control">
+                <input class="input" type="text" v-model="$v.benefit.$model" />
+            </div>
+            <p v-if="$v.benefit.$error" class="help is-danger">โปรดกรอกข้อมูลสวัสดิการ</p>
+            </div>
+          </section>
+          <footer class="modal-card-foot">
+            <button class="button is-primary" @click="submitBenefit">บันทึก</button>
+            <button class="button" @click="showBenefitForm = false">ยกเลิก</button>
+          </footer>
+        </div>
+        </div>
+
+        <!-- Review Modal -->
+        <div class="modal" :class="{'is-active': showReviewModal}">
+      <div class="modal-background" @click="showReviewModal = false"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">ให้คะแนน {{ }}</p>
+            <button class="delete" aria-label="close" @click="openReviewModal = false"></button>
+        </header>
+        
+      <section class="modal-card-body">
+        <p>ชื่องาน {{ job_title }}</p>
+        <div class="stars">
+          <i v-for="star in 5"
+             :key="star"
+             @click="rate(star)"
+             class="fa-duotone fa-star"
+             :class="{'is-rated': star <= reviewRating}"></i>
+        </div>
+          <div class="field">
+        
+            <div class="control my-3">
+              <textarea class="textarea" v-model="reviewComment" placeholder="เขียนคอมเม้นท์ที่นี่..."></textarea>
+            </div>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button is-success" @click="submitReview()">บันทึก</button>
+          <button class="button" @click="showReviewModal = false">ยกเลิก</button>
+        </footer>
+      </div>
+    </div>
+    </div>
+
     </div>
 </template>
 <script>
+import { required } from 'vuelidate/lib/validators';
 import axios from "axios";
 import Swal from "sweetalert2";
+import applicantSideMenu from "./applicant-side-menu.vue";
 export default {
+    components:{
+        applicantSideMenu,
+
+    },
     data() {
         return {
             applications: [],
             user: [],
-            selectedJobId: null, // เพิ่ม property ใหม่
+            job_title:'',
+            
+            selectedJobId: '', // เพิ่ม property ใหม่
             selectedRating: null, // เพิ่ม property เก็บคะแนนดาวที่เลือก
+
+            isReportModalActive: false,
+            reportType: 'job',
+            reportDescription: '',
+            reportOptions:'',
+
+            isBenefitReportActive: true,
+
+            showBenefitForm: false,
+            company_name: '',
+            job_position: '',
+            description: '',
+            salary: 0,
+            benefit: '',
+
+            showReviewModal: false,
+            selectedJob: {},
+            reviewRating: 0,
+            reviewComment: ''
         };
     },
     mounted() {
         this.getJobApplications();
         this.getUser();
+       
     },
     updated() {
         console.log(this.applications); // ล็อกแอปพลิเคชันเพื่อตรวจสอบโครงสร้าง
     },
     methods: {
+        
         imagePath(companyProfileImage) {
             if (companyProfileImage) {
                 return "http://localhost:3000" + companyProfileImage.replace(/\\/g, '/').replace('static', '');
@@ -102,9 +237,7 @@ export default {
                     job_id,
                 },
             });
-            this.closeAddJobModal();
         },
-
         gotofilecoop(job_id) {
             this.$router.push({
                 path: "/coopFile",
@@ -112,11 +245,7 @@ export default {
                     job_id,
                 },
             });
-            this.closeAddJobModal();
         },
-
-
-
         getJobApplications() {
             const token = localStorage.getItem("token");
             const config = {
@@ -128,12 +257,12 @@ export default {
                 .get("http://localhost:3000/application/getJobApplications", config)
                 .then((response) => {
                     this.applications = response.data;
+                    this.job_title = response.data.job_title
                 })
                 .catch((error) => {
                     console.error(error);
                 });
         },
-
         getUser() {
             const token = localStorage.getItem("token");
             const config = {
@@ -155,327 +284,102 @@ export default {
                     console.error(error);
                 });
         },
-
-
-        showReportPopup(jobId) {
-            this.selectedJobId = jobId;
-            (async () => {
-                const result = await Swal.fire({
-                    title: 'Report',
-                    html:
-                        '<div>' +
-                        '<label for="report-title">Title: </label>' +
-                        '<input type="hidden" id="report-title" class="swal2-input">' +
-                        '<label><input type="radio" name="report-option" value="job" checked> Job </label>' +
-                        '<label><input type="radio" name="report-option" value="company"> Company </label>' +
-                        '<label><input type="radio" name="report-option" value="mentor"> Mentor </label>' +
-                        '<label><input type="radio" name="report-option" value="work"> Work </label>' +
-                        '<label><input type="radio" name="report-option" value="other"> Other </label>' +
-                        '</div><br>' +
-                        '<label for="report-description">Description:</label><br>' +
-                        '<textarea id="report-description" class="swal2-input" placeholder="Description"></textarea>',
-                    showCancelButton: true,
-                    confirmButtonText: 'Submit Report',
-                    cancelButtonText: 'Cancel',
-                    showLoaderOnConfirm: true,
-                    preConfirm: async () => {
-                        const reportOption = document.querySelector('input[name="report-option"]:checked').value;
-                        const title = this.getReportTitle(reportOption);
-                        const description = document.getElementById('report-description').value;
-
-                        const token = localStorage.getItem('token');
-                        const config = {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                            },
-                        };
-
-                        const data = {
-                            job_id: this.selectedJobId,
-                            user_id: this.user.user_id,
-                            title,
-                            description,
-                        };
-
-                        try {
-                            const res = await axios.post('http://localhost:3000/application/sendReport', data, config);
-                            console.log(res.data.message);
-                            return { success: true };
-                        } catch (error) {
-                            console.error(error);
-                            return {
-                                success: false,
-                                errorMessage: 'Failed to submit report. Please try again later.',
-                            };
-                        }
-                    },
-                });
-
-                if (result.isConfirmed && result.value.success) {
-                    Swal.fire({
-                        title: 'Report submitted successfully',
-                        icon: 'success',
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Cancel',
-                        
-                    });
-                }
-            })();
+        showReportModal(jobId) {
+            this.selectedJobId = jobId
+            this.isReportModalActive = true;
         },
-
-
-
-
-
-        getReportTitle(option) {
-            // Define how you want to map the option to a title
-            // For example, you can have a mapping object or use a switch statement
-            switch (option) {
-                case 'job':
-                    return 'Job';
-                case 'company':
-                    return 'Company';
-                case 'mentor':
-                    return 'Mentor';
-                case 'work':
-                    return 'Work';
-                case 'other':
-                    return 'Other';
-                default:
-                    return 'Unknown';
-            }
+        closeReportModal() {
+            this.isReportModalActive = false;
         },
-
-
-        BenefitReportPopup(jobId) {
-            this.selectedJobId = jobId;
-            // เริ่มต้นด้วยตัวแปรที่ใช้เก็บข้อมูลค่าแรงและสวัสดิการ
-            let salaryAndBenefits = {
-                companyName: '',
-                position: '',
-                jobDetails: '',
-                salary: '',
-                benefits: ''
-            };
-
-            Swal.fire({
-                title: 'ค่าแรงและสวัสดิการที่ได้รับ',
-                html:
-                    '<div>' +
-                    '<div style="margin-bottom: 10px;">' +
-                    '<label for="company-name">ชื่อบริษัท:</label>' +
-                    '<input type="text" id="company-name" class="swal2-input" v-model="salaryAndBenefits.companyName">' +
-                    '</div>' +
-                    '<div style="margin-bottom: 10px;">' +
-                    '<label for="position">ตำแหน่ง:</label>' +
-                    '<input type="text" id="position" class="swal2-input" v-model="salaryAndBenefits.position">' +
-                    '</div>' +
-                    '<div style="margin-bottom: 10px;">' +
-                    '<label for="job-details">รายละเอียดงาน:</label>' +
-                    '<textarea id="job-details" class="swal2-input" v-model="salaryAndBenefits.jobDetails"></textarea>' +
-                    '</div>' +
-                    '<div style="margin-bottom: 10px;">' +
-                    '<label for="salary">ค่าแรงที่ได้รับ (ต่อวัน):</label>' +
-                    '<input type="text" id="salary" class="swal2-input" v-model="salaryAndBenefits.salary">' +
-                    '</div>' +
-                    '<div style="margin-bottom: 10px;">' +
-                    '<label for="benefits">สวัสดิการที่ได้รับ:</label>' +
-                    '<textarea id="benefits" class="swal2-input" v-model="salaryAndBenefits.benefits"></textarea>' +
-                    '</div>' +
-                    '</div>',
-                showCancelButton: true,
-                confirmButtonText: 'Submit Report',
-                cancelButtonText: 'Cancel',
-                showLoaderOnConfirm: true,
-                preConfirm: () => {
-                    const reportOption = document.querySelector('input[name="report-option"]:checked').value;
-                    const title = this.getReportTitle(reportOption);
-                    const description = document.getElementById('report-description').value;
-
-                    const token = localStorage.getItem('token');
-                    const config = {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    };
-
-                    const data = {
-                        job_id: this.selectedJobId,
-                        user_id: this.user.user_id,
-                        title,
-                        description,
-                        salaryAndBenefits: salaryAndBenefits, // ส่งข้อมูลค่าแรงและสวัสดิการไปที่ backend
-                    };
-
-                    // Send the report data to the backend
-                    return axios.post('http://localhost:3000/application/sendReport', data, config)
-                        .then((res) => {
-                            console.log(res.data.message);
-                            return {
-                                success: true,
-                            };
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                            return {
-                                success: false,
-                                errorMessage: 'Failed to submit report. Please try again later.',
-                            };
-                        });
-                },
-            }).then((result) => {
-                if (result.success) {
-                    Swal.fire({
-                        title: 'Report submitted successfully',
-                        icon: 'success',
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: result.errorMessage,
-                    });
-                }
-            });
+        showBenefitModal(jobId) {
+            this.selectedJobId = jobId
+            this.showBenefitForm = true;
         },
-
-
-        showReviewPopup(jobId) {
-            this.selectedJobId = jobId;
-
-            // Check review history before showing the popup
-            this.checkReviewHistory(jobId);
+        closeBenefitModal() {
+            this.showBenefitForm = false;
         },
-
-        checkReviewHistory(jobId) {
-            const token = localStorage.getItem('token');
+        submitBenefit() {
+            const token = localStorage.getItem("token");
             const config = {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
                 },
             };
+            this.$v.$touch();
+            if (!this.$v.$error) {
+                const data = {
+                company_name: this.company_name,
+                job_position: this.job_position,
+                description: this.description,
+                salary: this.salary,
+                benefit: this.benefit,
+                job_id: this.job_id, // รวม job_id ในข้อมูล
+                };
 
-            axios.get(`http://localhost:3000/application/checkReviewHistory?jobId=${jobId}`, config)
+
+                axios
+                .post("http://localhost:3000/application/addBenefitReport", data, config)
                 .then((res) => {
-                    const reviewHistory = res.data;
+                    const message = res.data.message;
+                    Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "กรอกข้อมูลค่าแรงเรียบร้อย",
+                    showConfirmButton: message,
+                    });
 
-                    if (reviewHistory.length > 0) {
-                        // If review history exists, populate the popup with rating and comment
-                        const { rating, comment } = reviewHistory[0];
-                        this.selectedRating = rating;
-                        document.getElementById('comment').value = comment;
+                    this.$router.push('/MyJobspage');
 
-                        // Disable the stars so they cannot be clicked
-                        const stars = document.querySelectorAll('.stars span');
-                        stars.forEach(star => {
-                            star.style.pointerEvents = 'none';
-                        });
-
-                        // Disable the textarea so it cannot be edited
-                        document.getElementById('comment').disabled = true;
-
-                        // Hide the submit button since the user has already reviewed this job
-                        document.getElementById('submitReviewButton').style.display = 'none';
-
-                        // Change the header text to display review history
-                        document.querySelector('.reviewPopup-header h2').innerText = 'ประวัติการรีวิว';
-                    } else {
-                        // Show the submit button if there is no review history
-                        document.getElementById('submitReviewButton').style.display = 'block';
-
-                        // Enable the stars for rating
-                        const stars = document.querySelectorAll('.stars span');
-                        stars.forEach(star => {
-                            star.style.pointerEvents = 'auto';
-                        });
-
-                        // Enable the textarea for comment
-                        document.getElementById('comment').disabled = false;
+                })
+                .catch((error) => {
+                    if (error.response) {
+                    console.log("response.data", error.response.data);
                     }
-
-                    // Show the review popup
-                    document.getElementById('reviewPopup').style.display = 'block';
-                })
-                .catch((error) => {
-                    console.error(error);
-                    // If error occurs, still show the review popup
-                    document.getElementById('reviewPopup').style.display = 'block';
                 });
-        },
-
-
-
-        closeReviewPopup() {
-            this.selectedJobId = null; // ล้างค่า selectedJobId เพื่อซ่อนป็อปอัพ
-            this.selectedRating = null; // ล้างค่า selectedRating
-        },
-        // ส่งคะแนนดาว
-        selectRating(rating) {
-            this.selectedRating = rating;
-        },
-        // ส่งคะแนนดาว
-        // ส่งคะแนนดาว
-        submitReview() {
-            // ตรวจสอบว่าคะแนนถูกเลือกหรือไม่
-            if (!this.selectedRating) {
-                // ถ้าไม่มีคะแนนที่ถูกเลือก
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Please select a rating',
-                    text: 'Please select a rating before submitting the review.',
-                });
-                return;
             }
-
-            // ถ้ามีคะแนนที่ถูกเลือก
-            const comment = document.getElementById('comment').value;
-
-            const token = localStorage.getItem('token');
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            };
-
-            const data = {
-                job_id: this.selectedJobId,
-                rating: this.selectedRating,
-                comment: comment,
-            };
-
-            // ส่งข้อมูลรีวิวไปยังฐานข้อมูล
-            axios.post('http://localhost:3000/application/sendReview', data, config)
-                .then((res) => {
-                    console.log(res.data.message);
-                    // แสดงแจ้งเตือนเมื่อสำเร็จ
-                    Swal.fire({
-                        title: 'Review submitted successfully',
-                        icon: 'success',
-                    });
-                    document.getElementById('reviewPopup').style.display = 'none';
-                })
-                .catch((error) => {
-                    console.error(error);
-                    // แสดงข้อผิดพลาดเมื่อไม่สำเร็จ
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to submit review. Please try again later.',
-                    });
-                    document.getElementById('reviewPopup').style.display = 'none';
-                });
+            },
+        formatDate(dateString) {
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        return date.toLocaleDateString('th-TH', options);
         },
-
-
-
-
-
-
-
+        rate(star) {
+        this.reviewRating = star;
+        },
+        openReviewModal(jobId) {
+            this.selectedJobId = jobId
+            this.showReviewModal = true;
+        },
+        closeReviewModal() {
+            this.showReviewModal = false;
+        },
+        submitReview() {
+        // ส่งข้อมูลรีวิวไปยังเซิร์ฟเวอร์ที่นี่
+        console.log({
+            job_id: this.selectedJob.job_id,
+            rating: this.reviewRating,
+            comment: this.reviewComment
+        });
+        this.showReviewModal = false;
+        }
     },
+    validations: {
+    company_name: {
+      required,
+    },
+    job_position: {
+      required,
+    },
+    description: {
+      required,
+    },
+    salary: {
+      required,
+    },
+    benefit: {
+      required,
+    },
+  },
 };
 </script>
 <style scoped>
@@ -484,102 +388,26 @@ export default {
     color: yellow;
 }
 
-/* CSS สำหรับหน้าต่างแสดงให้เลือกคะแนนดาว */
-#reviewPopup {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+
+.content figure{
+    margin-left: 0;
 }
 
-.reviewPopup-inner {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fefefe;
-    padding: 20px;
-    border: 1px solid #888;
-    border-radius: 5px;
-    width: 80%;
-    max-width: 500px;
+.option{
+    background-color: #dbdbdb;
+}
+.CompanyLogo{
+width: 50px;
+border: 1px solid rgb(240, 240, 240);
+border-radius: 5px;
+transition: width 0.3s ease-in-out;
 }
 
-.reviewPopup-header {
-    text-align: center;
-    margin-bottom: 20px;
+.fa-star:hover {
+  transform: scale(1.5);
 }
-
-.reviewPopup-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.close-button {
-    background: none;
-    border: none;
-    font-size: 1.5em;
-    cursor: pointer;
-    color: #888;
-}
-
-.close-button:hover {
-    color: #555;
-}
-
-
-.stars {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.stars span {
-    font-size: 24px;
-    cursor: pointer;
-    color: #ccc;
-    transition: color 0.3s;
-}
-
-.stars span.yellow {
-    color: gold;
-}
-
-.comment textarea {
-    width: 100%;
-    height: 100px;
-    resize: vertical;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    /* เพิ่ม border */
-}
-
-.reviewPopup-footer {
-    text-align: center;
-}
-
-.reviewPopup-footer button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.reviewPopup-footer button:hover {
-    background-color: #45a049;
-}
-
-@media screen and (max-width: 600px) {
-    .reviewPopup-inner {
-        width: 90%;
-    }
+.is-rated {
+  color: gold;
 }
 </style>
 

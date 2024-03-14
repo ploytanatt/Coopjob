@@ -20,9 +20,15 @@
                
                 <ul>
                   <li>
-                    <a :class="{ 'is-active':  menuActiveTab === 'MyJobs' }" @click="gotoApplicantJobs">
+                    <a :class="{ 'is-active':  menuActiveTab === 'MyJobsPage' }" @click="gotoApplicantJobs">
                       <i class="fa-light fa-clipboard-list"></i>
                       <span class="menu-text">งานที่สมัคร</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a :class="{ 'is-active':  menuActiveTab === 'myApproveJob' }" @click="gotoApplicantApprove">
+                      <i class="fa-regular fa-circle-check"></i>
+                      <span class="menu-text">งานที่สมัครแล้ว</span>
                     </a>
                   </li>
                   <li>
@@ -82,8 +88,13 @@ export default {
       }
     },
     gotoApplicantJobs() {
-      if (this.$route.path !== '/MyJobs') {
-        this.$router.push('/MyJobs');
+      if (this.$route.path !== '/MyJobsPage') {
+        this.$router.push('/MyJobsPage');
+      }
+    },
+    gotoApplicantApprove(){
+      if (this.$route.path !== '/myApproveJob') {
+        this.$router.push('/myApproveJob');
       }
     },
     gotoApplicantFavoriteJobs() {

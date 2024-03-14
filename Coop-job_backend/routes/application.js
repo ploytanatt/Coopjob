@@ -66,7 +66,7 @@ router.get('/getJobApplications', isLoggedIn, async (req, res) => {
         WHERE ja.student_id = ?
     `, [userId]);
 
-    console.log(results);
+    console.log("getJobApplications complete");
 
     res.json(results);
   } catch (error) {
@@ -272,7 +272,6 @@ router.post('/sendReport', isLoggedIn, async (req, res) => {
 
     pool.query(query, [user_id, job_id, title, description])
     res.json({ message: 'Report submitted successfully' });;
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
@@ -303,41 +302,25 @@ router.get('/getReports', isLoggedIn, async (req, res) => {
 });
 
 
-//benefitreport
-const benefitReportSchema = Joi.object({
-  company_name: Joi.string().required(),
-  job_position: Joi.string().required(),
-  description: Joi.string().required(),
-  salary: Joi.number().required().min(0),
-  benefit: Joi.string().required(),
-  job_id: Joi.string().required(), // สมมุติว่าเป็น string ในการอ้างอิงไอดีงาน
-});
-
-module.exports = benefitReportSchema;
 router.post("/addBenefitReport", isLoggedIn, async (req, res) => {
   try {
-    const { error, value } = benefitReportSchema.validate(req.body, { abortEarly: false });
-    if (error) {
-      return res.status(400).json({ message: error.details.map((detail) => detail.message) });
-    }
-
+  
     const {
-      company_name,
       job_position,
       description,
       salary,
       benefit,
-    } = value;
+    } = req.body;
 
     const user_id = req.user.user_id;
     const job_id = req.body.job_id; // สมมุติว่ามี property job_id ใน req.body
 
     const datePosted = new Date(); // เวลาปัจจุบัน
-
+    const benefit_status = 'complete'
     // เพิ่มข้อมูลลงในตาราง benefit_reports
     await pool.query(
-      'INSERT INTO benefit_reports (user_id, job_id, company_name, position, description, salary, benefit, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())',
-      [user_id, job_id, company_name, job_position, description, salary, benefit, datePosted]
+      'INSERT INTO benefit_reports (user_id, job_id,  position, description, salary, benefit, benefit_status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())',
+      [user_id, job_id, job_position, description, salary, benefit, benefit_status, datePosted]
     );
 
     res.status(200).json({ message: "Benefit report added successfully" });
@@ -347,23 +330,16 @@ router.post("/addBenefitReport", isLoggedIn, async (req, res) => {
   }
 });
 
-router.get('/checkBenefitHistory', isLoggedIn, async (req, res) => {
+router.get('getBenefitHistory', isLoggedIn, async (req, res) => {
   try {
-    const { jobId } = req.query;
-    const userId = req.user.user_id;
-
-    // Check if the user has filled out benefit information for this job
     const [benefitHistory] = await pool.query(
-      'SELECT * FROM benefit_reports WHERE job_id = ? AND user_id = ?',
-      [jobId, userId]
+      'SELECT * FROM benefit_reports',
+    
     );
 
-    // Check if benefitHistory exists
-    if (benefitHistory.length > 0) {
-      res.json({ benefitHistory });
-    } else {
-      res.json({ message: 'No benefit information found.' });
-    }
+      res.json({ benefitHistory })
+ 
+   
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });

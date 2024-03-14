@@ -172,7 +172,7 @@ export default {
       }
     },
     cancel() {
-      this.$router.push('/MyJobs');
+      this.$router.push('/myApproveJob');
     },
   },
   validations: {

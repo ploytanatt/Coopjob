@@ -42,7 +42,7 @@
               <router-link class="navbar-item " to="/applicantProfile" v-if="user.role === 'applicant' ">
                 <font-awesome-icon icon="exclamation" style="color: red" v-if="applicant.status === 'close'" />ประวัติส่วนตัว
               </router-link>
-              <router-link class="navbar-item " to="/MyJobs" v-if="user.role === 'applicant'">
+              <router-link class="navbar-item " to="/MyJobsPage" v-if="user.role === 'applicant'">
                 งานของฉัน
               </router-link>
               <router-link class="navbar-item " to="/applicantAccount" v-if="user.role === 'applicant'">
