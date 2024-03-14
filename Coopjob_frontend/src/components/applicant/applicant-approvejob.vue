@@ -156,6 +156,7 @@
              class="fa-duotone fa-star"
              :class="{'is-rated': star <= reviewRating}"></i>
         </div>
+        <p class="rating-text">{{ ratingText }}</p>
           <div class="field">
         
             <div class="control my-3">
@@ -220,6 +221,18 @@ export default {
     updated() {
         console.log(this.applications); // ล็อกแอปพลิเคชันเพื่อตรวจสอบโครงสร้าง
     },
+    computed: {
+    ratingText() {
+      switch(this.reviewRating) {
+        case 1: return 'แย่';
+        case 2: return 'พอใช้';
+        case 3: return 'ปานกลาง';
+        case 4: return 'ดี';
+        case 5: return 'ยอดเยี่ยม';
+        default: return ''; // หรือข้อความเริ่มต้นถ้าคุณต้องการ
+      }
+    }
+  },
     methods: {
         
         imagePath(companyProfileImage) {
@@ -408,6 +421,10 @@ transition: width 0.3s ease-in-out;
 }
 .is-rated {
   color: gold;
+}
+
+.rating-text{
+    color: rgba(255, 217, 0, 0.908);
 }
 </style>
 
