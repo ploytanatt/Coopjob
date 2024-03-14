@@ -53,32 +53,31 @@
           <div class="box rating">       
             <p class="rating-title"><span class=" is-3">คะแนนบริษัท</span></p>
             <article class="media">
-              <p class="">
-            <i class="fa fa-star title is-5" style="color:#ed6c63"></i>
-            <i class="fa fa-star title is-5" style="color:#ed6c63"></i>
-            <i class="fa fa-star title is-5" style="color:#ed6c63"></i>
-            <i class="fa fa-star title is-5"></i>
-            <i class="fa fa-star title is-5"></i>
+              {{ averageRating.toFixed(2) }} / 5
+            &nbsp;
+            <p>({{ companyReviews.length }} รีวิว)</p>
             &nbsp; &nbsp;
-            <strong>1 Reviews</strong>
-            &nbsp; &nbsp;
-            <a href="#">show all</a>
-          </p>
+  
           </article>
-            <article class="media">
+          <article class="media" v-for="review in companyReviews" :key="review.id">
             <figure class="media-left">
-              <p class="image is-64x64">
-                <img src="http://placehold.it/128x128">
-              </p>
+          
             </figure>
             <div class="media-content">
               <div class="content">
-                <p>
-                  <strong>Barbara Middleton</strong> <small> · 3 hrs</small>
-                  <br>
-                  Lorem ipsum dolor
-                  <br>
-                </p>
+                <div class="stars">
+                  <i v-for="star in 5" :key="star" class="fa fa-star"
+                    :class="{ 'is-rated': review.rating >= star }"></i>
+                </div>
+             
+                  <p>ชื่องาน: {{ review.job_title }}</p> 
+
+                  <p>{{ review.comment }}</p>
+                  
+                  
+                  <p>{{ formatDate(review.review_created_at) }}</p>
+                  
+              
               </div>
             </div>
           </article>
@@ -146,7 +145,8 @@
             <p><span class="title is-5">บริษัทที่คุณอาจสนใจ</span></p>
             <hr>
             <div class="columns">
-              <div class="column is-3 is-marginless">    
+              <div class="column ">   
+                <allCompany :company-id="currentID"></allCompany> 
               </div>  
             </div>
           </div>
@@ -158,17 +158,36 @@
 </template>
 <script>
 import axios from "axios";
+import allCompany from "@/components/all-company.vue";
 export default {
+  components:{
+    allCompany
+  },
+
   data() {
     return {
       company: [],
       jobs: [],
+      companyReviews:[],
+      getcompanyId:''
     };
   },
   mounted() {
     const companyId = this.$route.params.companyId;
+    this.getycompanyId = companyId;
     this.getCompanyDetails(companyId);
     this.getCompanyJobs(companyId);
+    this.getCompanyReviews(companyId);
+  },
+
+  computed: {
+    averageRating() {
+      if (this.companyReviews.length === 0) {
+        return 0;
+      }
+      const sum = this.companyReviews.reduce((acc, review) => acc + review.rating, 0);
+      return sum / this.companyReviews.length;
+    }
   },
   methods: {
     
@@ -179,6 +198,18 @@ export default {
           this.company = response.data;
           this.company.profile_image = response.data.profile_image.replace(/\\/g, '/').replace('static', '');
           this.company.cover_image = response.data.cover_image.replace(/\\/g, '/').replace('static', '');
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    getCompanyReviews(companyId) {
+      axios
+        .get(`http://localhost:3000/recruiter/getRecruiterReviews/${companyId}`)
+        .then((response) => {
+          this.companyReviews = response.data;
+    
         })
         .catch((error) => {
           console.error(error);
@@ -329,7 +360,11 @@ getCompanyJobs(companyId) {
 .job_content:hover {
   transform: scale(1.05);
 }
-.video_iframe {
+.stars .fa {
+  color: #ccc; /* Default star color */
+}
 
+.stars .fa.is-rated {
+  color: gold; /* Active star color (when rated) */
 }
 </style>

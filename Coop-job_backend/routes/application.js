@@ -347,53 +347,34 @@ router.get('getBenefitHistory', isLoggedIn, async (req, res) => {
 });
 
 
-/*ให้คะแนนบริษัท*/
-// Route for submitting a review
-router.post('/sendReview', isLoggedIn, async (req, res) => {
+/* ให้คะแนนบริษัท */
+router.post('/submitReview', isLoggedIn, async (req, res) => {
   try {
-    const { job_id, rating, comment } = req.body;
-    const student_id = req.user.user_id; // Assuming user_id is available in req.user
-
-    // Check if the user has already submitted a review for this job
-    const [existingReview] = await pool.query(
-      'SELECT * FROM reviews WHERE job_id = ? AND student_id = ?',
-      [job_id, student_id]
+    const { company_id, job_id, rating, comment } = req.body;
+    const student_id = req.user.user_id;
+    const review_status = "complete";
+   
+    //console.log(req.body)
+    await pool.query(
+      'INSERT INTO reviews (company_id, job_id, student_id, rating, comment, review_status, review_created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())',
+      [company_id, job_id, student_id, rating, comment, review_status]
     );
-
-    if (existingReview.length > 0) {
-      // If the user has already submitted a review for this job
-      return res.status(400).json({ error: 'You have already submitted a review for this job.' });
-    }
-
-    // Insert the review into the database
-    const [result] = await pool.query(
-      `INSERT INTO reviews (job_id, student_id, rating, comment, created_at, company_id) 
-       SELECT ?, ?, ?, ?, NOW(), j.user_id
-       FROM jobs AS j 
-       WHERE j.job_id = ?`,
-      [job_id, student_id, rating, comment, job_id]
-    );
-
-    res.json({ message: 'Review submitted successfully' });
+    res.status(201).json({ message: 'รีวิวถูกบันทึกเรียบร้อยแล้ว' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
+    console.error('เกิดข้อผิดพลาดในการบันทึกข้อมูล:', error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล' });
   }
 });
 
-
 // Route for checking review history for a job
-router.get('/checkReviewHistory', isLoggedIn, async (req, res) => {
+router.get('/reviewHistory', isLoggedIn, async (req, res) => {
   try {
-    const { jobId } = req.query;
-    const studentId = req.user.user_id; // Assuming user_id is available in req.user
-
-    // Check if the user has reviewed this job
+    //const { jobId } = req.query;
+    const studentId = req.user.user_id; 
     const [reviewHistory] = await pool.query(
-      'SELECT * FROM reviews WHERE job_id = ? AND student_id = ?',
-      [jobId, studentId]
+      'SELECT * FROM reviews WHERE student_id = ?',
+      [studentId]
     );
-
     res.json(reviewHistory);
   } catch (error) {
     console.error(error);
@@ -401,6 +382,25 @@ router.get('/checkReviewHistory', isLoggedIn, async (req, res) => {
   }
 });
 
+// นี่เป็นตัวอย่างโค้ดและคุณจำเป็นต้องปรับแต่งให้เข้ากับ logic และโครงสร้างของฐานข้อมูลของคุณ
+router.put('/editReview', isLoggedIn, async (req, res) => {
+  try {
+    const { review_id, rating, comment } = req.body; // ค่าเหล่านี้ควรถูกส่งมาจาก client
+    const student_id = req.user.user_id; // หรือคุณอาจมีวิธีอื่นในการรับ user id
+
+    console.log(req.body)
+    if (!review_id || rating == undefined || !comment) {
+      return res.status(400).json({ message: 'ข้อมูลไม่ครบถ้วน' });
+    }
+    const query = 'UPDATE reviews SET rating = ?, comment = ? WHERE review_id = ? AND student_id = ?';
+    await pool.query(query, [rating, comment, review_id, student_id]);
+
+    res.status(200).json({ message: 'รีวิวได้รับการอัปเดตเรียบร้อยแล้ว' });
+  } catch (error) {
+    console.error('เกิดข้อผิดพลาดในการแก้ไขรีวิว:', error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาดในการแก้ไขรีวิว' });
+  }
+});
 
 // Route เพื่อดึงข้อมูล applications จากฐานข้อมูล // เน้น coop302
 router.get('/getStudentJobs', isLoggedIn, async (req, res) => {

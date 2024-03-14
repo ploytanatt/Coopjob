@@ -30,8 +30,7 @@
                                     กรอกค่าแรงและสวัสดิการ
                                 </button>
                                 <button class="button is-light" @click="gotofilecoop(application.job_id)">ดูใบตอบรับ</button>
-                                <button class="button is-info"  v-if="!review_history" @click="openReviewModal(application.job_id, application.user_id)"><i class="fa-regular fa-star"></i>ให้คะแนน</button>
-                                <button class="button is-link is-light" v-if="review_history"> <router-link :to="'/review-history'" ><i class="fa-regular fa-star"></i> ดูรีวิว</router-link></button>
+                                <button class="button is-info" @click="openReviewModal(application.job_id)"><i class="fa-regular fa-star"></i>ให้คะแนน</button>
                             </div>
                         </div>
                     </div>
@@ -39,45 +38,37 @@
                 <div class="">             
                 </div> 
                         <!-- Review Modal -->
-                <div class="modal" :class="{'is-active': showReviewModal}">
-                    <div class="modal-background" @click="showReviewModal = false"></div>
-                    <div class="modal-card">
-                        <header class="modal-card-head">
-                            <p class="modal-card-title">ให้คะแนน {{ application.company_name }}</p>
-                            <button class="delete" aria-label="close" @click="showReviewModal = false"></button>
-
-                        </header>
-                        
-                    <section class="modal-card-body">
-                        <p>ชื่องาน {{ application.job_title }}</p>
-                        <div class="stars" >
-                            <i v-for="star in 5"
-                            :key="star"
-                            @click="rate(star)"
-                            class="fa fa-star"
-                            :class="{ 'is-rated': star <= reviewRating}"></i>
-                        </div>
-
-                        <p v-if="$v.reviewRating.$error" class="help is-danger">
-                        กรุณาเลือกคะแนน
-                    </p>
-
-                        <p class="rating-text">{{ ratingText }}</p>
-                        <div class="field">
-                        
-                            <div class="control my-3">
-                            <textarea class="textarea" v-model="$v.reviewComment.$model" placeholder="เขียนคอมเม้นท์ที่นี่..."></textarea>
-                            <p class="help is-danger" v-if="$v.reviewComment.$error">กรุณาเขียนคอมเม้น</p>
-                            </div>
-                        </div>
-                        </section>
-                        <footer class="modal-card-foot">
-                        <button class="button is-success" @click="submitReview">บันทึก</button>
-                        <button class="button" @click="showReviewModal = false">ยกเลิก</button>
-                        </footer>
-                    </div>
-                </div>
-
+        <div class="modal" :class="{'is-active': showReviewModal}">
+      <div class="modal-background" @click="showReviewModal = false"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">ให้คะแนน {{ application.company_name }}</p>
+            <button class="delete" aria-label="close" @click="openReviewModal = false"></button>
+        </header>
+        
+      <section class="modal-card-body">
+        <p>ชื่องาน {{ application.job_title }}</p>
+        <div class="stars">
+          <i v-for="star in 5"
+             :key="star"
+             @click="rate(star)"
+             class="fa-duotone fa-star"
+             :class="{'is-rated': star <= reviewRating}"></i>
+        </div>
+        <p class="rating-text">{{ ratingText }}</p>
+          <div class="field">
+        
+            <div class="control my-3">
+              <textarea class="textarea" v-model="reviewComment" placeholder="เขียนคอมเม้นท์ที่นี่..."></textarea>
+            </div>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button is-success" @click="submitReview()">บันทึก</button>
+          <button class="button" @click="showReviewModal = false">ยกเลิก</button>
+        </footer>
+      </div>
+        </div>
         </div>
             <!-- Report Modal -->
             
@@ -201,6 +192,7 @@ export default {
             job_title:'',
             
             selectedJobId: '', // เพิ่ม property ใหม่
+            selectedRating: null, // เพิ่ม property เก็บคะแนนดาวที่เลือก
 
             isReportModalActive: false,
             reportType: 'job',
@@ -218,15 +210,14 @@ export default {
 
             showReviewModal: false,
             selectedJob: {},
-            reviewRating: '',
-            reviewComment: '',
-            review_history:[]
+            reviewRating: 0,
+            reviewComment: ''
         };
     },
     mounted() {
         this.getJobApplications();
         this.getUser();
-        this.getReviewHistory();
+       
     },
     updated() {
         console.log(this.applications); // ล็อกแอปพลิเคชันเพื่อตรวจสอบโครงสร้าง
@@ -307,23 +298,6 @@ export default {
                     console.error(error);
                 });
         },
-        getReviewHistory(){
-            const token = localStorage.getItem("token");
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            };
-
-            axios.get("http://localhost:3000/application/reviewHistory", config)
-                .then((res) => {
-                    this.review_history = res.data[0];
-
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        },
         showReportModal(jobId) {
             this.selectedJobId = jobId
             this.isReportModalActive = true;
@@ -384,52 +358,24 @@ export default {
         return date.toLocaleDateString('th-TH', options);
         },
         rate(star) {
-            this.reviewRating = star;
-            console.log('star',star)
+        this.reviewRating = star;
         },
-        openReviewModal(jobId, companyId) {
+        openReviewModal(jobId) {
             this.selectedJobId = jobId
-            this.companyId = companyId
             this.showReviewModal = true;
         },
         closeReviewModal() {
             this.showReviewModal = false;
         },
         submitReview() {
-            const token = localStorage.getItem("token");
-            const config = {
-                headers: {
-                Authorization: `Bearer ${token}`,
-                },
-            };
-            console.log("this.selectedJobId", this.selectedJobId)
-            this.$v.$touch();
-                const data = {
-                    company_id: this.companyId,
-                    job_id: this.selectedJobId,
-                    rating: this.reviewRating,
-                    comment: this.reviewComment
-                };
-            axios
-            .post("http://localhost:3000/application/submitReview", data, config)
-            .then((res) =>{
-                const message = res.data.message;
-                Swal.fire({
-                    position: "center",
-                    icon: "success",
-                    title: "ให้คะแนนเรียบร้อย",
-                    showConfirmButton: message,
-                });
-                this.showReviewModal = false;
-            })    
-            .catch((error) =>{
-                if (error.response){
-                    console.error("Error submitting review: ", error);
-                    Swal.fire("โปรดกรอกข้อมูลให้ถูกต้อง", "", "error");
-                }
-                });
-            },
 
+        console.log({
+            job_id: this.selectedJobId,
+            rating: this.reviewRating,
+            comment: this.reviewComment
+        });
+        this.showReviewModal = false;
+        }
     },
     validations: {
     //benefit
@@ -456,7 +402,7 @@ export default {
     reviewRating:{
         required
     }
-}
+  },
 };
 </script>
 <style scoped>
@@ -483,13 +429,10 @@ transition: width 0.3s ease-in-out;
 .fa-star:hover {
   transform: scale(1.5);
 }
-.stars .fa {
-  color: #ccc; /* Default star color */
+.is-rated {
+  color: gold;
 }
 
-.stars .fa.is-rated {
-  color: gold; /* Active star color (when rated) */
-}
 .rating-text{
     color: rgba(255, 217, 0, 0.908);
 }

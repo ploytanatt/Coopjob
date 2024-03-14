@@ -44,6 +44,7 @@ router.get("/getRecruiter", async (req, res) => {
   }
 });
 
+
 const passwordValidator = (value, helpers) => {
     if (value.length < 8) {
       throw new Joi.ValidationError("Password must contain at least 8 characters");
@@ -365,6 +366,26 @@ router.get("/getJobDetails/:job_id", isLoggedIn, async (req, res) => {
   }
 });
 
+router.get('/getRecruiterReviews/:companyId', async (req, res) => {
+  const { companyId } = req.params;
+
+  try {
+      const reviewsQuery = `
+          SELECT r.*, c.user_id, j.job_title
+          FROM reviews AS r
+          JOIN companies AS c ON r.company_id = c.user_id
+          JOIN jobs AS j ON j.job_id = r.job_id
+          WHERE r.company_id = ?
+      `;
+
+      const [reviews] = await pool.query(reviewsQuery, [companyId]);
+      res.json(reviews);
+  } catch (error) {
+      console.error('Error getting recruiter reviews:', error);
+      res.status(500).json({ message: 'Error getting recruiter reviews' });
+  }
+});
+
 
 const updateJobStatusSchema = Joi.object({
   job_status: Joi.string().valid('open', 'close').required(),
@@ -449,26 +470,6 @@ router.put('/updateUploadJob/:jobId', isLoggedIn, upload.single('job_upload_file
   }
 });
 
-
-//router.put('/updateJob/:jobId', isLoggedIn, async (req, res) => {
-//  try {
-//    const { jobId } = req.params;
-//    console.log(req.body)
-//    
-//    const { job_type, project_name, job_title, description, job_position, position_type, quantity, gpa, salary, benefit, specification, internship_duration, job_upload_file, status } = req.body;
-//    const filePath  = req.body.job_upload_file;
-//await pool.query(
-//  'UPDATE jobs SET job_type = ?, project_name = ?, job_title = ?, description = ?, job_position = ?, position_type = ?, quantity = ?, gpa = ?, salary = ?, benefit = ?, specification = ?, internship_duration = ?, status = ?, job_upload_file WHERE job_id = ?',
-//  [job_type, project_name, job_title, description, job_position, position_type, quantity, gpa, salary, benefit, specification, internship_duration, status,filePath, jobId]
-//);
-//
-//    res.status(200).json({ message: 'Job updated successfully' });
-//    
-//  } catch (error) {
-//    console.error(error);
-//    res.status(500).json({ message: 'Internal server error' });
-//  }
-//});
 
 // change email
 router.post('/changeEmail', isLoggedIn, async (req, res) => {

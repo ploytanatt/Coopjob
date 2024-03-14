@@ -32,6 +32,12 @@
                     </a>
                   </li>
                   <li>
+                    <a :class="{ 'is-active':  menuActiveTab === 'review-history' }" @click="gotoApplicantReviewHistory">
+                      <i class="fa-regular fa-star"></i>
+                      <span class="menu-text">คะแนนของฉัน</span>
+                    </a>
+                  </li>
+                  <li>
                     <a :class="{ 'is-active':  menuActiveTab === 'MyFavoriteJobs' }" @click="gotoApplicantFavoriteJobs">
                       <i class="fa-regular fa-heart"></i>
                       <span class="menu-text">งานที่สนใจ</span>
@@ -97,6 +103,11 @@ export default {
         this.$router.push('/myApproveJob');
       }
     },
+    gotoApplicantReviewHistory() {
+      if (this.$route.path !== '/review-history') {
+        this.$router.push('/review-history');
+      }
+    },
     gotoApplicantFavoriteJobs() {
       if (this.$route.path !== '/MyFavoriteJobs') {
         this.$router.push('/MyFavoriteJobs');
@@ -117,6 +128,8 @@ export default {
     }
   }
 }
+
+
 </script>
 
 <style scoped>

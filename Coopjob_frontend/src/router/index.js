@@ -86,6 +86,13 @@ const routes = [
     component: () => import('../components/applicant/applicant-benefit.vue')
   },
   {
+    path: '/review-history',
+    name: 'review-history',
+    meta: { login: true },
+    component: () => import('../components/applicant/applicant-review-history.vue')
+  },
+  
+  { 
     path: '/coopFile',
     name: 'coopFile',
     meta: { login: true },

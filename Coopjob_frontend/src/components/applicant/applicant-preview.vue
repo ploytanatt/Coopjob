@@ -127,7 +127,6 @@ export default {
 </script>
 
 <style scoped>
-.card{}
 .job-card {
   background-color: #F8F8FD;
   border-radius: 6px;
