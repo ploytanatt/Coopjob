@@ -18,7 +18,7 @@
 --
 -- Table structure for table `access_tokens`
 --
-
+USE itjs;
 DROP TABLE IF EXISTS `access_tokens`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -29,8 +29,18 @@ CREATE TABLE `access_tokens` (
   PRIMARY KEY (`token_id`),
   KEY `token_user_id_idx` (`user_id`),
   CONSTRAINT `token_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `access_tokens`
+--
+
+LOCK TABLES `access_tokens` WRITE;
+/*!40000 ALTER TABLE `access_tokens` DISABLE KEYS */;
+INSERT INTO `access_tokens` VALUES (58,62,'mo7rR12cXUUWvJ$jhTiEShsHn8$!q^dPZKUdjH56rh2&0$rl&0yq7j1!If0aBGurE$sLpQFtk0a13v6Y3M$B^a49!HBK@7jb-D=Y'),(61,63,'3rAmxOtubMuFh2d7UXG18FkmmhoSjSDB&w*J*47b/yWMTUgxCmnwGAhos@vcizL8Xk1JYL=AzQZY8BkNmb&Oadhyq=kpHmyN*BvJ');
+/*!40000 ALTER TABLE `access_tokens` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `admin`
@@ -45,34 +55,18 @@ CREATE TABLE `admin` (
   `first_name` varchar(45) DEFAULT NULL,
   `last_name` varchar(45) DEFAULT NULL,
   `role` enum('admin') DEFAULT NULL,
-  `email` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`admin_id`),
-  UNIQUE KEY `admin_id_UNIQUE` (`admin_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`admin_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `applications`
+-- Dumping data for table `admin`
 --
 
-DROP TABLE IF EXISTS `applications`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `applications` (
-  `application_id` int NOT NULL AUTO_INCREMENT,
-  `job_id` int DEFAULT NULL,
-  `student_id` int DEFAULT NULL,
-  `application_status` enum('pending','approve','declined','canceled') DEFAULT 'pending',
-  `coop302` varchar(255) DEFAULT NULL COMMENT 'เก็บที่อยู่ไฟล์ coop 302',
-  `applied_datetime` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`application_id`),
-  KEY `app_job_id_idx` (`job_id`),
-  KEY `app_user_id_idx` (`student_id`),
-  CONSTRAINT `app_job_id` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`job_id`),
-  CONSTRAINT `app_student_id` FOREIGN KEY (`student_id`) REFERENCES `students` (`user_id`),
-  CONSTRAINT `app_user_id` FOREIGN KEY (`student_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+LOCK TABLES `admin` WRITE;
+/*!40000 ALTER TABLE `admin` DISABLE KEYS */;
+/*!40000 ALTER TABLE `admin` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `benefit_reports`
@@ -88,12 +82,18 @@ CREATE TABLE `benefit_reports` (
   `benefit` varchar(45) DEFAULT NULL,
   `salary` int DEFAULT NULL,
   `created_at` varchar(45) DEFAULT NULL,
-  `position` varchar(225) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `benefit_status` enum('pending','complete') DEFAULT 'pending',
   PRIMARY KEY (`benefit_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `benefit_reports`
+--
+
+LOCK TABLES `benefit_reports` WRITE;
+/*!40000 ALTER TABLE `benefit_reports` DISABLE KEYS */;
+/*!40000 ALTER TABLE `benefit_reports` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `companies`
@@ -116,18 +116,27 @@ CREATE TABLE `companies` (
   `business_type` varchar(255) DEFAULT NULL COMMENT 'ประเภทธุรกิจ',
   `company_phone_number` varchar(25) DEFAULT NULL COMMENT 'เบอร์โทรศัพท์บริษัท',
   `website` varchar(255) DEFAULT NULL COMMENT 'เว็บไซต์ของบริษัท',
-  `address` varchar(255) DEFAULT NULL COMMENT 'บ้านเลขที่ / ซอย',
-  `location` varchar(255) DEFAULT '[{"province":""},{"amphure":""},{"tambon":""},{"zip_code":""}]' COMMENT 'สถานที่ตั้งบริษัท จังหวัด, อำเภอ, ตำบล, หรือ รหัสไปรษณีย์',
+  `location` varchar(255) DEFAULT NULL COMMENT 'สถานที่ตั้งบริษัท',
   `description` varchar(255) DEFAULT NULL COMMENT 'เกี่ยวกับเรา\\nเกี่ยวกับบริษัทและการดำเนินกิจการ',
   `expedition` varchar(255) DEFAULT NULL COMMENT 'การเดินทางมาบริษัท',
-  `company_video` longtext COMMENT 'วิดีโอแนะนำบริษัท',
-  `status` enum('close','open') DEFAULT 'open',
+  `company_video` varchar(500) DEFAULT NULL COMMENT 'วิดีโอแนะนำบริษัท',
+  `status` enum('close','open') DEFAULT 'close',
   `role` varchar(45) DEFAULT 'recruiter',
   PRIMARY KEY (`company_id`),
   UNIQUE KEY `user_id_UNIQUE` (`user_id`),
   CONSTRAINT `recruiter_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `companies`
+--
+
+LOCK TABLES `companies` WRITE;
+/*!40000 ALTER TABLE `companies` DISABLE KEYS */;
+INSERT INTO `companies` VALUES (13,62,'Company5@gmail.com','jiminjeong','09999999999','jiminjeong@gmail.com','hr','/static/uploads/cd8f-attachment_57810318-e1539290902964.avif','/static/uploads/dd23-1600w-A3NKTylTNBQ.webp','GEORGE VINCENT','[{\"title\":\"สายการบิน\"},{\"title\":\"องค์กรการกุศล\"},{\"title\":\"หห\"}]','08787877','www.google.com','2 ถ.บางมด 1303-2','Based in Bangkok, we pride ourselves in providing comprehensive yet bespoke solutions to service cross-border eCommerce brands.','bts ','<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/QyhwSYhX09s?si=16A9HXfOqaWpDzvg\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" allowfullscreen></iframe>','open','recruiter');
+/*!40000 ALTER TABLE `companies` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `favorite_jobs`
@@ -145,30 +154,18 @@ CREATE TABLE `favorite_jobs` (
   KEY `fav_job_id_idx` (`job_id`),
   CONSTRAINT `fav_job_id` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`job_id`),
   CONSTRAINT `fav_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `interesting_applicant`
+-- Dumping data for table `favorite_jobs`
 --
 
-DROP TABLE IF EXISTS `interesting_applicant`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `interesting_applicant` (
-  `interesting_id` varchar(45) NOT NULL,
-  `student_id` int DEFAULT NULL,
-  `company_id` int DEFAULT NULL,
-  `job_id` int DEFAULT NULL,
-  PRIMARY KEY (`interesting_id`),
-  KEY `interesting_student_id_idx` (`student_id`),
-  KEY `interesting_company_id_idx` (`company_id`),
-  KEY `interesting_job_id_idx` (`job_id`),
-  CONSTRAINT `interesting_company_id` FOREIGN KEY (`company_id`) REFERENCES `users` (`user_id`),
-  CONSTRAINT `interesting_job_id` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`job_id`),
-  CONSTRAINT `interesting_student_id` FOREIGN KEY (`student_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+LOCK TABLES `favorite_jobs` WRITE;
+/*!40000 ALTER TABLE `favorite_jobs` DISABLE KEYS */;
+INSERT INTO `favorite_jobs` VALUES (1,63,32);
+/*!40000 ALTER TABLE `favorite_jobs` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `jobs`
@@ -193,14 +190,24 @@ CREATE TABLE `jobs` (
   `specification` varchar(255) DEFAULT NULL COMMENT 'คุณสมบัติผู้สมัคร\n',
   `internship_duration` int DEFAULT NULL COMMENT 'ระยะเวลาฝึกงาน',
   `date_posted` date DEFAULT NULL COMMENT 'วันที่โพสประกาศ',
-  `job_status` enum('close','open') DEFAULT 'close' COMMENT 'สถานะของโพส เปิด/ปิด',
+  `status` enum('close','open') DEFAULT 'close' COMMENT 'สถานะของโพส เปิด/ปิด',
   `create_type` enum('upload','form') DEFAULT NULL COMMENT 'ประเภทที่สร้างประกาศงาน อัพโหลด/กรอกฟอร์ม',
   `job_upload_file` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`job_id`),
   KEY `job_recruiter_id_idx` (`user_id`),
   CONSTRAINT `job_recruiter_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `jobs`
+--
+
+LOCK TABLES `jobs` WRITE;
+/*!40000 ALTER TABLE `jobs` DISABLE KEYS */;
+INSERT INTO `jobs` VALUES (32,62,'sfdsf','internship','sdfsdf','sfsfsdf','3','[{\"title\":\"นักพัฒนาแอปพลิเคชันมือถือ (Mobile App Developer)\"}]',33,'3',33,'3sfsdf','sdfsdf',3,'2024-01-10','open',NULL,NULL),(33,62,'asdasdas','internship','dasdasda','sdasdasa','22','[{\"title\":\"asdas\"},{\"title\":\"นักพัฒนาเว็บ (Web Developer)\"}]',3,'2',4,'2','asdasdas',222,'2024-01-10','open',NULL,NULL),(34,62,'หปฟห','internship','ปฟหป','ฟหปฟห','ปฟหปฟห','[{\"title\":\"asdaas\"},{\"title\":\"นักพัฒนาเว็บ (Web Developer)\"}]',3,'2',4,'asd','sda',1,'2024-01-10','open',NULL,NULL),(36,62,NULL,NULL,'dgdfg','dfgdfdfg',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2024-01-10','open','upload','9c94-209456.jpg');
+/*!40000 ALTER TABLE `jobs` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `report_company`
@@ -212,40 +219,55 @@ DROP TABLE IF EXISTS `report_company`;
 CREATE TABLE `report_company` (
   `report_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL,
+  `job_id` int DEFAULT NULL,
   `title` enum('job','company','mentor','work','other') DEFAULT NULL,
   `description` varchar(45) DEFAULT NULL,
   `created_at` varchar(45) DEFAULT NULL,
-  `status` enum('pending','banned','rejected') DEFAULT 'pending',
-  `job_id` int DEFAULT NULL,
+  `status` enum('pending','banned','rejected') DEFAULT NULL,
   PRIMARY KEY (`report_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `reviews`
+-- Dumping data for table `report_company`
 --
 
-DROP TABLE IF EXISTS `reviews`;
+LOCK TABLES `report_company` WRITE;
+/*!40000 ALTER TABLE `report_company` DISABLE KEYS */;
+/*!40000 ALTER TABLE `report_company` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `student_jobs`
+--
+
+DROP TABLE IF EXISTS `student_jobs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `reviews` (
-  `review_id` int NOT NULL AUTO_INCREMENT,
-  `student_id` int DEFAULT NULL,
+CREATE TABLE `student_jobs` (
+  `student_job_id` int NOT NULL AUTO_INCREMENT,
   `job_id` int DEFAULT NULL,
-  `company_id` int DEFAULT NULL,
-  `rating` int DEFAULT NULL,
-  `comment` varchar(255) DEFAULT NULL,
-  `review_created_at` datetime DEFAULT NULL,
-  `review_status` enum('complete','pending') DEFAULT NULL,
-  PRIMARY KEY (`review_id`),
-  KEY `review_student_id_idx` (`student_id`),
-  KEY `review_job_id_idx` (`job_id`),
-  KEY `review_company_id_idx` (`company_id`),
-  CONSTRAINT `review_company_id` FOREIGN KEY (`company_id`) REFERENCES `companies` (`user_id`),
-  CONSTRAINT `review_job_id` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`job_id`),
-  CONSTRAINT `review_student_id` FOREIGN KEY (`student_id`) REFERENCES `students` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `student_id` int DEFAULT NULL,
+  `status` enum('pending','approve','reject','canceled') DEFAULT 'pending',
+  `datetime` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`student_job_id`),
+  KEY `app_job_id_idx` (`job_id`),
+  KEY `app_user_id_idx` (`student_id`),
+  CONSTRAINT `app_job_id` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`job_id`),
+  CONSTRAINT `app_student_id` FOREIGN KEY (`student_id`) REFERENCES `students` (`user_id`),
+  CONSTRAINT `app_user_id` FOREIGN KEY (`student_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `student_jobs`
+--
+
+LOCK TABLES `student_jobs` WRITE;
+/*!40000 ALTER TABLE `student_jobs` DISABLE KEYS */;
+INSERT INTO `student_jobs` VALUES (67,32,63,'canceled',NULL),(68,32,63,'approve',NULL);
+/*!40000 ALTER TABLE `student_jobs` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `students`
@@ -257,7 +279,6 @@ DROP TABLE IF EXISTS `students`;
 CREATE TABLE `students` (
   `students_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL,
-  `studentID` varchar(45) DEFAULT NULL,
   `firstName` varchar(255) DEFAULT NULL,
   `lastName` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
@@ -268,14 +289,23 @@ CREATE TABLE `students` (
   `resume` varchar(255) DEFAULT NULL,
   `transcript` varchar(255) DEFAULT NULL,
   `portfolio` varchar(255) DEFAULT NULL,
-  `coop.302` varchar(255) DEFAULT NULL,
-  `student_status` enum('close','open') DEFAULT 'close',
+  `status` enum('close','open') DEFAULT 'close',
   `role` varchar(255) DEFAULT 'applicant',
   PRIMARY KEY (`students_id`),
   UNIQUE KEY `user_id_UNIQUE` (`user_id`),
   CONSTRAINT `applicant_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `students`
+--
+
+LOCK TABLES `students` WRITE;
+/*!40000 ALTER TABLE `students` DISABLE KEYS */;
+INSERT INTO `students` VALUES (35,63,NULL,NULL,'Ploythanat1@gmail.com',NULL,NULL,NULL,NULL,'static\\resume\\f7ea-resume4.pdf',NULL,NULL,'close','applicant');
+/*!40000 ALTER TABLE `students` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `users`
@@ -288,11 +318,21 @@ CREATE TABLE `users` (
   `user_id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` enum('applicant','recruiter','admin') DEFAULT NULL,
+  `role` enum('applicant','recruiter') DEFAULT NULL,
   `status` enum('close','open') DEFAULT 'close',
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (62,'Company5@gmail.com','$2b$10$Rw8UTyxUDEO0TikJYJrPtOEuIh1meI5mHqkYIUjBpfid9Y3FGiALy','recruiter','open'),(63,'Ploythanat1@gmail.com','$2b$10$XusJmdqk2k4ZjxxAsBsLvOonyxLRaet9zVpSYP6vlKycuOkls4k0G','applicant','close');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -303,4 +343,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-15  7:26:26
+-- Dump completed on 2024-01-10  7:51:51
