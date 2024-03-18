@@ -55,7 +55,7 @@
           <div class="control">
         <div class="field has-addons">
           <div class="control">
-            <input class="input" type="number" v-model="$v.quantity.$model" />
+            <input class="input" type="text" v-model="$v.quantity.$model" />
           </div>
           <div class="control">
             <a class="button is-static">
@@ -86,7 +86,7 @@
           <div class="control">
             <div class="field has-addons">
               <div class="control">
-                <input class="input" type="number" v-model="$v.salary.$model" />
+                <input class="input" type="text" v-model="$v.salary.$model" />
               </div>
               <div class="control">
                 <a class="button is-static">
@@ -121,7 +121,7 @@
     <div class="field">
       <label class="label">ระยะเวลาฝึกงาน (เดือน)</label>
       <div class="control">
-        <input class="input" type="number" v-model="$v.internship_duration.$model" />
+        <input class="input" type="text" v-model="$v.internship_duration.$model" />
       </div>
       <p v-if="$v.internship_duration.$error" class="help is-danger">โปรดกรอกระยะเวลา</p>
     </div>

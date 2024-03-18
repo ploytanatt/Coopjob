@@ -53,7 +53,7 @@
           <div class="control">
         <div class="field has-addons">
           <div class="control">
-            <input class="input" type="number" v-model="jobs.quantity" />
+            <input class="input" type="text" v-model="jobs.quantity" />
           </div>
           <div class="control">
             <a class="button is-static">
@@ -85,7 +85,7 @@
           <div class="control">
             <div class="field has-addons">
               <div class="control">
-                <input class="input" type="number" v-model="jobs.salary" />
+                <input class="input" type="text" v-model="jobs.salary" />
               </div>
               <div class="control">
                 <a class="button is-static">
@@ -119,7 +119,7 @@
     <div class="field">
       <label class="label">ระยะเวลาฝึกงาน (เดือน)</label>
       <div class="control">
-        <input class="input" type="number" v-model="jobs.internship_duration" />
+        <input class="input" type="text" v-model="jobs.internship_duration" />
       </div>
       
     </div>
@@ -129,7 +129,7 @@
       <label class="label">สถานะ</label>
       <div class="control">
         <div class="select">
-          <select v-model="jobs.status">
+          <select v-model="jobs.job_status">
             <option value="open">เปิดรับสมัคร</option>
             <option value="close">ปิดรับสมัคร</option>
           </select>

@@ -1,64 +1,93 @@
 <template>
-  <div class="w3-light-grey">
-    
-      <div class="card">
-        <button class="button is-dark go-back-button"  @click="goback">
+   <div class="columns is-centered">
+  <div class="column is-3  mt-4">
+
+        <button class="button is-dark go-back-button m-3"  @click="goback">
       <i class="fa-solid fa-left-long"></i> 
     </button>
-        <div class="columns" v-for="application in applications" :key="application.student_job_id">
-          <div class="column is-2 job_position mt-6">
-            <div class="columns is-multiline  ml-6 mt-1">
-              <p class="column is-12">ตำแน่งงาน:{{ jobName }} {{  getApplicationByJob(application.job_id) }}</p>
-            </div>
-            
-          </div>
+    
+  <div class="job-card card" v-for="application in applications" :key="application.student_job_id">
 
-          <div class="columns is-2 ml-6 mt-6"  >
-        <button class="button is-primary" @click="showModal = true"  :disabled="application.application_status === 'approve'" >Accept</button>
-      </div>
-          
+                <div class="job-card-header" >
+                  <span class="job-date">Applied Jobs</span>
+                  <small>{{ formatDate(application.applied_datetime) }}</small>
+                </div>
+                <hr>
+                <div class="job-card-body">
+                  <p class="card-header-title">ตำแน่งงาน: {{ jobName }} {{  getApplicationByJob(application.job_id) }}</p>
+                </div>
+                <header class="card">
+                  <div class="card-header-icon is-pull-right">
+                    <button class="button is-primary" @click="showModal = true" :disabled="application.application_status === 'approve'">Accept</button>
+                    <button class="button is-danger ml-3" @click="declineApplicant(applicationUserId)">Decline</button>
+                  </div>
+                </header>
+              </div>
+              
+              <div class="job-card card">
+                <div class="job-card-body">
+                  <div class="column">
+                <div class="field">
+                <label class="label">Personal Info</label>
+                <div class="columns is-multiline  mt-1">
+                  <p class="column is-6">ชื่อ-นามสกุล: {{ applicationJob.firstName }} {{ applicationJob.lastName }}</p>
+                  
+                  <p class="column is-6">เพศ: {{ applicationJob.gender }}</p>
+
+                  <p class="column is-6">วัน-เดือน-ปี เกิด: {{  applicationJob.birthdate  }}</p>
+                  <p class="column is-6">ที่อยู่:  {{applicationJob.address}}</p>
+                
+                </div>
+              </div>
+                <div class="field">
+                <label class="label">Contact</label>
+                <div class="control">
+                  <p class="">  <i class="fa-regular fa-envelope mr-1"></i> Email</p>
+                  <P class="ml-5"> {{ applicationJob.email }}</P>
+                </div>
+              </div>
+              <div class="field">
+        
+                <div class="control">
+                  <p class=""><i class="fa-regular fa-mobile mr-2"></i> Phone</p>
+                  <P class="ml-5"> {{ applicationJob.phone_number }}</P>
+                </div>
+              </div>
+              </div>
+              </div>
         </div>
-      
-          <div class=" applicant_info">
-            <div class="columns is-multiline ml-6 mt-1">
-              <p class="column is-12">ชื่อ-นามสกุล: {{ applicationJob.firstName }} {{ applicationJob.lastName }}</p>
-              <p class="column is-12">เพศ: {{ applicationJob.gender }}</p>
-              <p class="column is-12">วัน-เดือน-ปี เกิด: {{  applicationJob.birthdate  }}</p>
-              <p class="column is-12">ที่อยู่: {{applicationJob.address}}</p>
-              <p class="column is-12">เบอร์โทร: {{ applicationJob.phone_number }}</p>
-              <p class="column is-12">อีเมล: {{ applicationJob.email }}</p>
-            </div>
-          </div>
+        
+      </div>
+      <!-- ส่วนของการอัพโหลด -->
+      <div class="column is-7 mt-4 mr-3">
+                    <div class="card">
+                        <div class="content ">
+                            <div class="tabs  is-boxed  mb-0 ">
+                              <ul class="mt-0 pl-2 pr-2">
+                                <li :class="[select_option === 'resume' ? 'is-active' : '']" @click="select_option = 'resume'">
+                                  <a><span>Resume</span></a>
+                                </li>
+                                <li :class="[select_option === 'transcript' ? 'is-active' : '']" @click="select_option = 'transcript'">
+                                  <a><span>Transcript</span></a>
+                                </li>
+                                <li :class="[select_option === 'portfolio' ? 'is-active' : '']" @click="select_option = 'portfolio'">
+                                  <a><span>Portfolio</span>
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                            <div class="p-2 mt-4">
+                              <iframe :src="imagePath(applicationJob.resume)" type="application/pdf" class="pdf" v-if="select_option === 'resume'" />
+                              <iframe :src="imagePath(applicationJob.transcript)" type="application/pdf" class="pdf" v-if="select_option === 'transcript'" />
+                              <iframe :src="imagePath(applicationJob.portfolio)" type="application/pdf" class="pdf" v-if="select_option === 'portfolio'" />
+                                     
+                                </div>
+                        </div>
+                      </div>
+      </div>
 
- 
-       
-        <div class="tabs is-centered is-boxed">
-      <ul>
-        <li :class="[select_option === 'resume' ? 'is-active' : '']" @click="select_option = 'resume'">
-          <a>
-            <span>Resume</span>
-          </a>
-        </li>
-        <li :class="[select_option === 'transcript' ? 'is-active' : '']" @click="select_option = 'transcript'">
-          <a>
-            <span>Transcript</span>
-          </a>
-        </li>
-        <li :class="[select_option === 'portfolio' ? 'is-active' : '']" @click="select_option = 'portfolio'">
-          <a>
-            <span>Portfolio</span>
-          </a>
-        </li>
-      </ul>
-      
-    </div>
-    <div class="preview-pdf">
-      <iframe :src="imagePath(applicationJob.resume)" type="application/pdf" class="pdf" v-if="select_option === 'resume'" />
-      <iframe :src="imagePath(applicationJob.transript)" type="application/pdf" class="pdf" v-if="select_option === 'transcript'" />
-      <iframe :src="imagePath(applicationJob.portfolio)" type="application/pdf" class="pdf" v-if="select_option === 'portfolio'" />
-    </div>
-        <!-- Modal Content -->
-        <div class="modal" :class="{ 'is-active': showModal }">
+      <!-- Modal Content -->
+      <div class="modal" :class="{ 'is-active': showModal }">
           <div class="modal-background"></div>
           <div class="modal-card">
             
@@ -115,11 +144,9 @@
               <button class="button" @click="showModal = false">Cancel</button>
             </footer>
           </div>
-          
-        </div>
-      </div>
-      
-    </div>
+          </div>
+  </div>
+  
 </template>
 
 <script>
@@ -226,61 +253,88 @@ export default {
           return "https://bulma.io/images/placeholders/640x360.png";
       }
     },
-    acceptApplicant(applicationJob, file) {
-        const token = localStorage.getItem("token");
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        };
-        const filess = this.$refs.fileInput.files[0];
-        const formData = new FormData();
-        formData.append('coopfile', filess); 
-        formData.append('application_status', 'approve'); 
-        if (!file) {
-          this.errors = ["Please select a file to upload."];
-          return;
+    acceptApplicant(applicationJob) {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      };
+      const formData = new FormData();
+      const file = this.$refs.fileInput.files[0];
+      if (!file) {
+        Swal.fire({
+          title: "Error",
+          text: "Please select a file to upload.",
+          icon: "error",
+        });
+        return;
+      }
+      formData.append('coopfile', file); 
+      formData.append('application_status', 'approve'); 
+
+      axios.put(
+        `http://localhost:3000/application/acceptApplicant/${applicationJob}`,
+        formData,
+        config
+      )
+      .then((res) => {
+        Swal.fire({
+          title: "Success",
+          text: res.data.message,
+          icon: "success",
+        });
+        this.showModal = false;
+        this.getApplication(this.applicationUserId);
+      })
+      .catch((error) => {
+        let errorMessage = "There was an error processing your request.";
+        if (error.response && error.response.data && error.response.data.error) {
+          errorMessage = error.response.data.error;
         }
-        axios.put(
-          `http://localhost:3000/application/updateStatus/${applicationJob}`,
-          formData,
+        Swal.fire({
+          title: "Error",
+          text: errorMessage,
+          icon: "error",
+        });
+      });
+    },
+
+      declineApplicant(applicationJob) {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const application_status = "declined";
+      axios
+        .put(
+          `http://localhost:3000/application/declineApplicant/${applicationJob}`,
+          { application_status },
           config
         )
         .then((res) => {
           Swal.fire({
-        title: res.data.message,
-        icon: "success",
-      })
-      this.showModal = false;
-      this.getApplication(this.applicationUserId);
+          title: "Declined",
+          text: res.data.message,
+          icon: "success",
+        });
+          this.getApplication(this.applicationUserId);
         })
         .catch((error) => {
-          Swal.fire(error);
+        let errorMessage = "There was an error processing your request.";
+        if (error.response && error.response.data && error.response.data.error) {
+          errorMessage = error.response.data.error;
+        }
+        Swal.fire({
+          title: "Error",
+          text: errorMessage,
+          icon: "error",
         });
+      });
     },
-   //   declineApplicant(applicationJob) {
-   //   const token = localStorage.getItem("token");
-   //   const config = {
-   //     headers: {
-   //       Authorization: `Bearer ${token}`,
-   //     },
-   //   };
-   //   const status = "reject";
-   //   axios
-   //     .put(
-   //       `http://localhost:3000/application/updateStatus/${applicationJob}`,
-   //       { status },
-   //       config
-   //     )
-   //     .then((res) => {
-   //       Swal.fire(res.data.message, "", "success");
-   //       this.getApplications(); // โหลดข้อมูลใหม่หลังจากปฏิเสธ
-   //     })
-   //     .catch((error) => {
-   //       console.error(error);
-   //     });
-   // },
 
     downloadFile(url) {
       fetch(url)
@@ -298,6 +352,19 @@ export default {
     handleFileUpload(event) {
       this.file = event.target.files[0]; // เซ็ตค่าของ file เมื่อมีการเปลี่ยนแปลงไฟล์
     }, 
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      };
+      return date.toLocaleDateString('en-EN', options);
+    },
     goback(){
       this.$router.push("/applicantList");
     },
@@ -307,31 +374,70 @@ export default {
 </script>
 <style scoped>
 
-.job_position{
-  background-color: #e6e6e6;
-  width: 40%;
-  margin-bottom: 2rem;
-  border-radius: 7px;
-  box-shadow: 1px 1px 1px 1px #00000019;
+
+.job-card {
+  background-color: #F8F8FD;
+  border-radius: 6px;
+  padding: 16px;
+  box-shadow: 0 2px 4px #0000002d;
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-bottom: 16px; 
+  width: 380px; 
 }
 
-.applicant_info{
-  background-color: #efefef;
-  width: 100%;
-  margin-bottom: 2rem;
-  border-radius: 7px;
-  box-shadow: 1px 1px 1px 1px #00000019;
+.job-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px; /* Adjust as needed */
 }
 
+.job-title {
+  font-weight: bold;
+  color: #333; /* Adjust as needed */
+}
+
+.job-date {
+  color: #666; /* Adjust as needed */
+  font-size: 0.875rem;
+}
+
+.job-card-body p {
+  margin: 0;
+  color: #333; /* Adjust as needed */
+}
+
+.job-role {
+  font-size: 1.125rem;
+  font-weight: bold;
+  margin-bottom: 4px; /* Adjust as needed */
+}
+
+.job-details {
+  font-size: 0.875rem;
+  color: #666; /* Adjust as needed */
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background-color: #ddd; /* Adjust as needed */
+  margin-bottom: 8px; /* Adjust as needed */
+}
 .preview-pdf {
-width: 100%;
-height: 1000px;
-display: flex;
-  justify-content: center; /* จัดให้อยู่ตรงกลางแนวนอน */
-background-color: #c9c9c9;
+  width: 100%; 
+  display: flex;
+  justify-content: center; 
+  background-color: #424242;
 }
 
-.pdf{
-  width: 60%;
+.pdf {
+  width:100%; 
+  height: 1080px;
+}
+
+.content ul{
+  margin-left: 0;
 }
 </style>

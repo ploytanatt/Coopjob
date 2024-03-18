@@ -22,31 +22,40 @@ const upload = multer({
   }),
 });
 
-//สมัครงาน
+// สมัครงาน
 router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
   try {
     const { job_id, user_id } = req.body;
 
-    // ตรวจสอบว่า user_id นี้เคยสมัคร job_id นี้แล้วหรือไม่ (รวมถึงสถานะ 'cancelled' ถ้าเกิดว่า ยกเลิกแล้วให้สมัครใหม่ได้)
+    // ตรวจสอบว่า user_id นี้มีการอนุมัติงานอื่นอยู่แล้วหรือไม่
+    const [alreadyApproveApplication] = await pool.query(
+      'SELECT * FROM applications WHERE student_id = ? AND application_status = "approve"',
+      [user_id]
+    );
+
+    if (alreadyApproveApplication.length > 0) {
+      // ถ้ามีงานที่ได้รับการอนุมัติแล้ว
+      return res.status(400).json({ error: 'คุณมีงานที่ได้รับการอนุมัติแล้ว ไม่สามารถสมัครเพิ่มได้' });
+    }
+
+    // ตรวจสอบว่า user_id นี้เคยสมัคร job_id นี้แล้วหรือไม่ (รวมถึงสถานะ 'cancelled' ถ้าเกิดว่ายกเลิกแล้วให้สมัครใหม่ได้)
     const [existingApplication] = await pool.query(
       'SELECT * FROM applications WHERE job_id = ? AND student_id = ? AND application_status != "canceled"',
       [job_id, user_id]
     );
 
-    console.log(existingApplication);
-
     if (existingApplication.length > 0) {
       // ถ้ามีการสมัครซ้ำแล้วหรือถูกยกเลิก
-      return res.status(400).json({ error: 'You have already applied for this job.' });
+      return res.status(400).json({ error: 'คุณได้สมัครงานนี้แล้ว' });
     }
 
     // ถ้ายังไม่มีการสมัคร
     const [result] = await pool.query(
-      'INSERT INTO applications (job_id, student_id, application_status, applied_datetime) VALUES (?, ?, ?, now())',
-      [job_id, user_id, 'pending']
+      'INSERT INTO applications (job_id, student_id, application_status, applied_datetime) VALUES (?, ?, "pending", NOW())',
+      [job_id, user_id]
     );
 
-    res.json({ message: 'Application submitted successfully' });
+    res.json({ message: 'Application submitted successfully', applicationId: result.insertId });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
@@ -122,8 +131,6 @@ router.get('/getApplicationByJob/:jobId', isLoggedIn, async (req, res) => {
   }
 });
 
-
-
 // Get job applications for all recruiter
 router.get('/getApplications', isLoggedIn, async (req, res) => {
   const recruiterId = req.user.user_id;
@@ -142,16 +149,52 @@ router.get('/getApplications', isLoggedIn, async (req, res) => {
   }
 });
 
-
 //ตอบรับการสมัครงาน, อัพโหลดไฟล์ coop
-router.put('/updateStatus/:applicationId', isLoggedIn, upload.single('coopfile'), async (req, res) => {
+router.put('/acceptApplicant/:applicationId', isLoggedIn, upload.single('coopfile'), async (req, res) => {
   const applicationId = req.params.applicationId;
   const { application_status } = req.body;
   const filePath = req.file.path;
+
   try {
+    // ตรวจสอบว่าผู้สมัครมีการอนุมัติสำหรับงานอื่นหรือไม่
+    const [applicantDetails] = await pool.query('SELECT student_id FROM applications WHERE application_id = ?', [applicationId]);
+    const studentId = applicantDetails[0].student_id;
+
+    const [approvedApplications] = await pool.query(
+      'SELECT * FROM applications WHERE student_id = ? AND application_status = "approve"',
+      [studentId]
+    );
+
+    if (approvedApplications.length > 0) {
+      return res.status(400).json({ error: 'ผู้สมัครนี้มีงานที่อนุมัติแล้ว ไม่สามารถอนุมัติเพิ่มได้' });
+    }
+
+    // ตรวจสอบก่อนว่ามีการอนุมัติสำหรับผู้สมัครนี้แล้วหรือไม่
+    const [existingApplication] = await pool.query(
+      'SELECT * FROM applications WHERE application_id = ? AND application_status = "approve"',
+      [applicationId]
+    );
+
+    if (existingApplication.length > 0) {
+      return res.status(400).json({ error: 'ผู้สมัครนี้ได้รับการอนุมัติสำหรับงานนี้แล้ว' });
+    }
+
+    // ถ้ายังไม่ได้รับการอนุมัติ ดำเนินการอัพเดท
     await pool.query('UPDATE applications SET application_status = ?, coop302 = ? WHERE application_id = ?', [application_status, filePath, applicationId]);
-    res.json({ message: 'อัพโหลดไฟล์สำเร็จ' });
-    console.log("update job apllication successfuly")
+    res.json({ message: 'อัพโหลดไฟล์สำเร็จ และสถานะการสมัครได้รับการอัพเดท' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.put('/declineApplicant/:applicationId', isLoggedIn, async (req, res) => {
+  const applicationId = req.params.applicationId;
+  const { application_status } = req.body;
+  try {
+    await pool.query('UPDATE applications SET application_status = ? WHERE application_id = ?', [application_status, applicationId]);
+    res.json({ message: 'สถานะการสมัครได้รับการอัพเดท' });
+    //console.log("สถานะการสมัครได้รับการอัพเดท")
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
@@ -178,18 +221,7 @@ router.post('/sendFavoriteJob/:jobId', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
 
   try {
-    // ตรวจสอบว่าผู้ใช้ได้กดถูกใจงานนี้ไปแล้วหรือไม่
-    const [existingFavorite] = await pool.query(
-      'SELECT * FROM favorite_jobs WHERE job_id = ? AND user_id = ?',
-      [jobId, userId]
-    );
-
-    if (existingFavorite.length > 0) {
-      // ถ้าได้กดถูกใจไปแล้ว
-      return res.status(400).json({ error: 'You have already liked this job.' });
-    }
-
-    // ถ้ายังไม่ได้กดถูกใจ
+  
     await pool.query(
       'INSERT INTO favorite_jobs (user_id, job_id) VALUES (?, ?)',
       [userId, jobId]
@@ -202,33 +234,42 @@ router.post('/sendFavoriteJob/:jobId', isLoggedIn, async (req, res) => {
   }
 });
 
-
-
+//ทุกงานที่ถูกใจ
 router.get('/getFavoriteJobs', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   try {
     const [results] = await pool.query(`
-      SELECT fj.*, j.job_title as job_title, c.company_name
+      SELECT fj.*, j.job_title as job_title, c.company_name, c.profile_image, c.cover_image
       FROM favorite_jobs fj
       INNER JOIN jobs j ON fj.job_id = j.job_id
       LEFT JOIN companies c ON j.user_id = c.user_id
       WHERE fj.user_id = ?
     `, [userId]);
-    const FavoriteJobs = results.map((row) => {
-      return {
-        favorite_job_id: row.favorite_job_id,
-        job_id: row.job_id,
-        job_title: row.job_title,
-        company_name: row.company_name, 
-      };
-    });
-    res.json(FavoriteJobs);
+
+    res.json(results);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
+//เชคสถานะถูกใจของแต่ละงาน
+router.get('/checkJobLiked/:jobId', isLoggedIn, async(req, res) => {
+  try {
+    const jobId = req.params.jobId;
+    const userId = req.user.user_id;
+    const [result] = await pool.query('SELECT * FROM favorite_jobs WHERE job_id = ? AND user_id = ?', [jobId, userId]);
+
+    if (result.length > 0) {
+      res.json({ isLiked: true });
+    } else {
+      res.json({ isLiked: false });
+    }
+  } catch (error) {
+    console.error('Error checking job like status:', error);
+    res.status(500).json({ message: 'Error checking job like status' });
+  }
+});
 
 
 // ยกเลิกการถูกใจงาน
@@ -237,17 +278,7 @@ router.delete('/cancelFavoriteJob/:jobId', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
 
   try {
-    // ตรวจสอบว่าผู้ใช้ได้กดถูกใจงานนี้ไปแล้วหรือไม่
-    const [existingFavorite] = await pool.query(
-      'SELECT * FROM favorite_jobs WHERE job_id = ? AND user_id = ?',
-      [jobId, userId]
-    );
-
-    if (existingFavorite.length === 0) {
-      // ถ้ายังไม่ได้กดถูกใจ
-      return res.status(400).json({ error: 'You have not liked this job.' });
-    }
-
+  
     // ถ้าได้กดถูกใจไปแล้ว
     await pool.query(
       'DELETE FROM favorite_jobs WHERE user_id = ? AND job_id = ?',
@@ -262,62 +293,69 @@ router.delete('/cancelFavoriteJob/:jobId', isLoggedIn, async (req, res) => {
 });
 
 //รีพอร์ตงาน
-router.post('/sendReport', isLoggedIn, async (req, res) => {
-  console.log('Received a POST request to /application/sendReport', req.body);
+router.post('/submitReport', isLoggedIn, async (req, res) => {
+  
   try {
-    const { job_id, user_id, title, description } = req.body;
+    const user_id = req.user.user_id;
+    const { job_id, report_title, report_description } = req.body;
+    const report_status = "pending";
 
-    // Save the report details to the database or perform any necessary actions ใส่ now()เพื่อให้เอาวันที่ปัจจุบันมา
-    const query = `INSERT INTO report_company (user_id, job_id, title, description, created_at) VALUES (?, ?, ?, ?, NOW())`;
-
-    pool.query(query, [user_id, job_id, title, description])
+    console.log('Received a POST request to /application/sendReport', req.body);
+    await pool.query('INSERT INTO report_company (user_id, job_id, report_title, report_description, report_status, report_created_at) VALUES (?, ?, ?, ?, ?,  NOW())', 
+    [user_id, job_id, report_title, report_description, report_status])
     res.json({ message: 'Report submitted successfully' });;
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ message: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล'});
   }
 });
 
-router.get('/getReports', isLoggedIn, async (req, res) => {
+router.get('/getReportHistory', isLoggedIn, async (req, res) => {
   const userId = req.user.user_id;
   try {
-    const [results] = await pool.query(`
-      SELECT report_id, title, description, created_at
-      FROM report_company
-      WHERE user_id = ?
-    `, [userId]);
-    const reports = results.map((row) => {
-      return {
-        report_id: row.report_id,
-        title: row.title,
-        description: row.description,
-        created_at: row.created_at,
-      };
-    });
-    res.json(reports);
+    
+    const [results] = await pool.query('SELECT *  FROM report_company WHERE user_id = ?', [userId]);
+    res.json(results);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
+router.get('/getBenefitHistory', isLoggedIn, async (req, res) => {
+  const userId = req.user.user_id;
+  try {
+    const [results] = await pool.query(`
+    SELECT br.*, c.company_name, c.profile_image
+    FROM benefit_reports br
+    JOIN jobs j ON br.job_id = j.job_id
+    JOIN companies c ON j.user_id = c.user_id
+    WHERE br.user_id = ?
+  `, [userId]);
+
+  res.json(results);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 router.post("/addBenefitReport", isLoggedIn, async (req, res) => {
   try {
-  
     const {
       job_position,
       description,
       salary,
       benefit,
+      job_id
     } = req.body;
 
     const user_id = req.user.user_id;
-    const job_id = req.body.job_id; // สมมุติว่ามี property job_id ใน req.body
 
     const datePosted = new Date(); // เวลาปัจจุบัน
     const benefit_status = 'complete'
-    // เพิ่มข้อมูลลงในตาราง benefit_reports
+
     await pool.query(
       'INSERT INTO benefit_reports (user_id, job_id,  position, description, salary, benefit, benefit_status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())',
       [user_id, job_id, job_position, description, salary, benefit, benefit_status, datePosted]
@@ -330,24 +368,30 @@ router.post("/addBenefitReport", isLoggedIn, async (req, res) => {
   }
 });
 
-router.get('getBenefitHistory', isLoggedIn, async (req, res) => {
-  try {
-    const [benefitHistory] = await pool.query(
-      'SELECT * FROM benefit_reports',
-    
-    );
 
-      res.json({ benefitHistory })
- 
-   
+
+// อัพเดตข้อมูล benefit
+router.put('/updateBenefit', isLoggedIn, async (req, res) => {
+  const { benefit_id} = req.body;
+  const { company_name, job_position, description, salary, benefit } = req.body;
+
+  try {
+    const sql = `
+      UPDATE benefit_reports
+      SET company_name = ?, position = ?, description = ?, salary = ?, benefit = ?
+      WHERE benefit_id = ?
+    `;
+    const values = [company_name, job_position, description, salary, benefit, benefit_id];
+
+    await pool.query(sql, values);
+    res.json({ message: 'ข้อมูลได้รับการอัพเดตเรียบร้อยแล้ว' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-
-/* ให้คะแนนบริษัท */
+// ให้คะแนนบริษัท
 router.post('/submitReview', isLoggedIn, async (req, res) => {
   try {
     const { company_id, job_id, rating, comment } = req.body;
@@ -366,10 +410,8 @@ router.post('/submitReview', isLoggedIn, async (req, res) => {
   }
 });
 
-// Route for checking review history for a job
 router.get('/reviewHistory', isLoggedIn, async (req, res) => {
   try {
-    //const { jobId } = req.query;
     const studentId = req.user.user_id; 
     const [reviewHistory] = await pool.query(
       'SELECT * FROM reviews WHERE student_id = ?',

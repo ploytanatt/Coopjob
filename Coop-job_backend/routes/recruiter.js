@@ -549,12 +549,10 @@ router.get('/getRecruiterDetails/:companyId', async (req, res) => {
 router.get('/getCompanyJobs/:companyId', async (req, res) => {
   const companyId = req.params.companyId;
   try {
-    const [results] = await pool.query('SELECT * FROM jobs WHERE user_id = ?', [companyId]);
-    if (results.length > 0) {
-      res.json(results);
-    } else {
-      res.status(404).json({ message: 'No jobs found for this company' });
-    }
+    const [results] = await pool.query(`
+    SELECT * FROM Jobs WHERE user_id = ?
+`, [companyId]);
+    res.json(results);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
@@ -565,10 +563,16 @@ router.get('/getCompanyJobs/:companyId', async (req, res) => {
 router.get('/getJobDetail/:jobId', async (req, res) => {
   try {
     const jobId = req.params.jobId;
-    const [results] = await pool.query('SELECT * FROM jobs WHERE job_id = ?', [jobId]);
-    // Assuming the results contain a single job object
-    const job = results[0];
-    res.json(job);
+    const [results] = await pool.query(`
+        SELECT j.*, c.company_name, c.profile_image
+        FROM jobs j
+        JOIN companies c ON j.user_id = c.user_id
+        WHERE j.job_id = ?
+    `, [jobId]);
+
+    console.log("getJobApplications complete");
+
+    res.json(results);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });

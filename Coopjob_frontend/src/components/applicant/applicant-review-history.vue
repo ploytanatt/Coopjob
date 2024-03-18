@@ -2,7 +2,17 @@
   <div>
     <div class="columns">
       <applicantSideMenu></applicantSideMenu>
-      <div class="column">
+      
+      <div class="column is-10 mt-4">
+        <section class="hero is-dark welcome is-small">
+        <div class="hero-body">
+          
+            <p class="is-size-2">รีวิวของฉัน</p>
+            <p class="is-size-3">
+           
+            </p>       
+        </div>
+      </section>
         <div v-for="data in mergedData" :key="data.application_id">
           <div class="job-card card mt-4">
             <div class="job-card-header">
@@ -251,7 +261,7 @@ export default {
   border-radius: 6px;
   padding: 16px;
   box-shadow: 0 2px 4px #0000002d;
-  margin-left: 16px;
+  
   margin-right: 16px;
   margin-bottom: 16px; 
   width: 380px; 
@@ -319,4 +329,3 @@ transition: width 0.3s ease-in-out;
     color: rgba(255, 217, 0, 0.908);
 }
 </style>
-  

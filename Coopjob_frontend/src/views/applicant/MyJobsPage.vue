@@ -7,7 +7,7 @@
           
             <p class="is-size-2">งานที่สมัคร</p>
             <p class="is-size-3">
-              จำนวนงานที่สมัครทั้งหมด : {{ }}
+              จำนวนงานที่สมัครทั้งหมด: {{ applications.length }} รายการ
             </p>       
         </div>
       </section>
@@ -215,6 +215,7 @@ computed: {
       return this.sortOrder === 'asc' ? result : -result;
     });
   },
+  
   // Other computed properties...
   computedPaginatedApplications() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;

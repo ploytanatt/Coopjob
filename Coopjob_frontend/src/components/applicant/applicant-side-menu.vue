@@ -28,7 +28,7 @@
                   <li>
                     <a :class="{ 'is-active':  menuActiveTab === 'myApproveJob' }" @click="gotoApplicantApprove">
                       <i class="fa-regular fa-circle-check"></i>
-                      <span class="menu-text">งานที่สมัครแล้ว</span>
+                      <span class="menu-text">งานที่อนุมัติแล้ว</span>
                     </a>
                   </li>
                   <li>
@@ -44,9 +44,15 @@
                     </a>
                   </li>
                   <li>
+                    <a :class="{ 'is-active':  menuActiveTab === 'benefitReport' }" @click="gotoApplicantBenefitReport">
+                      <i class="fa-solid fa-file-invoice-dollar"></i>
+                      <span class="menu-text">แบบฟอร์มค่าแรง</span>
+                    </a>
+                  </li>
+                  <li>
                     <a :class="{ 'is-active':  menuActiveTab === 'report-history' }" @click="gotoRecruiterReportHistory">
                       <i class="fa-regular fa-circle-exclamation"></i>
-                      <span class="menu-text">การรายงาน</span>
+                      <span class="menu-text">ประวัติการรายงาน</span>
                     </a>
                   </li>
                 </ul>
@@ -113,6 +119,11 @@ export default {
         this.$router.push('/MyFavoriteJobs');
       }
     },
+    gotoApplicantBenefitReport() {
+      if (this.$route.path !== '/benefitReport') {
+        this.$router.push('/benefitReport');
+      }
+    },
     gotoRecruiterReportHistory() {
       if (this.$route.path !== '/report-history') {
         this.$router.push('/report-history');
@@ -139,7 +150,7 @@ export default {
 }
 .menu{
 padding: 1rem;
-  background-color: #698a8d;
+  background-color: #363740;
   width: 250px;
   height: 100vh;
 }

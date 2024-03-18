@@ -1,41 +1,42 @@
 <template>
-
   <div class="columns">
     <applicantSideMenu></applicantSideMenu>
-    <div class="">
-      <div v-for="likedJob in likedJobs" :key="likedJob.job_id">
-      <div class="card px-5 py-3">
-        <div class="pt-3" style="border-top: 0.5px solid gray">
-          <div class="columns p-4">
-            <div class="column">
-              <p class="is-size-5 has-text-weight-bold"> บริษัท: {{ likedJob.company_name }} </p>
+    <div class="column is-10 mt-4">
+      <section class="hero is-dark welcome is-small">
+        <div class="hero-body">
+          <p class="is-size-2">งานที่สนใจ</p>
+          <p class="is-size-3">
+            จำนวนงานที่คุณสนใจทั้งหมด: {{ likedJobs.length }} งาน
+          </p>       
+        </div>
+      </section>
+      <div class="job-list columns  mt-2">
+        <div v-for="likedJob in likedJobs" :key="likedJob.job_id" class="column is-2">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image CompanyLogo">
+                <img :src="imagePath(likedJob.profile_image)" alt="Company Logo">
+              </figure>
             </div>
-            <!--
-            <div class="column">
-              <p class="is-size-5 has-text-weight-bold"> ID: {{ likedJob.job_id }} </p>
-            </div>-->
-            <div class="column">
-              <p class="is-size-5 has-text-weight-bold"> ชื่องาน: {{ likedJob.job_title }} </p>
+            <div class="card-content">
+              <p class="title is-4">{{ likedJob.job_title }}</p>
+              <p class="subtitle is-6">{{ likedJob.company_name }}</p>
             </div>
-            <div class="column">
-              <!-- เพิ่มปุ่มดูรายละเอียด -->
-              <button class="button is-info">
-                <router-link :to="'/job/' + likedJob.job_id" class="has-text-white">ดูรายละเอียด</router-link>
-              </button>
-            </div>
+            <footer class="card-footer">
+              <router-link :to="'/job/' + likedJob.job_id" class="card-footer-item">ดูรายละเอียด</router-link>
+              <a class="card-footer-item" @click="unfavThisJob(likedJob.job_id)">ลบ</a>
+            </footer>
           </div>
         </div>
       </div>
     </div>
-    </div>
-
   </div>
-
 </template>
 
 <script>
 import axios from "axios";
 import applicantSideMenu from '@/components/applicant/applicant-side-menu.vue';
+import Swal from "sweetalert2";
 export default {
   components: {
      applicantSideMenu
@@ -43,6 +44,7 @@ export default {
   data() {
     return {
       likedJobs: [],
+      
     };
   },
   mounted() {
@@ -57,18 +59,56 @@ export default {
             Authorization: `Bearer ${token}`,
           },
         };
-
         const response = await axios.get("http://localhost:3000/application/getFavoriteJobs", config);
-
-        // ใช้ JSON.parse(JSON.stringify()) เพื่อ deep clone และลบ Observer ทิ้ง
-        this.likedJobs = JSON.parse(JSON.stringify(response.data));
-        console.log(this.likedJobs);
+        this.likedJobs = response.data
+        //console.log(this.likedJobs);
       } catch (error) {
         console.error(error);
+      }
+    },
+    unfavThisJob(jobId) {
+      const token = localStorage.getItem("token");
+      axios.delete(`http://localhost:3000/application/cancelFavoriteJob/${jobId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(() => {
+        
+        Swal.fire("Unliked!", "You have unliked this job.", "success");
+        this.getFavoriteJobs();
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    },
+    imagePath(companyProfileImage) {
+      if (companyProfileImage) {
+        return "http://localhost:3000" + companyProfileImage.replace(/\\/g, '/').replace('static', '');
+      } else {
+        return "https://bulma.io/images/placeholders/640x360.png";
       }
     },
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.liked-jobs-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: 20px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-content {
+  flex-grow: 1;
+}
+
+.card-footer {
+  border-top: 1px solid #dbdbdb;
+}
+</style>

@@ -50,7 +50,7 @@
       <label class="label">สถานะ</label>
       <div class="control">
         <div class="select">
-          <select v-model="jobs.status">
+          <select v-model="jobs.job_status">
             <option value="open">เปิดรับสมัคร</option>
             <option value="close">ปิดรับสมัคร</option>
           </select>
@@ -157,7 +157,7 @@ export default {
   formData.append('job_upload_file', uploadedFile); 
   formData.append('job_title', this.jobs.job_title);
   formData.append('description', this.jobs.description);
-  formData.append('status', this.jobs.status);
+  formData.append('job_status', this.jobs.job_status);
   
   // สามารถเพิ่มข้อมูลอื่น ๆ เข้าไปใน formData ตามต้องการ
 
@@ -243,5 +243,8 @@ export default {
   background-color: rgb(255, 255, 255);
   border: 1px solid rgb(203, 203, 203);
 
+}
+.jobUpload{
+  width: 200px;
 }
 </style>

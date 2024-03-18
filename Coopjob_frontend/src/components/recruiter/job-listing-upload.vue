@@ -230,6 +230,6 @@ export default {
   background-color: #eeeeee;
 }
 .jobUpload{
-  width: 15%;
+  width: 200px;
 }
 </style>
