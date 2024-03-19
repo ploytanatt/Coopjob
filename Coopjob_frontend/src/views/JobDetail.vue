@@ -1,71 +1,100 @@
 <template>
-  <div class="container mt-4">
+  <div class="containerJob">
+  <div class="job-detail-container mt-6">
+      
+    <div class="columns">
+      <!-- Left Column: Job Description -->
+      <div class="column is-two-thirds">
+        <div class="box">
+          <div class="media">
+            <div class="media-left">
+              <figure class="image is-128x128">
+                <img :src="imagePath(job.profile_image)" alt="Company logo">
+              </figure>
+            </div>
+            <div class="media-content">
+              <div class="content">
+                <p class="mb-1">
+                  <strong>{{ job.job_title }}</strong> <br>
+                  {{ job.company_name}}
+                </p>
+                <p class="tags "><span class="tag is-primary">{{ job.job_type }}</span></p>
+                <small>วันที่ลงประกาศ: {{ formatDate(job.date_posted) }}</small> 
+              </div>
+            </div>
 
-    <div class="columns m-5">
-
-      <img :src="imagePath(job.profile_image)" class="column is-2 profile_image" />
-      <p class="is-size-4 has-text-weight-bold">{{ job.company_name }}</p>
-
-      <div class="column is-4">
-
-      </div>
-      <div class="column is-3 has-text-right" v-show="user.role === 'applicant'"  >
-    
-        <button class="button mr-2 heart" @click="favThisJob(job.job_id)"  v-if="!isJobLiked ">
-          <i class="fa fa-heart is-medium "></i>
-        </button>
-        <button class="button mr-2 heart" @click="unfavThisJob(job.job_id)" v-if="isJobLiked">
-          <i class="fa fa-heart is-medium is-liked"></i>
-        </button>
-        <button class="button is-success mr-2" @click="applyToJob(job.job_id)">
-          ยื่นสมัคร
-        </button>
-        <button @click="showReportModal(job.job_id)" class="button is-danger">รายงาน</button>
-      </div>
-    </div>
-
-    <div class="box has-background-light m-5">
-      <p class="has-text-right"></p>
-      <div class="columns mt-1">
-        <div class="column is-11">
-          <p class="is-size-5-mobile is-size-4-desktop pl-4"><b>ชื่องาน : {{ job.title }}</b></p>
-          <div class="pl-2">
-            <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>รายละเอียด : </b>{{ job.description }}</span>
+            <div class="media-right buttons is-aligned-top" v-show="user.role === 'applicant'">
+              <button class="button mr-2 heart" @click="favThisJob(job.job_id)" v-if="!isJobLiked">
+                <i class="fa fa-heart"></i>
+              </button>
+              <button class="button mr-2 heart is-liked" @click="unfavThisJob(job.job_id)" v-if="isJobLiked">
+                <i class="fa fa-heart"></i>
+              </button>
+              <button class="button is-success mr-2" @click="applyToJob(job.job_id)">
+                Apply
+              </button>
+              <button @click="showReportModal(job.job_id)" class="button is-danger">
+                Report
+              </button>
             </div>
-            
-            <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>จำนวนที่รับสมัคร : </b>{{ job.date_posted }}</span>
-            </div>
-            <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>วันที่รับสมัคร : </b></span>
-            </div>
-            <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>สวัสดิการ : </b></span>
-            </div>
-            <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-6"><b>ค่าตอบแทน: </b> {{ job.salary }} / วัน</span>
-              <span class="is-size-5-mobile is-size-4-desktop pl-6"><b>สวัสดิการอื่นๆ </b>: xxxx </span>
-            </div>
-            <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>ระยะเวลาทำงาน :</b> {{ job.internship_duration
-              }}
-                เดือน
-              </span>
-            </div>
-            <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>คุณสมบัติผู้สมัคร :</b> {{ job.qualifications
-              }}
-              </span>
-            </div>
-            <div class="p-4">
-              <span class="is-size-5-mobile is-size-4-desktop pl-4"><b>ช่องทางการติดต่อ :</b></span>
-              <span class="is-size-5-mobile is-size-4-desktop pl-4">ชื่อผู้ติดต่อ อีเมลล์ โทรศัพท์</span>
-            </div>
+          </div>
+          <hr>
+          <div class="content">
+            <h3>คำอธิบาย</h3>
+            <p>{{ job.description }}</p>
+            <h3>คุณสมบัติผู้สมัคร</h3>
+            <li v-for="item in specification" :key="item.text">{{ item.text }}</li>
+            <h3>สวัสดิการ</h3>
+            <li v-for="item in benefit" :key="item.text">{{ item.text }}</li>
           </div>
         </div>
       </div>
+
+      <!-- Right Column: Job Summary and Apply Button -->
+      <div class="column">
+        <div class="box ">
+          <i class="fa-sharp fa-solid fa-location-dot"></i>
+          <span v-for="(type, index) in location" :key="index" > {{ type.tambon }} {{ type.amphure }} {{ type.province }} {{ type.zip_code }}</span>
+          <p><strong>ระยะเวลา:</strong> {{ job.internship_duration }} months</p>
+          <p><strong>ชื่อโครงงาน:</strong> {{ job.project_name }}</p>
+          <p><strong>GPA:</strong> {{ job.gpa }}</p>
+          <p><i class="fa-solid fa-envelope-open-dollar"></i><span> {{ job.salary }} บาท/วัน</span></p>
+          <p><i class="fa-solid fa-user"></i><span> {{ job.quantity }} อัตรา</span></p>
+        </div>
+         <div class="box ">
+          <div class="content has-text-centered">
+            <h3>ติดต่อ</h3>
+            <hr>
+            </div>
+          <p><strong>ชื่อผู้ติดต่อ:</strong> {{ job.contact_person_name }}</p>
+          <p><strong>แผนก:</strong> {{ job.contact_person_department }}</p>
+          <p><strong>โทรศัพท์:</strong> {{ job.company_phone_number }}</p>
+          <p><strong>อีเมล:</strong> {{ job.contact_email }}(อีเมลนี้ใช้สำหรับการติดต่อและสมัครงาน)</p>
+        </div>
+        <div class="tags-container is-flex is-justify-content-center">
+          <span><strong>Tags:</strong></span>
+          <span v-for="(type, index) in position_type" :key="index" class="tag is-info ml-2">{{ type.title }}</span>
+        </div>
+      </div>
     </div>
+    <p>งานอื่น ๆ ของบริษัทนี้</p>
+    <div class="columns is-multiline">
+      <div class="column is-one-third" v-for="job in jobs.slice(0, 3)" :key="job.job_id">
+        <div class="card card-equal-height" @click="viewJob(job.job_id)">
+          <div class="card-content">
+            <p class=""><strong>{{ job.job_title }}</strong></p>
+            <i class="fa-sharp fa-solid fa-location-dot"></i>
+          <span v-for="(type, index) in location" :key="index" > {{ type.tambon }} {{ type.amphure }} {{ type.province }} {{ type.zip_code }}</span>
+           <p><i class="fa-solid fa-envelope-open-dollar"></i><span> {{ job.salary }} บาท/วัน</span></p>
+            
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+  </div>
 
      <!-- Report Modal -->
      <div :class="{'is-active': isReportModalActive}" class="modal">
@@ -107,9 +136,16 @@ export default {
     return {
 
       job: [],
+      jobs: [],
       alljobs: [],
       user: [],
+      companyId:'',
       isJobLiked:false,
+
+      location:[],
+      benefit:[],
+      specification:[],
+      position_type:[],
       
       isReportModalActive: false,
       reportType: 'job',
@@ -117,13 +153,30 @@ export default {
       selectedJobId: null,
     };
   },
+  watch: {
+    companyId(newValue, oldValue) {
+      if (newValue !== oldValue && newValue) {
+        this.getCompanyJobs(newValue);
+      }
+    }
+  },
   mounted() {
-    this.getUser();
+    this.onAuthChange();
     const jobId = this.$route.params.jobId;
-    this.getCompanyJobs(jobId);
+    const c_user_id = this.companyId;
+    this.getCompanyJobDetail(jobId);
     this.checkIfJobIsLiked(jobId);
+    this.getCompanyJobs(c_user_id);
   },
   methods: {
+    onAuthChange() {
+      const token = localStorage.getItem("token");
+      if (token) {
+        this.getUser();
+      } else {
+        this.user = ''; // เคลียร์ค่า user เมื่อไม่มี token
+      }
+    },
     getUser() {
       const token = localStorage.getItem("token");
       const config = {
@@ -150,55 +203,68 @@ export default {
     });
   },
 
-    getCompanyJobs(jobId) {
+    getCompanyJobDetail(jobId) {
       axios.get(`http://localhost:3000/recruiter/getJobDetail/${jobId}`)
         .then((response) => {
           this.job = response.data[0];
+          this.position_type = JSON.parse(this.job.position_type);
+          this.benefit = JSON.parse(this.job.benefit);
+          this.specification = JSON.parse(this.job.specification);
+          this.location = JSON.parse(this.job.location);
+          this.companyId = response.data[0].user_id;
         })
         .catch((error) => {
           console.error(error);
         });
     },
-
-    applyToJob(jobId) {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  const data = {
-    user_id: this.user.user_id,
-    job_id: jobId,
-  };
-  console.log(`Applying to job ${jobId}`);
+    getCompanyJobs(companyId) {
+    console.log("companyId", companyId)
   axios
-    .post(`http://localhost:3000/application/sendApplicationJob`, data, config)
-    .then(res => {
-      console.log(res.data.message)
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "ดำเนินการสำเร็จ",
-        showConfirmButton: false,
-      });
+    .get(`http://localhost:3000/recruiter/getAnotherJobs/${companyId}`)
+    .then((response) => {
+      this.jobs = response.data;
     })
-    .catch(error => {
+    .catch((error) => {
       console.error(error);
-      let errorMessage = 'เกิดข้อผิดพลาดในการสมัครงาน กรุณาลองใหม่ภายหลัง';
-      if (error.response && error.response.data && error.response.data.error) {
-        errorMessage = error.response.data.error;
-      }
-
-      Swal.fire({
-        icon: 'error',
-        title: 'สมัครงานไม่สำเร็จ',
-        text: errorMessage
-      });
     });
 },
+    applyToJob(jobId) {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const data = {
+        user_id: this.user.user_id,
+        job_id: jobId,
+      };
+      console.log(`Applying to job ${jobId}`);
+      axios
+        .post(`http://localhost:3000/application/sendApplicationJob`, data, config)
+        .then(res => {
+          console.log(res.data.message)
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "ดำเนินการสำเร็จ",
+            showConfirmButton: false,
+          });
+        })
+        .catch(error => {
+          console.error(error);
+          let errorMessage = 'เกิดข้อผิดพลาดในการสมัครงาน กรุณาลองใหม่ภายหลัง';
+          if (error.response && error.response.data && error.response.data.error) {
+            errorMessage = error.response.data.error;
+          }
 
-
+          Swal.fire({
+            icon: 'error',
+            title: 'สมัครงานไม่สำเร็จ',
+            text: errorMessage
+          });
+        });
+    },
     showReportModal(jobId) {
       this.isReportModalActive = true;
       this.selectedJobId = jobId;
@@ -260,7 +326,12 @@ export default {
         return "https://bulma.io/images/placeholders/640x360.png";
       }
     },
-
+    formatDate(date) {
+      return new Date(date).toLocaleDateString()
+    },
+    viewJob(jobId){
+        this.$router.push("/job/"+jobId);
+    },
   },
   validations: {
     reportType:{
@@ -274,9 +345,18 @@ export default {
 </script>
   
 <style scoped>
-/* สไตล์ของหน้ารายละเอียดบริษัท */
+.containerJob {
+  width: 100%; /* กำหนดความกว้างเป็น 80% ของหน้าจอ */
+  margin: 0 auto; /* จัดให้เนื้อหาอยู่ตรงกลางของหน้าจอในแนวนอน */
+  display: flex; /* เปิดใช้งาน flexbox */
+  justify-content: center; /* จัดตำแหน่งเนื้อหาให้อยู่ตรงกลาง */
+  padding-left: 8rem;
+  padding-right: 8rem;
+  min-height: 100vh; /* กำหนดความสูงขั้นต่ำให้เต็มหน้าจอ */
+  background-color: #f5f8fa;
+}
 .profile_image {
-  width: 150px;
+  width: 130px;
   height: 150px;
   border: 2px solid gray;
   padding: 0;
@@ -284,6 +364,21 @@ export default {
 }
 .is-liked{
   color: red;
+}
+.card-equal-height {
+  height: 120px;
+  /* Add a transition effect for scaling */
+  transition: transform 0.3s ease;
+}
+
+.card-equal-height:hover {
+  /* Scale up the card slightly when hovering */
+  transform: scale(1.05);
+}
+
+.card-content {
+  flex-grow: 1;
+  background-color: hsl(0, 0%, 100%);
 }
 </style>
   

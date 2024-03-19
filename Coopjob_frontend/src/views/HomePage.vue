@@ -1,6 +1,6 @@
 <template>
-  <div class="">
-    <div class="column is-10 mt-4">
+  <div class=" main-content">
+    <div class="column mt-4 container ">
       <img
         id="suggest"
         class="is-rounded"
@@ -19,9 +19,9 @@
 </div>
       <!-- Companies Section -->
       <div class="columns is-multiline">
-        <div class="column is-3" v-for="company in paginatedCompanies" :key="company.job_id">
+        <div class=" column is-3" v-for="company in paginatedCompanies" :key="company.job_id">
 
-          <div class="card is-fullwidth"  @click="goToCompanyDetails(company.user_id)">
+          <div class="card is-fullwidth Companies"  @click="goToCompanyDetails(company.user_id)">
             <header class="card-header">
               <img :src="imagePath(company.cover_image)"  class="card-header-img" />
             </header>
@@ -126,11 +126,7 @@
   </ul>
 </nav>
     </div>
-    <footer class="footer">
-      <div class="content has-text-centered">
-        <p>&copy;</p>
-      </div>
-    </footer>
+
   </div>
 </template>
 
@@ -151,7 +147,7 @@ export default {
   },
   computed: {
     filteredJobs() {
-    return this.jobs.filter(job => job.status === 'open' && (this.activeTab === 'all' || job.job_type === this.activeTab));
+    return this.jobs.filter(job => job.job_status === 'open' && (this.activeTab === 'all' || job.job_type === this.activeTab));
   },
     paginatedCompanies() {
       const start = (this.currentPageCompanies - 1) * this.perPage;
@@ -254,9 +250,14 @@ methods: {
 <style scoped>
 
 .main-content {
-  background-color: #F5F8FA;
-  padding: 2rem;
+  width: 100%; 
+  margin: 0 auto; 
+  display: flex; 
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f5f8fa;
 }
+
 
 .searchbar{
   margin-bottom: 1rem;
@@ -276,28 +277,23 @@ methods: {
  
 }
 .card-header-img {
-    
   width: 100%;
   height: 100px;
- 
-
 }
 .card-content {
     padding: 0px;
 }
 .card-profile {
-  background-color: #fff;
-  border-radius: 6px;
   display: inline-block !important;
   float: left;
   margin: -30px 5px 0 8px;
   max-width: 100%;
-  padding: 1px;
+
   vertical-align: bottom;
   position: relative;
 }
 .card-profile-img {
-  border: 2px solid #fff;
+
   border-radius: 7px;
   box-sizing: border-box;
   color: #fff;
@@ -367,5 +363,8 @@ methods: {
   width: 72px;
 }
 
-
+.Companies{
+  background-color: #ffffff;
+  height: 260px;
+}
 </style>

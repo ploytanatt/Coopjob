@@ -38,15 +38,24 @@
     </div>
 
     <div class="columns">
-      <div class="column is-6">
+      <div class="column is-3">
         <div class="field">
-          <label class="label">ตำแหน่ง</label>
+          <label class="label">ค่าตอบแทน</label>
           <div class="control">
-            <input class="input" type="text" v-model="jobs.job_position" />
+            <div class="field has-addons">
+              <div class="control">
+                <input class="input" type="text" v-model="jobs.salary" />
+              </div>
+              <div class="control">
+                <a class="button is-static">
+                  บาท/วัน
+                </a>
+              </div>
+            </div>
           </div>
-  
         </div>
       </div>
+
       <div class="column is-3">
         <div class="field">
           <label class="label">จำนวนที่รับ</label>
@@ -76,46 +85,37 @@
         </div>
       </div>
     </div>
-
+  <div>
+      <label class="label">ประเภทของงาน</label>
     <multiselect v-model="position_type"  placeholder="ค้นหาหรือพิมพ์เพื่อเพิ่มประเภท" label="title" track-by="title" :options="options" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
-    <div class="columns">
-      <div class="column is-3">
-        <div class="field">
-          <label class="label">ค่าตอบแทน</label>
+  </div>
+  <div class="columns mt-3">
+    <div class="column is-6">
+        <label class="label">สวัสดิการ</label>
+        <div class="field is-grouped" v-for="(spec, index) in benefit" :key="index">
+          <div class="control is-expanded">
+            <input class="input" type="text" v-model="spec.text" placeholder="Enter specification"/>
+          </div>
           <div class="control">
-            <div class="field has-addons">
-              <div class="control">
-                <input class="input" type="text" v-model="jobs.salary" />
-              </div>
-              <div class="control">
-                <a class="button is-static">
-                  บาท/วัน
-                </a>
-              </div>
-            </div>
+            <button class="button is-danger" @click="removeBenefit(index)">Remove</button>
           </div>
         </div>
+        <button class="button is-primary" @click="addBenefit">เพิ่ม</button>
       </div>
-      <div class="column is-9">
-        <div class="field">
-          <label class="label">สวัสดิการ</label>
-          <div class="control">
-            <input class="input" type="text" v-model="jobs.benefit" />
+      <div class="column is-6">
+        <label class="label">คุณสมบัติ</label>
+        <div class="field is-grouped" v-for="(spec, index) in specification" :key="index">
+          <div class="control is-expanded">
+            <input class="input" type="text" v-model="spec.text" placeholder="Enter specification"/>
           </div>
-
+          <div class="control">
+            <button class="button is-danger" @click="removeSpecification(index)">Remove</button>
+          </div>
         </div>
+        <button class="button is-primary" @click="addSpecification">เพิ่ม</button>
       </div>
     </div>
 
-
-    
-      <div class="field">
-      <label class="label">คุณสมบัติผู้สมัคร</label>
-      <div class="control">
-        <textarea class="textarea" v-model="jobs.specification"></textarea>
-      </div>
-      
-    </div>
     <div class="field">
       <label class="label">ระยะเวลาฝึกงาน (เดือน)</label>
       <div class="control">
@@ -169,12 +169,27 @@ export default {
         jobs:[],
         options: JobtypeJson,
         position_type:[],
+
+        benefit:[],
+        specification:[]
     };
   },
   mounted() {
     this.getJobDetails();
   },
   methods: {
+    addSpecification() {
+      this.specification.push({ text: '' });
+    },
+    removeSpecification(index) {
+      this.specification.splice(index, 1);
+    },
+    addBenefit() {
+      this.benefit.push({ text: '' });
+    },
+    removeBenefit(index) {
+      this.benefit.splice(index, 1);
+    },
     getJobDetails() {
       const token = localStorage.getItem("token");
       const config = {
@@ -189,6 +204,8 @@ export default {
           this.jobs = res.data;
           const job = res.data; 
           this.position_type = JSON.parse(job.position_type);
+          this.benefit = JSON.parse(job.benefit);
+          this.specification = JSON.parse(job.specification);
         })
         .catch((error) => {
           console.log(error);
@@ -196,32 +213,33 @@ export default {
     },
 
     updateJob() {
-
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  const jobId = this.$route.params.jobId;
-  const data = {
-    ...this.jobs,
-    position_type: JSON.stringify(this.position_type)
-  };
-  axios.put(`http://localhost:3000/recruiter/updateJob/${jobId}`, data, config)
-    .then((res) => {
-      Swal.fire({
-        icon: 'success',
-        title: res.data.message,
-        showConfirmButton: false,
-        timer: 1500
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const jobId = this.$route.params.jobId;
+    const data = {
+      ...this.jobs,
+      position_type: JSON.stringify(this.position_type),
+      benefit : JSON.stringify(this.benefit),
+      specification : JSON.stringify(this.specification)
+    };
+    axios.put(`http://localhost:3000/recruiter/updateJob/${jobId}`, data, config)
+      .then((res) => {
+        Swal.fire({
+          icon: 'success',
+          title: res.data.message,
+          showConfirmButton: false,
+          timer: 1500
+        });
+        this.$router.push('/recruiterJob');
+      })
+      .catch((error) => {
+        console.log(error);
       });
-      this.$router.push('/recruiterJob');
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-},
+  },
 
 
     addTag(newTag) {
@@ -237,7 +255,7 @@ export default {
 
 };
 </script>
-
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style scoped>
 .card {
   width:  50%; /* เพิ่มความกว้างของการ์ด ค่าที่เพิ่มขึ้นนี้ขึ้นอยู่กับความต้องการของคุณ */

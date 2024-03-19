@@ -40,13 +40,22 @@
     </div>
 
     <div class="columns">
-      <div class="column is-6">
+      <div class="column is-3">
         <div class="field">
-          <label class="label">ตำแหน่ง</label>
+          <label class="label">ค่าตอบแทน</label>
           <div class="control">
-            <input class="input" type="text" v-model="$v.job_position.$model" />
+            <div class="field has-addons">
+              <div class="control">
+                <input class="input" type="text" v-model="$v.salary.$model" />
+              </div>
+              <div class="control">
+                <a class="button is-static">
+                  บาท/วัน
+                </a>
+              </div>
+            </div>
           </div>
-          <p v-if="$v.job_position.$error" class="help is-danger">โปรดกรอกคำอธิบาย</p>
+          <p v-if="$v.salary.$error" class="help is-danger">โปรดกรอกเงินเดือน</p>
         </div>
       </div>
       <div class="column is-3">
@@ -78,46 +87,40 @@
         </div>
       </div>
     </div>
-    <multiselect v-model="position_type"  placeholder="ค้นหาหรือพิมพ์เพื่อเพิ่มประเภท" label="title" track-by="title" :options="options" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
-    <div class="columns">
-      <div class="column is-3">
-        <div class="field">
-          <label class="label">ค่าตอบแทน</label>
-          <div class="control">
-            <div class="field has-addons">
-              <div class="control">
-                <input class="input" type="text" v-model="$v.salary.$model" />
-              </div>
-              <div class="control">
-                <a class="button is-static">
-                  บาท/วัน
-                </a>
-              </div>
-            </div>
+    <div>
+      <label class="label">ประเภทของงาน</label>
+    <multiselect v-model="$v.position_type.$model"  placeholder="ค้นหาหรือพิมพ์เพื่อเพิ่มประเภทงาน" label="title" track-by="title" :options="options" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+    <p v-if="$v.position_type.$error" class="help is-danger">โปรดกรอกเงินเดือน</p>
+  </div>
+
+    <div class="columns mt-3">
+      <div class="column is-6">
+        <label class="label">สวัสดิการ</label>
+        <div class="field is-grouped" v-for="(spec, index) in benefit" :key="index">
+          <div class="control is-expanded">
+            <input class="input" type="text" v-model="spec.text" placeholder="Enter specification"/>
           </div>
-          <p v-if="$v.salary.$error" class="help is-danger">โปรดกรอกเงินเดือน</p>
+          <div class="control">
+            <button class="button is-danger" @click="removeBenefit(index)">Remove</button>
+          </div>
         </div>
+        <button class="button is-primary" @click="addBenefit">เพิ่ม</button>
       </div>
-      <div class="column is-9">
-        <div class="field">
-          <label class="label">สวัสดิการ</label>
-          <div class="control">
-            <input class="input" type="text" v-model="$v.benefit.$model" />
+
+      <div class="column is-6">
+        <label class="label">คุณสมบัติ</label>
+        <div class="field is-grouped" v-for="(spec, index) in specification" :key="index">
+          <div class="control is-expanded">
+            <input class="input" type="text" v-model="spec.text" placeholder="Enter specification"/>
           </div>
-          <p v-if="$v.benefit.$error" class="help is-danger">โปรดกรอกข้อมูล</p>
+          <div class="control">
+            <button class="button is-danger" @click="removeSpecification(index)">Remove</button>
+          </div>
         </div>
+        <button class="button is-primary" @click="addSpecification">เพิ่ม</button>
       </div>
     </div>
 
-    
-
-    <div class="field">
-      <label class="label">คุณสมบัติผู้สมัคร</label>
-      <div class="control">
-        <textarea class="textarea" v-model="$v.specification.$model"></textarea>
-      </div>
-      <p v-if="$v.specification.$error" class="help is-danger">โปรดกรอกคุณสมบัติ</p>
-    </div>
     <div class="field">
       <label class="label">ระยะเวลาฝึกงาน (เดือน)</label>
       <div class="control">
@@ -153,6 +156,7 @@
 
 <script>
 import { required, minValue } from 'vuelidate/lib/validators';
+import { validationMixin } from 'vuelidate';
 import axios from 'axios';
 import Swal from "sweetalert2";
 import Multiselect from 'vue-multiselect'
@@ -161,28 +165,39 @@ export default {
   components: {
     Multiselect,
   },
+  mixins: [validationMixin],
   data() {
     return {
       job_type: 'internship',
       project_name:'',
       job_title: '',
       description: '',
-      job_position:'',
       
       quantity: 0,
       gpa:'',
       position_type:[],
       salary: 0,
-      benefit:'', 
-      specification: '',
+      benefit:[{ text: '' }],
+      specification: [{ text: '' }],
       internship_duration:'',
       status: 'open',
       options: JobtypeJson,
     };
   },
   methods: {
+    addSpecification() {
+      this.specification.push({ text: '' });
+    },
+    removeSpecification(index) {
+      this.specification.splice(index, 1);
+    },
+    addBenefit() {
+      this.benefit.push({ text: '' });
+    },
+    removeBenefit(index) {
+      this.benefit.splice(index, 1);
+    },
     addJob() {
-      const position_type_String = JSON.stringify(this.position_type);
       const token = localStorage.getItem("token");
       const config = {
         headers: {
@@ -196,16 +211,13 @@ export default {
         project_name:this.project_name,
         job_title:this.job_title,
         description:this.description,
-        location:this.location,
-        job_position:this.job_position,
-        position_type: position_type_String,
+        salary:this.salary,
         quantity:this.quantity,
         gpa:this.gpa,
-        salary:this.salary,
-        benefit:this.benefit,
-        specification:this.specification,
+        position_type: JSON.stringify(this.position_type),
+        benefit:JSON.stringify(this.benefit),
+        specification: JSON.stringify(this.specification),
         internship_duration:this.internship_duration,
-     
         status:this.status
       }
 
@@ -232,12 +244,7 @@ export default {
     cancel() {
       this.$router.push('/recruiterJob');
     },
-    customLabel(option) {
-      // กำหนด custom label สำหรับแสดงผลใน dropdown
-      return `${option.name} (${option.id})`;
-    },
     addTag(newTag) {
-      // ฟังก์ชันที่ถูกเรียกเมื่อมีการเพิ่มแท็กใหม่
       console.log("Added new tag:", newTag);
       this.position_type.push({ title: newTag });
     },
@@ -249,9 +256,6 @@ export default {
     description: {
       required,
     },
-    job_position:{
-      required
-    },
     quantity:{
       required
     },
@@ -261,23 +265,25 @@ export default {
     benefit:{
       required
     },
-
     specification: {
-      required,
-    },
+    required 
+  },
     internship_duration: {
       required,
       minValue: minValue(0),
     },
+    position_type:{
+      required
+    }
   },
   
 };
 </script>
-
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style scoped>
 .card {
-  width:  50%; /* เพิ่มความกว้างของการ์ด ค่าที่เพิ่มขึ้นนี้ขึ้นอยู่กับความต้องการของคุณ */
-  margin: 0 auto; /* ใช้ในการจัดวางการ์ดให้อยู่ตรงกลางหน้าจอ */
+  width:  50%;
+  margin: 0 auto; 
   background-color: #eeeeee;
 }
 .profile_image {
@@ -287,10 +293,8 @@ export default {
   border-radius: 25px;
 }
 .cover_image {
- /* ทำให้ภาพเต็มความกว้างของ div */
-/* ทำให้ภาพเต็มความสูงของ div */
-  object-fit: cover; /* ปรับขนาดภาพให้พอดีกับขนาดของ div โดยไม่เกี่ยวข้องกับสัดส่วนของภาพ */
-  border-radius: 10px; /* สามารถปรับค่า border-radius ตามที่ต้องการ */
+  object-fit: cover; 
+  border-radius: 10px; 
 }
 
 .field.is-horizontals {

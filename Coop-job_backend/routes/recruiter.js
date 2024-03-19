@@ -225,7 +225,6 @@ const addJobSchema = Joi.object({
   project_name:Joi.string().required(),
   job_title:Joi.string().required(),
   description:Joi.string().required(),
-  job_position:Joi.string().required(),
   position_type:Joi.string().required(),
   quantity:Joi.string().required(),
   gpa:Joi.string().required(),
@@ -281,7 +280,6 @@ router.post("/addJob", isLoggedIn, async (req, res) => {
       project_name,
       job_title,
       description,
-      job_position,
       quantity,
       gpa,
       position_type,
@@ -297,13 +295,12 @@ router.post("/addJob", isLoggedIn, async (req, res) => {
     const datePosted = new Date(); // เวลาปัจจุบัน
     // เพิ่มข้อมูลงานใหม่ลงในตาราง jobs
     await pool.query(
-      'INSERT INTO jobs (user_id, job_type, project_name, job_title, description, job_position, quantity, gpa, position_type, salary, benefit,  specification,  internship_duration, create_type, job_status, date_posted) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO jobs (user_id, job_type, project_name, job_title, description, quantity, gpa, position_type, salary, benefit,  specification,  internship_duration, create_type, job_status, date_posted) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [req.user.user_id, 
         job_type,
         project_name,
         job_title,
         description,
-        job_position,
         quantity,
         gpa,
         position_type,
@@ -421,12 +418,12 @@ router.put('/updateJob/:jobId', isLoggedIn, upload.single('job_upload_file'), as
       return res.status(400).json({ message: 'Job ID is missing' });
     }
 
-    const { job_type, project_name, job_title, description, job_position, position_type, quantity, gpa, salary, benefit, specification, internship_duration, job_status } = req.body;
+    const { job_type, project_name, job_title, description, position_type, quantity, gpa, salary, benefit, specification, internship_duration, job_status } = req.body;
 
 
     await pool.query(
-      'UPDATE jobs SET job_type = ?, project_name = ?, job_title = ?, description = ?, job_position = ?, position_type = ?, quantity = ?, gpa = ?, salary = ?, benefit = ?, specification = ?, internship_duration = ?, job_status = ? WHERE job_id = ?',
-      [job_type, project_name, job_title, description, job_position, position_type, quantity, gpa, salary, benefit, specification, internship_duration, job_status, jobId]
+      'UPDATE jobs SET job_type = ?, project_name = ?, job_title = ?, description = ?, position_type = ?, quantity = ?, gpa = ?, salary = ?, benefit = ?, specification = ?, internship_duration = ?, job_status = ? WHERE job_id = ?',
+      [job_type, project_name, job_title, description, position_type, quantity, gpa, salary, benefit, specification, internship_duration, job_status, jobId]
     );
 
     res.status(200).json({ message: 'Job updated successfully' });
@@ -456,11 +453,11 @@ router.put('/updateUploadJob/:jobId', isLoggedIn, upload.single('job_upload_file
       fs.renameSync(uploadedFile.path, newFilePath);
     }
 
-    const { job_type, project_name, job_title, description, job_position, position_type, quantity, gpa, salary, benefit, specification, internship_duration, job_status } = req.body;
+    const { job_type, project_name, job_title, description, position_type, quantity, gpa, salary, benefit, specification, internship_duration, job_status } = req.body;
 
     await pool.query(
-      'UPDATE jobs SET job_type = ?, project_name = ?, job_title = ?, description = ?, job_position = ?, position_type = ?, quantity = ?, gpa = ?, salary = ?, benefit = ?, specification = ?, internship_duration = ?, job_status = ?, job_upload_file = ? WHERE job_id = ?',
-      [job_type, project_name, job_title, description, job_position, position_type, quantity, gpa, salary, benefit, specification, internship_duration, job_status, newFilePath, jobId]
+      'UPDATE jobs SET job_type = ?, project_name = ?, job_title = ?, description = ?, position_type = ?, quantity = ?, gpa = ?, salary = ?, benefit = ?, specification = ?, internship_duration = ?, job_status = ?, job_upload_file = ? WHERE job_id = ?',
+      [job_type, project_name, job_title, description, position_type, quantity, gpa, salary, benefit, specification, internship_duration, job_status, newFilePath, jobId]
     );
 
     res.status(200).json({ message: 'Job updated successfully' });
@@ -559,12 +556,24 @@ router.get('/getCompanyJobs/:companyId', async (req, res) => {
   }
 });
 
+//Get company jobs in jobDetail page
+router.get('/getAnotherJobs/:companyId', async (req, res) => {
+  const companyId = req.params.companyId;
+  try {
+    const [results] = await pool.query('SELECT * FROM Jobs WHERE user_id = ?', [companyId]);
+    res.json(results);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // job details
 router.get('/getJobDetail/:jobId', async (req, res) => {
   try {
     const jobId = req.params.jobId;
     const [results] = await pool.query(`
-        SELECT j.*, c.company_name, c.profile_image
+        SELECT j.*, c.*
         FROM jobs j
         JOIN companies c ON j.user_id = c.user_id
         WHERE j.job_id = ?

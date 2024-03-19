@@ -34,7 +34,7 @@
                   
                   <p class="column is-6">เพศ: {{ applicationJob.gender }}</p>
 
-                  <p class="column is-6">วัน-เดือน-ปี เกิด: {{  applicationJob.birthdate  }}</p>
+                  <p class="column is-6">วัน-เดือน-ปี เกิด: {{  formatDate(applicationJob.birthdate)  }}</p>
                   <p class="column is-6">ที่อยู่:  {{applicationJob.address}}</p>
                 
                 </div>
