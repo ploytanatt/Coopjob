@@ -4,7 +4,7 @@
       
     <div class="columns">
       <!-- Left Column: Job Description -->
-      <div class="column is-two-thirds">
+      <div class="column is-9">
         <div class="box">
           <div class="media">
             <div class="media-left">
@@ -39,6 +39,15 @@
             </div>
           </div>
           <hr>
+          <div>
+          <div v-if="isImage(job.job_upload_file)  ">
+            <img :src="imagePath(job.job_upload_file)" class="jobUpload">
+          </div>
+          <div v-else-if="isPdf(job.job_upload_file)">
+            <iframe :src="imagePath(job.job_upload_file)" class="preview-pdf" />
+          </div>
+        </div>
+         
           <div class="content">
             <h3>คำอธิบาย</h3>
             <p>{{ job.description }}</p>
@@ -51,7 +60,7 @@
       </div>
 
       <!-- Right Column: Job Summary and Apply Button -->
-      <div class="column">
+      <div class="column is-3">
         <div class="box ">
           <i class="fa-sharp fa-solid fa-location-dot"></i>
           <span v-for="(type, index) in location" :key="index" > {{ type.tambon }} {{ type.amphure }} {{ type.province }} {{ type.zip_code }}</span>
@@ -330,7 +339,16 @@ export default {
       return new Date(date).toLocaleDateString()
     },
     viewJob(jobId){
-        this.$router.push("/job/"+jobId);
+      if (this.$route.path !== "/job/"+jobId) {
+                this.$router.push("/job/"+jobId);
+            }
+    },
+    isImage(filePath) {
+      return /\.(jpeg|jpg|gif|png)$/i.test(filePath);
+    },
+    // ตรวจสอบว่าไฟล์เป็น PDF หรือไม่
+    isPdf(filePath) {
+      return /\.pdf$/i.test(filePath);
     },
   },
   validations: {
@@ -380,5 +398,10 @@ export default {
   flex-grow: 1;
   background-color: hsl(0, 0%, 100%);
 }
+.jobUpload{
+  width: 200px;
+}
+
+.box{}
 </style>
   

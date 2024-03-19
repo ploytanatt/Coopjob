@@ -61,7 +61,6 @@
             </div>
           
     </div>
-<p>Area Test</p>
   </div>
 </nav>
     <router-view

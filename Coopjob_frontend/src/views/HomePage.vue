@@ -321,8 +321,8 @@ methods: {
 }
 
 .pagination-link.is-current {
-  background-color: #00d1b2;
-  color: #fff;
+  background-color: aqua;
+  color: #000000;
 }
 
 .card {
