@@ -2,7 +2,7 @@
     <div class="columns">
       <applicantSideMenu></applicantSideMenu>
         
-            <div class=" card">
+            <div class=" card p-6">
               <h1 class="title">ตั้งค่าบัญชีผู้ใช้</h1>
               <div class="email_password">
               <div class="column is-12" >
