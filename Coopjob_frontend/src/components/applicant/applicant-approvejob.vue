@@ -360,7 +360,7 @@ export default {
             };
             axios.get("http://localhost:3000/application/reviewHistory", config)
                 .then((res) => {
-                    this.review_history = res.data;
+                    this.review_history = res.data[0];
                 })
                 .catch((error) => {
                     console.error(error);
