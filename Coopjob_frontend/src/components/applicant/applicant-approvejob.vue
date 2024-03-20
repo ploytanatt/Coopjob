@@ -482,6 +482,7 @@ export default {
                     title: "ให้คะแนนเรียบร้อย",
                     showConfirmButton: message,
                 });
+                this.getReviewHistory();
                 this.showReviewForm = false;
             })    
             .catch((error) =>{
