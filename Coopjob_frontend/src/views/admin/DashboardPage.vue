@@ -29,7 +29,7 @@ export default {
 </script>
 <style scoped>
 .columns{
-    background-color: #e3f8ff;
+    background-color: #edfbff;
 }
 .menu{
     padding: 1rem;

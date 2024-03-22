@@ -90,8 +90,8 @@
           <th class="px-6 py-3 has-text-grey">Action</th>
 
         </tr>
-
         </thead>
+        
         <tbody>
           <tr v-for="(report, index) in computedFilteredReports" :key="report.report_id">
 

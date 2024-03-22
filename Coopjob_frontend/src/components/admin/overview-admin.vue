@@ -1,6 +1,6 @@
 <template>
-    <div class="container">
-        <main class="column">
+  <div class="">
+    <main class="column">
       <div class="level">
         <div class="level-left">
           <div class="level-item">
@@ -15,301 +15,206 @@
           </div>
         </div>
       </div>
-      
+
+      <section class="info-tiles">
+        <div class="tile is-ancestor has-text-centered">
+          <div class="tile is-parent">
+            <article class="tile is-child box">
+              <p class="title">10</p>
+              <p class="subtitle">จำนวนผู้ใช้งานทั้งหมด</p>
+            </article>
+          </div>
+          <div class="tile is-parent">
+            <article class="tile is-child box">
+              <p class="title">7</p>
+              <p class="subtitle">จำนวนนักศึกษา</p>
+            </article>
+          </div>
+          <div class="tile is-parent">
+            <article class="tile is-child box">
+              <p class="title">3</p>
+              <p class="subtitle">จำนวนบริษัท</p>
+            </article>
+          </div>
+          <div class="tile is-parent">
+            <article class="tile is-child box">
+              <p class="title">7</p>
+              <p class="subtitle">จำนวนงานที่ประกาศ</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <div class="columns is-multiline">
-        <div class="column">
-          <div class="box">
-            <div class="heading">Top Seller Total</div>
-            <div class="title">56,950</div>
-            <div class="level">
-              <div class="level-item">
-                <div class="">
-                  <div class="heading">Sales $</div>
-                  <div class="title is-5">250,000</div>
-                </div>
-              </div>
-              <div class="level-item">
-                <div class="">
-                  <div class="heading">Overall $</div>
-                  <div class="title is-5">750,000</div>
-                </div>
-              </div>
-              <div class="level-item">
-                <div class="">
-                  <div class="heading">Sales %</div>
-                  <div class="title is-5">25%</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="box">
-            <div class="heading">Revenue / Expenses</div>
-            <div class="title">55% / 45%</div>
-            <div class="level">
-              <div class="level-item">
-                <div class="">
-                  <div class="heading">Rev Prod $</div>
-                  <div class="title is-5">30%</div>
-                </div>
-              </div>
-              <div class="level-item">
-                <div class="">
-                  <div class="heading">Rev Serv $</div>
-                  <div class="title is-5">25%</div>
-                </div>
-              </div>
-              <div class="level-item">
-                <div class="">
-                  <div class="heading">Exp %</div>
-                  <div class="title is-5">45%</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="box">
-            <div class="heading">Feedback Activity</div>
-            <div class="title">78% &uarr;</div>
-            <div class="level">
-              <div class="level-item">
-                <div class="">
-                  <div class="heading">Positive</div>
-                  <div class="title is-5">1560</div>
-                </div>
-              </div>
-              <div class="level-item">
-                <div class="">
-                  <div class="heading">Negative</div>
-                  <div class="title is-5">368</div>
-                </div>
-              </div>
-              <div class="level-item">
-                <div class="">
-                  <div class="heading">Pos/Neg %</div>
-                  <div class="title is-5">77% / 23%</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="box">
-            <div class="heading">Orders / Returns</div>
-            <div class="title">75% / 25%</div>
-            <div class="level">
-              <div class="level-item">
-                <div class="">
-                  <div class="heading">Orders $</div>
-                  <div class="title is-5">425,000</div>
-                </div>
-              </div>
-              <div class="level-item">
-                <div class="">
-                  <div class="heading">Returns $</div>
-                  <div class="title is-5">106,250</div>
-                </div>
-              </div>
-              <div class="level-item">
-                <div class="">
-                  <div class="heading">Success %</div>
-                  <div class="title is-5">+ 28,5%</div>
-                </div>
-              </div>
-            </div>
-          </div>
+ <div class="column is-6">
+    <div class="card events-card">
+      <header class="card-header">
+        <p class="card-header-title">คำร้องเรียนที่รอดำเนินการ ({{ reportLists.length }})</p>
+      </header>
+      <div class="card-table">
+        <div class="content">
+          <table class="table is-fullwidth is-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>หัวข้อการรายงาน</th>
+                <th>คำอธิบาย</th>
+                <th>วันที่รายงาน</th>
+                <th>สถานะ</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(report, index) in reportLists" :key="report.report_id">
+                <td>{{ index + 1 }}</td>
+                <td>{{ report.report_title }}</td>
+                <td>{{ report.report_description }}</td>
+                <td>{{ formatDate(report.date_posted) }}</td>
+                <td>{{ report.report_status }}</td>
+                <td><button class="button is-info">ดูรายละเอียด</button></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      
-      <div class="columns is-multiline">
+    </div>
+  </div>
         <div class="column is-6">
-          <div class="panel">
-            <p class="panel-heading">
-              Expenses: Daily - $700
-            </p>
-            <Bar
-    id="my-chart-id"
-    :options="chartOptions"
-    :data="chartData"
-  />
+          <div class="card">
+            <header class="card-header">
+              <p class="card-header-title">ค่าแรงและสวัสดิการ</p>
+              <a href="#" class="card-header-icon" aria-label="more options">
+                <span class="icon">
+                  <i class="fa fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </a>
+            </header>
+            <div class="card-content">
+              <div class="content">
+                <div class="control has-icons-left has-icons-right">
+                  <p>นักศึกษาที่ฝึกงานฝสหกิจศึกษาทั้งหมด {{}} คน</p>
+                  <p>ฝึกงาน {{}} คน</p>
+                  <p>สหกิจศึกษา {{}} คน</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="column is-6">
           <div class="panel">
-            <p class="panel-heading">
-              Refunds: Daily - $200
-            </p>
+            <p class="panel-heading">Expenses: Daily - $700</p>
+            <Bar id="my-chart-id" :options="chartOptions" :data="chartData" />
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="panel">
+            <p class="panel-heading">Refunds: Daily - $200</p>
             <div class="panel-block">
               <figure class="image is-16x9">
-                <img src="https://placehold.it/1280x720">
+                <img src="https://placehold.it/1280x720" />
               </figure>
             </div>
           </div>
         </div>
         <div class="column is-6">
           <div class="panel">
-            <p class="panel-heading">
-              Something
-            </p>
+            <p class="panel-heading">Something</p>
             <div class="panel-block">
               <figure class="image is-16x9">
-                <img src="https://placehold.it/1280x720">
+                <img src="https://placehold.it/1280x720" />
               </figure>
             </div>
           </div>
         </div>
         <div class="column is-6">
           <div class="panel">
-            <p class="panel-heading">
-              Something Else
-            </p>
+            <p class="panel-heading">Something Else</p>
             <div class="panel-block">
               <figure class="image is-16x9">
-                <img src="https://placehold.it/1280x720">
+                <img src="https://placehold.it/1280x720" />
               </figure>
             </div>
           </div>
         </div>
       </div>
     </main>
-        <div class="columns">
-            <div class="column is-9">
-                <section class="hero is-info welcome is-small">
-                    <div class="hero-body">
-                        <div class="container">
-                            <h1 class="title">
-                                Hello, Admin.
-                            </h1>
-                            <h2 class="subtitle">
-                                I hope you are having a great day!
-                            </h2>
-                        </div>
-                    </div>
-                </section>
-                <section class="info-tiles">
-                    <div class="tile is-ancestor has-text-centered">
-                        <div class="tile is-parent">
-                            <article class="tile is-child box">
-                                <p class="title">439k</p>
-                                <p class="subtitle">Users</p>
-                            </article>
-                        </div>
-                        <div class="tile is-parent">
-                            <article class="tile is-child box">
-                                <p class="title">59k</p>
-                                <p class="subtitle">Products</p>
-                            </article>
-                        </div>
-                        <div class="tile is-parent">
-                            <article class="tile is-child box">
-                                <p class="title">3.4k</p>
-                                <p class="subtitle">Open Orders</p>
-                            </article>
-                        </div>
-                        <div class="tile is-parent">
-                            <article class="tile is-child box">
-                                <p class="title">19</p>
-                                <p class="subtitle">Exceptions</p>
-                            </article>
-                        </div>
-                    </div>
-                </section>
-                <div class="columns">
-                    <div class="column is-6">
-                        <div class="card events-card">
-                            <header class="card-header">
-                                <p class="card-header-title">
-                                    Events
-                                </p>
-                                <a href="#" class="card-header-icon" aria-label="more options">
-                  <span class="icon">
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                  </span>
-                </a>
-                            </header>
-                            <div class="card-table">
-                                <div class="content">
-                                    <table class="table is-fullwidth is-striped">
-                                        <tbody>
-                                            <tr>
-                                                <td width="5%"><i class="fa fa-bell-o"></i></td>
-                                                <td>Lorum ipsum dolem aire</td>
-                                                <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
-                                            </tr>
-                                            <tr>
-                                                <td width="5%"><i class="fa fa-bell-o"></i></td>
-                                                <td>Lorum ipsum dolem aire</td>
-                                                <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <footer class="card-footer">
-                                <a href="#" class="card-footer-item">View All</a>
-                            </footer>
-                        </div>
-                    </div>
-                    <div class="column is-6">
-                        <div class="card">
-                            <header class="card-header">
-                              <p class="card-header-title">
-                                  Inventory Search
-                              </p>
-                              <a href="#" class="card-header-icon" aria-label="more options">
-                                <span class="icon">
-                                  <i class="fa fa-angle-down" aria-hidden="true"></i>
-                                </span>
-                              </a>
-                            </header>
-                            <div class="card-content">
-                                <div class="content">
-                                    <div class="control has-icons-left has-icons-right">
-                                      <input class="input is-large" type="text" placeholder="">
-                                      <span class="icon is-medium is-left">
-                                        <i class="fa fa-search"></i>
-                                      </span>
-                                      <span class="icon is-medium is-right">
-                                        <i class="fa fa-check"></i>
-                                      </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <Bar id="my-chart-id"
-                                :options="chartOptions"
-                                :data="chartData"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+    <div class="columns">
+      <div class="column is-9">
+        <div class="columns"></div>
+      </div>
     </div>
-
+  </div>
 </template>
 
 <script>
-import { Bar } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
-
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+import { Bar } from "vue-chartjs";
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+} from "chart.js";
+import axios from "axios";
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale
+);
 
 export default {
-  name: 'BarChart',
+  name: "BarChart",
   components: { Bar },
   data() {
     return {
+      reportLists: [],
+sortKey: 'job_title',
       chartData: {
-        labels: [ 'January', 'February', 'March' ],
-        datasets: [ { data: [40, 20, 12] } ]
+        labels: ["January", "February", "March"],
+        datasets: [{ data: [40, 20, 12] }],
       },
       chartOptions: {
-        responsive: true
-      }
-    }
+        responsive: true,
+      },
+    };
+  },
+  mounted() {
+    this.getReportList();
+  },
+  methods: {
+    getReportList() {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      axios
+        .get("http://localhost:3000/admin/ReportList", config)
+        .then((response) => {
+          this.reportLists = response.data;
+          console.log(this.reportLists); // Debug: Log the fetched data
+        })
+        .catch((error) => {
+          console.error('Error fetching report list:', error);
+        });
+    },
+    formatDate(date) {
+      return new Date(date).toLocaleDateString();
+    },
+      sortReports(key) {
+  if (this.sortKey === key) {
+    this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+  } else {
+    this.sortKey = key;
+    this.sortOrder = 'asc';
   }
-}
+},
+  },
+};
 </script>
