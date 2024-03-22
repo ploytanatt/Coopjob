@@ -61,6 +61,8 @@ router.post('/signup', async (req, res) => {
 router.post("/editProfile", isLoggedIn, async (req, res) => {
   try {
     const {
+      academic_year,
+      studentID,
       firstName,
       lastName,
       birthdate,
@@ -71,37 +73,15 @@ router.post("/editProfile", isLoggedIn, async (req, res) => {
     } = req.body;
     const userId = req.user.user_id;
     // ใช้ Joi เพื่อตรวจสอบข้อมูลที่ผู้ใช้แก้ไข
-    const schema = Joi.object({
-      firstName: Joi.string().required(),
-      lastName: Joi.string().required(),
-      birthdate: Joi.date().required(),
-      phone_number: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
-      gender: Joi.string().valid("ชาย", "หญิง").required(),
-      email: Joi.string().email().required(),
-      address: Joi.string().required(),
-    });
-    // ตรวจสอบข้อมูล
-    const { error } = schema.validate({
-      firstName,
-      lastName,
-      birthdate,
-      phone_number,
-      gender,
-      email,
-      address,
-    });
-    if (error) {
-      return res.status(400).json({ message: "โปรดกรอกข้อมูลให้ถูกต้อง", error });
-    }
     // อัพเดตข้อมูลส่วนตัวในฐานข้อมูล
     await pool.query(
-      `UPDATE students SET firstName=?, lastName=?, birthdate=?, phone_number=?, gender=?, email=?, address=? WHERE user_id=?`,
-      [firstName, lastName, birthdate, phone_number, gender, email, address, userId]
+      `UPDATE students SET academic_year=?, studentID=?, firstName=?, lastName=?, birthdate=?, phone_number=?, gender=?, email=?, address=? WHERE user_id=?`,
+      [academic_year, studentID,firstName, lastName, birthdate, phone_number, gender, email, address, userId]
     );
-    await pool.query(
-      `UPDATE users SET email=? WHERE user_id=?`,
-      [email, userId]
-    );
+   // await pool.query(
+   //   `UPDATE users SET email=? WHERE user_id=?`,
+   //   [email, userId]
+   // );
     res.status(200).json({ message: "แก้ไขข้อมูลสำเร็จ" });
   } catch (error) {
     console.error(error);
@@ -201,10 +181,11 @@ router.post('/uploadResume',isLoggedIn, upload.single('resume'), async (req, res
       return res.status(400).json({ error: 'Invalid file' });
     }
     const filePath = req.file.path;
+    const student_status = "open"
     console.log("ResumePath", filePath)
     const userId = req.user.user_id;
     // บันทึกชื่อไฟล์เข้าฐานข้อมูล และ ใช้ฟังก์ชัน UUID() เพื่อสร้างชื่อไฟล์ที่ไม่ซ้ำกัน
-    await pool.query('UPDATE students SET resume =(?) WHERE user_id = ?', [filePath, userId]);
+    await pool.query('UPDATE students SET student_status=?, resume=? WHERE user_id = ?', [student_status, filePath, userId]);
     console.log("File uploaded successfully")
     return res.json({ message: 'File uploaded successfully', filePath:filePath });
   } catch (err) {
@@ -225,8 +206,9 @@ router.post('/uploadTranscript',isLoggedIn, uploadTranscript.single('transcript'
     const filePath = req.file.path;
     console.log("TranscriptPath", filePath)
     const userId = req.user.user_id;
+    const student_status = "open"
     // บันทึกชื่อไฟล์เข้าฐานข้อมูล และ ใช้ฟังก์ชัน UUID() เพื่อสร้างชื่อไฟล์ที่ไม่ซ้ำกัน
-    await pool.query('UPDATE students SET transcript =(?) WHERE user_id = ?', [filePath, userId]);
+    await pool.query('UPDATE students SET student_status=?, transcript =? WHERE user_id = ?', [student_status, filePath, userId]);
     console.log("Transcript uploaded successfully")
     return res.json({ message: 'File uploaded successfully', filePath:filePath });
   } catch (err) {
@@ -247,8 +229,9 @@ router.post('/uploadPortfolio',isLoggedIn, uploadPortfolio.single('portfolio'), 
     const filePath = req.file.path;
     console.log("PortfolioPath", filePath)
     const userId = req.user.user_id;
+    const student_status = "open"
     // บันทึกชื่อไฟล์เข้าฐานข้อมูล และ ใช้ฟังก์ชัน UUID() เพื่อสร้างชื่อไฟล์ที่ไม่ซ้ำกัน
-    await pool.query('UPDATE students SET portfolio =(?) WHERE user_id = ?', [filePath, userId]);
+    await pool.query('UPDATE students SET student_status=?, portfolio =? WHERE user_id = ?', [student_status, filePath, userId]);
     console.log("Portfolio uploaded successfully")
     return res.json({ message: 'File uploaded successfully', filePath:filePath });
   } catch (err) {

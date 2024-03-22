@@ -17,37 +17,37 @@
               </a>
             </li>
             <li>
-              <a @click="gotoStudentList">
+              <a @click="gotoCompanyList">
                 <i class="fa-sharp fa-solid fa-building-memo"></i>
                 <span class="menu-text">รายชื่อบริษัท</span>
               </a>
             </li>
             <li>
-              <a @click="gotoStudentList">
+              <a @click="gotoJobList">
                 <i class="fa-light fa-clipboard-list"></i>
                 <span class="menu-text">งานทั้งหมด</span>
               </a>
             </li>
             <li>
-              <a @click="gotoStudentList">
+              <a @click="gotoReportList">
                 <i class="fa-regular fa-circle-exclamation"></i>
                 <span class="menu-text">คำร้องเรียน</span>
               </a>
             </li>
             <li>
-              <a @click="gotoStudentList">
+              <a @click="gotoApplicationList">
                 <i class="fa-sharp fa-light fa-rectangle-history"></i>
                 <span class="menu-text">ผลการสมัครของนักศึกษา</span>
               </a>
             </li>
             <li>
-              <a @click="gotoStudentList">
+              <a @click="gotoBenefitResult">
                 <i class="fa-solid fa-file-invoice-dollar"></i>
                 <span class="menu-text">สรุปค่าแรงและสวัสดิการ</span>
               </a>
             </li>
             <li>
-              <a @click="gotoStudentList">
+              <a @click="gotoCompanyRating">
                 <i class="fa-regular fa-star"></i>
                 <span class="menu-text">รีวิวของบริษัท</span>
               </a>
@@ -105,8 +105,8 @@ export default {
             }
         },
         gotoJobList(){
-            if (this.$route.path !== '/jobList') {
-                this.$router.push('/jobList');
+            if (this.$route.path !== '/companyjobList') {
+                this.$router.push('/companyjobList');
             }
         },
         gotoReportList(){
@@ -149,7 +149,8 @@ export default {
     padding: 1rem;
     background-color: #363740;
     width: 250px;
-    height: 100vh;
+    min-height: 100lvh;
+    height: 100%;
 }
 .menu-label{
     color: wheat;

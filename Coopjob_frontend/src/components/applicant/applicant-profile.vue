@@ -9,6 +9,23 @@
                       </div>
                       <fieldset :disabled="!modify_profile" class="">
                         
+                        <div class="field is-horizontal">
+                          <div class="field-label is-normal">
+                            <label class="label">ปีการศึกษา</label>
+                          </div>
+                          <div class="field-body ">
+                            <!-- ปีการศึกษา -->
+                            <div class="field">
+                              <p class="control">
+                                <input class="input" type="text" v-model="$v.academic_year.$model" :class="{ 'is-danger': $v.academic_year.$error }" placeholder="25xx"/>
+                              </p>
+                              <template v-if="$v.academic_year.$error">
+                                <p class="help is-danger" v-if="!$v.academic_year.required"> โปรดกรอกข้อมูลในช่องนี้</p>
+                              </template>
+                            </div>
+                          </div>
+                        </div>
+                        
                         <!-- รหัสนักศึกษา -->
                         <div class="field is-horizontal">
                           <div class="field-label is-normal">
@@ -214,6 +231,7 @@ export default {
       transript:"",
       portfolio:"",
       studentID: "",
+      academic_year: "",
       select_option:'resume'
     };
   },
@@ -240,6 +258,7 @@ export default {
           this.birthdate = new Date(user[0].birthdate)
             .toISOString()
             .split("T")[0];
+          this.academic_year = user[0].academic_year;
           this.phone_number = user[0].phone_number;
           this.gender = user[0].gender;
           this.email = user[0].email;
@@ -258,6 +277,7 @@ export default {
         },
       };
       const data = {
+        academic_year: this.academic_year,
         studentID: this.studentID,
         firstName: this.firstName,
         lastName: this.lastName,
@@ -326,6 +346,9 @@ export default {
     address: {
       required,
     },
+    academic_year:{
+      required
+    }
   },
 };
 </script>

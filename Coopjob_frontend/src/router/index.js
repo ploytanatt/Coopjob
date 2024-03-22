@@ -186,7 +186,7 @@ const routes = [
     component:jobListingUpload
   },
 
-  ///ฝั่งAdmin
+  //ฝั่งAdmin
   {
     path: '/adminSignin',
     name: 'admin-signin',
@@ -204,6 +204,62 @@ const routes = [
     name: 'studentList',
     meta: {title: 'รายชื่อนักศึกษา'},
     component: () => import('../views/admin/StudentList.vue')
+  },
+  {
+    path: '/studentDetail/:id',
+    name: 'StudentDetails',
+    component: () => import('../views/admin/StudentDetails.vue')
+  },
+  {
+    path: '/companyList',
+    name: 'companyList',
+    meta: {title: 'รายชื่อนักศึกษา'},
+    component: () => import('../views/admin/CompanyList.vue')
+  },
+    {
+    path: '/companyDetail/:id',
+    name: 'Admin-companyDetails',
+    component: () => import('../views/admin/CompanyDetail.vue')
+  },
+  {
+    path: '/companyjobList',
+    name: 'Admin-companyjobList',
+    component: () => import('../views/admin/JobList.vue')
+  },
+  {
+    path: '/reportList',
+    name: 'Admin-reportList',
+    component: () => import('../views/admin/ReportList.vue')
+  },
+  {
+    path: '/reportDetail/:id',
+    name: 'Admin-reportDetailDetails',
+    component: () => import('../views/admin/ReportDetails.vue')
+  },
+    {
+    path: '/applicationList',
+    name: 'Admin-applicationList',
+    component: () => import('../views/admin/ApplicationList.vue')
+  },
+    {
+    path: '/BenefitResult',
+    name: 'Admin-BenefitResult',
+    component: () => import('../views/admin/BenefitList.vue')
+  },
+  {
+    path: '/benefitDetail/:id',
+    name: 'Admin-benefitResultDetail',
+    component: () => import('../views/admin/BenefitDetails.vue')
+  },
+  {
+    path: '/CompanyRating',
+    name: 'Admin-CompanyRating',
+    component: () => import('../views/admin/CompanyRating.vue')
+  },
+  {
+    path: '/CompanyRatingDetail/:id',
+    name: 'Admin-CompanyRatingDetail',
+    component: () => import('../views/admin/CompanyReviewDetail.vue')
   },
 ]
 

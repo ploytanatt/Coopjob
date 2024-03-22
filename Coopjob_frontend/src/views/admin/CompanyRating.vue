@@ -5,7 +5,7 @@
         
         <sideMenu></sideMenu>
         <div class="column">
-         <studenstList></studenstList>
+         <companyRaing></companyRaing>
         </div>
       </div>
 
@@ -15,13 +15,13 @@
   
 <script>
 import sideMenu from '@/components/admin/side-menu.vue';
-import studenstList from '@/components/admin/students-list.vue'
+import companyRaing from '@/components/admin/companies-rating.vue';
  
   export default {
     name: 'BarChart',
    components: { 
     sideMenu,
-    studenstList
+    companyRaing
    },
     data() {
       return {

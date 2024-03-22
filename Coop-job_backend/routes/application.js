@@ -26,7 +26,12 @@ const upload = multer({
 router.post('/sendApplicationJob', isLoggedIn, async (req, res) => {
   try {
     const { job_id, user_id } = req.body;
-
+    const [isStudentOpen] = await pool.query(
+      'SELECT * FROM students WHERE user_id = ? AND student_status != "open"',[user_id]
+    )
+    if (isStudentOpen.length > 0){
+      return res.status(400).json({ error: 'โปรดกรอกข้อมูลให้ครบถ้วนก่อน ถึงจะสามารถสมัครงานได้' });
+    }
     // ตรวจสอบว่า user_id นี้มีการอนุมัติงานอื่นอยู่แล้วหรือไม่
     const [alreadyApproveApplication] = await pool.query(
       'SELECT * FROM applications WHERE student_id = ? AND application_status = "approve"',

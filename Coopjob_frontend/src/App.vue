@@ -50,7 +50,11 @@
                 <span>ตั้งค่าบัญชีผู้ใช้</span>
               </router-link>
 
-        
+              <router-link class="navbar-item " to="/adminOverview" v-if="user.role === 'admin'">
+                     
+                      <span>dashboard</span>
+                    </router-link>
+              
               <div class="navbar-item">
                 <div class="buttons">
                   <a class="button is-danger" @click="logout()" v-if="user">

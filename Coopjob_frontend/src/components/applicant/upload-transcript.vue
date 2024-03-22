@@ -138,6 +138,7 @@ export default {
         return;
       }
       const formData = new FormData();
+      formData.append("student_status", 'open');
       formData.append("transcript", file);
       axios.post("http://localhost:3000/applicant/uploadTranscript", formData, config)
         .then((response) => {

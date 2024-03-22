@@ -138,6 +138,7 @@ export default {
         return;
       }
       const formData = new FormData();
+      formData.append("student_status", 'open');
       formData.append("portfolio", file);
       axios.post("http://localhost:3000/applicant/uploadPortfolio", formData, config)
         .then((response) => {
