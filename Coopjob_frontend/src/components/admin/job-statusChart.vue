@@ -22,7 +22,7 @@ export default {
           width: 380,
           type: 'pie',
         },
-        colors: ['#61A3BA', '#FFCCCC'],
+        colors: ['#A1EEBD', '#D04848'],
         labels: ['Open', 'Close'],
         responsive: [{
           breakpoint: 480,

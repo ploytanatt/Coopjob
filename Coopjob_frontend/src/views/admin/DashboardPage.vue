@@ -158,8 +158,7 @@
       </div>
       <div class="tile is-parent">
         <article class="tile is-child notification card">
-          <p class="title">Middle tile</p>
-          <p class="subtitle">With an image</p>
+          <p class="title">สถานะของงานทั้งหมด</p>
           <jobStatusChart></jobStatusChart>
         </article>
       </div>
