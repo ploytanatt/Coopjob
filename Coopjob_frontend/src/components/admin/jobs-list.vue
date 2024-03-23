@@ -6,7 +6,7 @@
           <div class="hero-body">
             <div class="">
                 <h1 class="title">
-               งานที่ประกาศทั้งหมด
+               งานที่ประกาศทั้งหมด ({{ companyLists.length }}) งาน
                 </h1>
             </div>
             </div>
@@ -216,7 +216,7 @@ computed: {
      return [...this.companyLists]
       .sort((a, b) => b.total_applications - a.total_applications)
       .slice(0, 3);
-  
+
   }
     
 },

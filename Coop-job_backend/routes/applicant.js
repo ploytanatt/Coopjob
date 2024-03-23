@@ -42,6 +42,7 @@ router.post('/signup', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const role = "applicant";
+    const datePosted = new Date();
     // เข้ารหัสรหัสผ่านก่อนเก็บในฐานข้อมูล
     const hashedPassword = await bcrypt.hash(password, 10);
     const [existingUser] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
@@ -49,7 +50,7 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ message: 'Email already exists' });
     }
     // บันทึกผู้ใช้ในฐานข้อมูล
-   await pool.query('INSERT INTO users (email, password, role) VALUES (?, ?, ? )', [email, hashedPassword, role]);
+   await pool.query('INSERT INTO users (email, password,created_at, role) VALUES (?, ?, ?, ? )', [email, hashedPassword,datePosted, role]);
     console.log("User registered successfully")
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {

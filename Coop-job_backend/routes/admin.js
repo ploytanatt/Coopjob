@@ -155,6 +155,7 @@ router.get("/getAllJobs", async (req, res) => {
                 j.job_type,
                 j.job_status,
                 J.date_posted,
+                j.salary,
                 COUNT(DISTINCT j.job_id) AS total_jobs,
                 COUNT(a.application_id) AS total_applications,
                 SUM(CASE WHEN a.application_status = 'approve' THEN 1 ELSE 0 END) AS approve_applications,
@@ -163,7 +164,7 @@ router.get("/getAllJobs", async (req, res) => {
             LEFT JOIN jobs j ON c.user_id = j.user_id
             LEFT JOIN applications a ON j.job_id = a.job_id
             LEFT JOIN reviews r ON c.user_id = r.company_id
-            GROUP BY c.user_id, j.job_id, c.company_name, c.profile_image, j.job_type, j.job_title, j.job_status, J.date_posted;
+            GROUP BY c.user_id, j.job_id, c.company_name, c.profile_image, j.job_type, j.job_title, j.job_status, J.date_posted, j.salary;
         `);
         res.json(jobList);
   } catch (error) {
@@ -350,4 +351,35 @@ router.get('/getRecruiterReviews/:companyId', async (req, res) => {
   }
 });
 
+//overview
+router.get('/ApproveApplicationList', async (req, res) => {
+    try {
+        const [results] = await pool.query(`
+            SELECT a.*, j.user_id, j.job_title, s.firstName, s.lastName, j.job_type, c.company_name, c.profile_image
+            FROM applications a
+            LEFT JOIN students s ON a.student_id = s.user_id
+            LEFT JOIN jobs j ON a.job_id = j.job_id
+            LEFT JOIN companies c ON j.user_id = c.user_id
+            WHERE a.application_status = "approve"
+        `,);
+        if (results.length > 0) {
+            res.json(results);
+        } else {
+            res.status(404).json({ message: 'Company not found' }); // ถ้าไม่พบนักศึกษา
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.get('/Allusers', async (req, res) => {
+    try {
+        const [results] = await pool.query(` SELECT * FROM users WHERE users.role != "admin" `);
+        res.json(results);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 module.exports = router;

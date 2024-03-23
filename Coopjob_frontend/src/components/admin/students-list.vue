@@ -177,7 +177,6 @@ data() {
 
   return {
     studentLists:[],
-    without_applications:[],
     currentFilter: 'all',
     selectedStatus:'',
     itemsPerPage: 10,
@@ -242,7 +241,6 @@ computed: {
 },
 mounted() {
   this.getStudentLists()
-  this.getstudentsWithoutApplications()
 },
 methods: {
   viewStudentDetails(studentId) {
@@ -260,22 +258,6 @@ methods: {
       .get("http://localhost:3000/admin/students/application-stats", config)
       .then((response) => {
         this.studentLists = response.data;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  },
-  getstudentsWithoutApplications(){
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-     axios
-      .get("http://localhost:3000/admin/students/without-applications", config)
-      .then((response) => {
-        this.without_applications = response.data;
       })
       .catch((error) => {
         console.error(error);
