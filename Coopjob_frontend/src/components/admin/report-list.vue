@@ -30,7 +30,15 @@
                 </section>
 
             <div class="field is-horizontal  ">
-        <div class="field-body filter_searchbox field is-grouped  is-grouped-right ">
+        <div class="field-body  filter_searchbox field is-grouped  is-grouped-right ">
+         <div class="filter_search  ">
+              <button class="button is-success mr-3" @click="exportToCSV">
+                <i class="fa-solid fa-file-csv"></i>
+              </button>
+              <button class="button is-dark " @click="exportToExcel">
+                <i class="fa-solid fa-file-xls"></i>
+              </button>
+             </div>
             <div class="filter_search select is-small">
               <select v-model="selectedStatus">
                 <option value="">สถานะ</option>
@@ -174,6 +182,8 @@
 <script>
 import axios from "axios";
 //import Swal from "sweetalert2";
+import Papa from 'papaparse';
+import * as XLSX from 'xlsx'
 export default {
 data() {
 
@@ -239,6 +249,24 @@ mounted() {
   this.getReportList()
 },
 methods: {
+  exportToCSV() {
+      const data = this.computedPaginatedApplications;
+      const csv = Papa.unparse(data);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'export.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
+    exportToExcel() {
+      // ตัวอย่างโค้ดการใช้งาน XLSX
+      const worksheet = XLSX.utils.json_to_sheet(this.computedFilteredApplications);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Applications');
+      XLSX.writeFile(workbook, 'applications.xlsx');
+    },
   viewReportDetails(reportId) {
    // this.$router.push({ name: 'StudentDetails', params: { id: reportId } });
     this.$router.push("/reportDetail/" + reportId);
@@ -307,8 +335,17 @@ filters: {
 <style scoped>
 
 .table td, .table th {
-  text-align: center; /* จัดให้ข้อความอยู่ตรงกลาง */
-  vertical-align: middle; /* จัดให้ข้อความอยู่กลางแนวตั้ง */
+  text-align: center; 
+  vertical-align: middle; 
+}
+.filter_search{
+  margin-top: 20px;
+  margin-left: 10px;
 }
 
+.filter_searchbox{
+ padding: 1rem;
+ margin-top: 1rem;
+ background-color: #eaeaea;
+}
 </style>

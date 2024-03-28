@@ -28,7 +28,7 @@
                           
                           <p class="column is-6">เพศ: {{ user.gender }}</p>
 
-                          <p class="column is-6">วัน-เดือน-ปี เกิด: {{user.birthdate}}</p>
+                          <p class="column is-6">วัน-เดือน-ปี เกิด: {{formatDate(user.birthdate)}}</p>
                           <p class="column is-6">ที่อยู่: {{user.address }}</p>
                         
                         </div>
@@ -123,6 +123,9 @@ export default {
  
     });
 },
+formatDate(date) {
+    return new Date(date).toLocaleDateString()
+  },
   },
 };
 </script>

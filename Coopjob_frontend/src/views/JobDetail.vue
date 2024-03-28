@@ -1,29 +1,34 @@
 <template>
-  <div class="containerJob">
-  <div class="job-detail-container mt-6">
+  <div class="containerJob ">
+  <div class="job-detail-container ">
       
-    <div class="columns">
+    <div class="columns ">
       <!-- Left Column: Job Description -->
-      <div class="column is-9">
+      <div class="column is-9 mt-6">
         <div class="box">
           <div class="media">
             <div class="media-left">
               <figure class="image is-128x128">
+                <router-link :to="'/company/' + job.user_id" >
                 <img :src="imagePath(job.profile_image)" alt="Company logo">
+                </router-link>
               </figure>
             </div>
             <div class="media-content">
               <div class="content">
+               <span class="tag is-dar">{{ job.job_status }}</span>
                 <p class="mb-1">
+                
                   <strong>{{ job.job_title }}</strong> <br>
                   {{ job.company_name}}
                 </p>
                 <p class="tags "><span class="tag is-primary">{{ job.job_type }}</span></p>
+               
                 <small>วันที่ลงประกาศ: {{ formatDate(job.date_posted) }}</small> 
               </div>
             </div>
 
-            <div class="media-right buttons is-aligned-top" v-show="user.role === 'applicant'">
+            <div class="media-right buttons is-aligned-top" v-show="user.role === 'applicant' && job.job_status === 'open'">
               <button class="button mr-2 heart" @click="favThisJob(job.job_id)" v-if="!isJobLiked">
                 <i class="fa fa-heart"></i>
               </button>
@@ -48,9 +53,9 @@
           </div>
         </div>
          
-          <div class="content">
+          <div class="content is-3">
             <h3>คำอธิบาย</h3>
-            <p>{{ job.description }}</p>
+            <p>{{ job.job_description }}</p>
             <h3>คุณสมบัติผู้สมัคร</h3>
             <li v-for="item in specification" :key="item.text">{{ item.text }}</li>
             <h3>สวัสดิการ</h3>
@@ -60,7 +65,7 @@
       </div>
 
       <!-- Right Column: Job Summary and Apply Button -->
-      <div class="column is-3">
+      <div class="column is-3 mt-6">
         <div class="box ">
           <i class="fa-sharp fa-solid fa-location-dot"></i>
           <span v-for="(type, index) in location" :key="index" > {{ type.tambon }} {{ type.amphure }} {{ type.province }} {{ type.zip_code }}</span>
@@ -77,7 +82,7 @@
             </div>
           <p><strong>ชื่อผู้ติดต่อ:</strong> {{ job.contact_person_name }}</p>
           <p><strong>แผนก:</strong> {{ job.contact_person_department }}</p>
-          <p><strong>โทรศัพท์:</strong> {{ job.company_phone_number }}</p>
+          <p><strong>โทรศัพท์:</strong> {{ job.contact_phone_number }}</p>
           <p><strong>อีเมล:</strong> {{ job.contact_email }}(อีเมลนี้ใช้สำหรับการติดต่อและสมัครงาน)</p>
         </div>
         <div class="tags-container is-flex is-justify-content-center">
@@ -172,8 +177,8 @@ export default {
   mounted() {
     this.onAuthChange();
     const jobId = this.$route.params.jobId;
-    const c_user_id = this.companyId;
     this.getCompanyJobDetail(jobId);
+    const c_user_id = this.companyId;
     this.checkIfJobIsLiked(jobId);
     this.getCompanyJobs(c_user_id);
   },
@@ -220,23 +225,24 @@ export default {
           this.benefit = JSON.parse(this.job.benefit);
           this.specification = JSON.parse(this.job.specification);
           this.location = JSON.parse(this.job.location);
-          this.companyId = response.data[0].user_id;
+          this.companyId = this.job.user_id;
         })
         .catch((error) => {
           console.error(error);
         });
     },
+
     getCompanyJobs(companyId) {
-    console.log("companyId", companyId)
-  axios
-    .get(`http://localhost:3000/recruiter/getAnotherJobs/${companyId}`)
-    .then((response) => {
-      this.jobs = response.data;
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-},
+        console.log("companyId", companyId)
+      axios
+        .get(`http://localhost:3000/recruiter/getAnotherJobs/${companyId}`)
+        .then((response) => {
+          this.jobs = response.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
     applyToJob(jobId) {
       const token = localStorage.getItem("token");
       const config = {
@@ -295,6 +301,12 @@ export default {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log(response.data.message);
+        Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "ดำเนินการเรียบร้อย",
+              showConfirmButton: response.data.message,
+            });
         this.isReportModalActive = false;
         // Show success message
       } catch (error) {
@@ -366,7 +378,7 @@ export default {
 .containerJob {
   width: 100%; /* กำหนดความกว้างเป็น 80% ของหน้าจอ */
   margin: 0 auto; /* จัดให้เนื้อหาอยู่ตรงกลางของหน้าจอในแนวนอน */
-  display: flex; /* เปิดใช้งาน flexbox */
+ /* เปิดใช้งาน flexbox */
   justify-content: center; /* จัดตำแหน่งเนื้อหาให้อยู่ตรงกลาง */
   padding-left: 8rem;
   padding-right: 8rem;

@@ -69,22 +69,7 @@
                           </div>
                         </div>
                         <!-- Email -->
-                        <div class="field is-horizontal">
-                          <div class="field-label is-normal">
-                            <label class="label">อีเมล</label>
-                          </div>
-                          <div class="field-body">
-                            <div class="field">
-                              <div class="control">
-                                <input v-model="$v.email.$model" :class="{ 'is-danger': $v.email.$error }" class="input" type="text" />
-                              </div>
-                              <template v-if="$v.email.$error">
-                                <p class="help is-danger" v-if="!$v.email.required">โปรดกรอกข้อมูลในช่องนี้</p>
-                                <p class="help is-danger" v-else-if="!$v.email.email">รูปแบบอีเมลไม่ถูกต้อง</p>
-                              </template>
-                            </div>
-                          </div>
-                        </div>
+
 
                         <!-- วันเกิด -->
                         <div class="field is-horizontal">
@@ -276,6 +261,8 @@ export default {
           Authorization: `Bearer ${token}`,
         },
       };
+      this.$v.$touch();
+      if (!this.$v.$error) {
       const data = {
         academic_year: this.academic_year,
         studentID: this.studentID,
@@ -298,7 +285,7 @@ export default {
             title: "แก้ไขข้อมูลสำเร็จ",
             showConfirmButton: false,
           });
-          this.modify_profile = false;
+         
         })
         .catch((error) => {
           if (error.response) {
@@ -311,6 +298,7 @@ export default {
             });
           }
         });
+         } 
     },
     resetProfile() {
       this.getUserProfile();

@@ -87,10 +87,16 @@ router.post('/changeEmail', isLoggedIn, async (req, res) => {
 
     // Update the email in users table
     await pool.query('UPDATE users SET email = ? WHERE user_id = ?', [email, userId]);
+    
 
     // If the user is a recruiter, also update the email in companies table
     if (req.user.role === 'recruiter') {
       await pool.query('UPDATE companies SET email = ? WHERE user_id = ?', [email, userId]);
+    }
+
+// If the user is a recruiter, also update the email in companies table
+    if (req.user.role === 'applicant') {
+      await pool.query('UPDATE students SET email = ? WHERE user_id = ?', [email, userId]);
     }
 
     res.status(200).json({ message: 'Email changed successfully' });

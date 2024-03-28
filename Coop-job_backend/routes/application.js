@@ -8,6 +8,9 @@ const { v4: uuidv4 } = require('uuid');
 const { isLoggedIn } = require("../middleware");
 const multer = require('multer');
 const { json } = require('body-parser');
+const { sendEmail, weeklyEmailScheduler } = require('../service/emailService');
+
+weeklyEmailScheduler(); // เริ่มต้นการทำงานของ Scheduler
 
 // ตั้งค่า multer upload
 const upload = multer({
@@ -162,14 +165,14 @@ router.put('/acceptApplicant/:applicationId', isLoggedIn, upload.single('coopfil
 
   try {
     // ตรวจสอบว่าผู้สมัครมีการอนุมัติสำหรับงานอื่นหรือไม่
-    const [applicantDetails] = await pool.query('SELECT student_id FROM applications WHERE application_id = ?', [applicationId]);
+    const [applicantDetails] = await pool.query('SELECT * FROM applications WHERE application_id = ?', [applicationId]);
     const studentId = applicantDetails[0].student_id;
 
+    //ตรวจสอยว่าผู้สมัครนี้มีงานที่อนุมัติแล้วหรือไม่
     const [approvedApplications] = await pool.query(
       'SELECT * FROM applications WHERE student_id = ? AND application_status = "approve"',
       [studentId]
     );
-
     if (approvedApplications.length > 0) {
       return res.status(400).json({ error: 'ผู้สมัครนี้มีงานที่อนุมัติแล้ว ไม่สามารถอนุมัติเพิ่มได้' });
     }
@@ -179,13 +182,59 @@ router.put('/acceptApplicant/:applicationId', isLoggedIn, upload.single('coopfil
       'SELECT * FROM applications WHERE application_id = ? AND application_status = "approve"',
       [applicationId]
     );
-
     if (existingApplication.length > 0) {
       return res.status(400).json({ error: 'ผู้สมัครนี้ได้รับการอนุมัติสำหรับงานนี้แล้ว' });
     }
 
-    // ถ้ายังไม่ได้รับการอนุมัติ ดำเนินการอัพเดท
-    await pool.query('UPDATE applications SET application_status = ?, coop302 = ? WHERE application_id = ?', [application_status, filePath, applicationId]);
+
+    //ดึงข้อมูลจากตาราง students และ jobs
+    const [[student]] = await pool.query('SELECT * FROM students WHERE user_id = ?', [studentId]);
+    const [[job]] = await pool.query('SELECT * FROM jobs WHERE job_id = ?', [applicantDetails[0].job_id]);
+   
+    if (!student || !job) {
+      return res.status(404).json({ error: 'Student or job not found' });
+    }
+
+    const [[company]] = await pool.query('SELECT * FROM companies WHERE user_id = ?', [job.user_id]);
+    if (!company) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+
+  const email = student.email;
+  const firstName = student.firstName;
+  const lastName = student.lastName;
+  const job_title = job.job_title;
+  const company_name = company.company_name;
+  const contact_email = company.contact_email;
+  const contact_phone_number = company.contact_phone_number;
+  console.log("studentEmail", email)
+  const emailData = {
+    to: email, // อีเมลของผู้รับ
+    subject: `การยืนยันการสมัครงานสำหรับตำแหน่ง ${job_title}`,
+    text: `คุณได้รับการยืนยันการสมัครงานสำหรับตำแหน่ง ${job_title} ที่บริษัท ${company_name}. โปรดตรวจสอบไฟล์ที่แนบมาเพื่อดูรายละเอียดเพิ่มเติม.`,
+    html: `
+      <p><strong>เรียน คุณ${firstName} ${lastName},</strong></p>
+      <p>คุณได้รับการยืนยันการสมัครงานสำหรับตำแหน่ง <strong>${job_title}</strong> ของบริษัท <strong>${company_name}</strong>.</p>
+      <p>เราได้แนบแบบตอบรับและเสนองานนักศึกษาสหกิจศึกษาในไฟล์นี้. โปรดตรวจสอบและอ่านเอกสารอย่างละเอียด เพื่อทำความเข้าใจเงื่อนไขและขั้นตอนถัดไปในการเริ่มต้นการฝึกงานของคุณ.</p>
+      <p>หากคุณมีคำถามหรือต้องการข้อมูลเพิ่มเติม, โปรดติดต่อเราที่ <a href='mailto:${contact_email}'>${contact_email}</a> หรือโทร <strong>${contact_phone_number}</strong>.</p>
+      <p>ขอบคุณอีกครั้งสำหรับความสนใจและความพยายามในการสมัครงานกับเรา.</p>
+      <p>ด้วยความเคารพ,<br>${company.company_name}</p>
+    `,
+    attachments: [{
+      filename: 'coop302.pdf',
+      path: filePath
+    }]
+  };
+
+  try {
+    await sendEmail(emailData);
+    // โค้ดอัพเดทสถานะการสมัครใน database
+  } catch (error) {
+    console.error('Error in sending email:', error);
+    res.status(500).json({ error: 'Error in sending email' });
+  }
+   
+     await pool.query('UPDATE applications SET application_status = ?, coop302 = ? WHERE application_id = ?', [application_status, filePath, applicationId]);
     res.json({ message: 'อัพโหลดไฟล์สำเร็จ และสถานะการสมัครได้รับการอัพเดท' });
   } catch (error) {
     console.error(error);

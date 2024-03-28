@@ -4,9 +4,11 @@
         <sideMenu></sideMenu>
         <div class="column is-9">
     <div class="student-details card mt-4">
-              <button class="button is-dark go-back-button">
-                <i class="fa-solid fa-left-long"></i> 
-              </button>
+      <router-link :to="'/studentList'" >
+         <button class="button is-dark go-back-button">
+           <i class="fa-solid fa-left-long"></i> 
+         </button>
+      </router-link>
     <h1 class="title">รายละเอียดของนักศึกษา</h1>
     <div class="details">
       <p><strong>ปีการศึกษา:</strong> {{ student.academic_year }}</p>

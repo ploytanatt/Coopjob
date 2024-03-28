@@ -4,9 +4,13 @@
         <sideMenu></sideMenu>
         <div class="column is-4">
           <div class="report-details card mt-4">
+          <router-link :to="'/BenefitResult'">
+         
           <button class="button is-dark go-back-button">
                           <i class="fa-solid fa-left-long"></i> 
                         </button>
+
+           </router-link>
               <h1 class="title">สรุปค่าแรงและบริษัท</h1>
              <div class="mt-4 card column" id="benefit_form">
       <section class="hero is-dark welcome is-small">

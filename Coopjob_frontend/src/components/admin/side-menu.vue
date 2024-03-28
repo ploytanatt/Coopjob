@@ -52,7 +52,7 @@
                 <span class="menu-text">รีวิวของบริษัท</span>
               </a>
             </li>
-
+            <!--
             <p class="menu-label">setting</p>
             <ul class="menu-list">
                 <li>
@@ -68,6 +68,8 @@
               </a>
             </li>
             </ul>
+
+            -->
           </ul>
           </aside>
 

@@ -69,13 +69,19 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(report, index) in reportLists" :key="report.report_id">
-                      <td>{{ index + 1 }}</td>
+                    <tr v-for="(report) in reportLists" :key="report.report_id">
+                      <td>#{{ report.report_id }}</td>
                       <td>{{ report.report_title }}</td>
                       <td>{{ report.report_description }}</td>
                       <td>{{ formatDate(report.date_posted) }}</td>
                       <td>{{ report.report_status }}</td>
-                      <td><button class="button is-info">ดูรายละเอียด</button></td>
+                             
+                      <td>
+                       <router-link :to="'/reportDetail/' + report.report_id" >
+                      <button class="button is-info">ดูรายละเอียด</button>
+                               </router-link>
+                      </td>
+             
                     </tr>
                   </tbody>
                 </table>
@@ -246,7 +252,10 @@
                       <td>{{ job.job_title }}</td>
                       <td>{{ job.job_type }}</td>
                       <td>จำนวนคนสมัคร: {{ job.total_applications }} จำนวนที่รับแล้ว: {{ job.approve_applications }}</td>
-                      <td><button class="button is-info">ดูรายละเอียด</button></td>
+                      <td>
+              
+                      <button class="button is-info">ดูรายละเอียด</button>
+                      </td>
                     </tr>
                   </tbody>
                 </table>

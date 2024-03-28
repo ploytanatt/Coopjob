@@ -113,7 +113,6 @@
         activeTab: 'all',
         locations: jsonData,
         options: JobtypeJson,
-        position_type:[],
         searchKeyword: this.$route.query.searchKeyword || '',
         selectedPosition_type:[],
         selectedJobType: '',
@@ -181,10 +180,9 @@
   },
       filterJobs() {
          this.filteredJobs = this.jobs.filter(job =>
-            job.status === 'open' &&
-            (this.selectedPosition_type.length === 0 || job.position_type && this.selectedPosition_type.some(type => job.position_type.includes(type.title))) &&
+            job.job_status === 'open' &&
             (this.activeTab === 'all' || job.job_type === this.activeTab) &&
-            (this.selectedJobType === '' || job.job_type === this.selectedJobType) && // กรองตามประเภทงานที่เลือก
+            (this.selectedJobType === '' || job.job_type.includes(this.selectedJobType)) && // กรองตามประเภทงานที่เลือก
             (this.selectedProvince === '' || job.company.location.includes(this.selectedProvince)) &&// กรองตามสถานที่ทำงานที่เลือก
             job.job_title.toLowerCase().includes(this.searchKeyword.toLowerCase())
 

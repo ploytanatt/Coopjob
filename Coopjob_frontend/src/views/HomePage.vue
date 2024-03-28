@@ -87,7 +87,7 @@
 
   <!-- Jobs Section -->
   <div class="columns is-multiline ">
-    <div class=" card column job_card is-3" v-for="job in filteredJobs" :key="job.job_id" @click="goToJobDetails(job.job_id)">
+    <div class=" card column job_card is-2" v-for="job in filteredJobs" :key="job.job_id" @click="goToJobDetails(job.job_id)">
 
       <div class="job-card-content">
         <a class="job-card-img">

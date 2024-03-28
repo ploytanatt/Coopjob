@@ -1,46 +1,16 @@
-	<template>
+<template>
   <div>
     <div class="columns">
       <div class="column ">
-        <section class="hero is-info welcome is-small">
-          <div class="hero-body">
-            <div class="">
-                <h1 class="title">
-              ผลการสมัครของนักศึกษา
-                </h1>
-            </div>
-                    </div>
-                </section>
-                <section class="info-tiles mt-4">
-                    <div class="tile is-ancestor has-text-centered">
-                        <div class="tile is-parent is-2">
-                            <article class="tile is-child box" style="background-color: #9BB0C1;">
-                                <p class="title">{{ totalInternCount}} </p>
-                                <p class="subtitle">ฝึกงาน</p>
-                            </article>
-                        </div>
-                        <div class="tile is-parent is-2">
-                            <article class="tile is-child box " style="background-color: #A8CD9F;">
-                                <p class="title">{{ totalCoopCount}}</p>
-                                <p class="subtitle">สหกิจศึกษา</p>
-                            </article>
-                        </div>
-                    </div>
-                </section>
-
-  <div>
-  <router-link :to="'/draggable-list'">
-   <button class="button">จัดกลุ่ม</button>
-  </router-link>
-   
-    <!-- โมดัลสำหรับการสร้างกลุ่มใหม่ -->
 
 
 
 
-  </div>
+
+    
             <div class="field is-horizontal  ">
         <div class="field-body filter_searchbox field is-grouped  is-grouped-right ">
+        
             <div class="filter_search  ">
               <button class="button is-success mr-3" @click="exportToCSV">
                 <i class="fa-solid fa-file-csv"></i>
@@ -78,73 +48,47 @@
         </div>
       </div>
 
-  <div class="box mb-3">
-    <div class="table-container">
-      <table class="table is-striped is-fullwidth is-size-7">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th class="">
-              <button class="button is-small is-white" @click="sortApplications('company_name')">
-                <span class="has-text-grey">ชื่อบริษัท</span>&nbsp;
-                <i class="fa-solid fa-angles-up-down"></i>
+    <div class="columns">
+
+    
+      <div class="column">
+              <main>
+            <div class="mt-5">
+              <div class="row justify-content-center border py-5">
+              <button class="button toggle-button" @click="toggleAllCategories">
+                {{ showAll ? 'Hide All Categories' : 'Show All Categories' }}
               </button>
-            </th>
+                <!-- Toggle for each category -->
+                <div class="col-12" v-for="category in categories" :key="category.name" v-show="showAll"> 
+                  <h4 class="mb-3 button" @click="toggleCategory(category.name)">{{ category.name }}</h4>
+                  <draggable v-if="category.visible" class="draggable-list" :list="category.items" group="categories">
+                    <div class="list-item" v-for="item in category.items" :key="item.name">
+                      {{ item.name }}
+                    </div>
+                  </draggable>
+                </div>
+              </div>
+            </div>
+          </main>
 
-            <th class="" @click="sortApplications('job_title')">
-              <button class="button is-small is-white" >
-                <span class="has-text-grey">ตำแหน่ง </span>&nbsp;
-                <i class="fa-solid fa-angles-up-down"></i>
-              </button>
-            </th>
-
-          <th @click="sortApplications('job_type')">
-            <button class="button is-small is-white" >
-              <span class="has-text-grey">รูปแบบงาน</span>&nbsp;
-              <i class="fa-solid fa-angles-up-down"></i>
-            </button>
-          </th>
-
-          <th class="" @click="sortApplications('firstName')">
-            <button class="button is-small is-white" >
-              <span class="has-text-grey">ชื่อผู้สมัคร </span>&nbsp;
-              <i class="fa-solid fa-angles-up-down"></i>
-            </button>
-          </th>
-          
-          <th @click="sortApplications('applied_datetime')">
-            <button class="button is-small is-white" >
-              <span class="has-text-grey">วันที่สมัคร </span>&nbsp;
-              <i class="fa-solid fa-angles-up-down"></i>
-            </button>
-          </th>
-
-          <th  @click="sortApplications('job_status')">
-            <button class="button is-small is-white">
-              <span class="px-5 has-text-grey">สถานะ</span>&nbsp;
-              <i class="fa-solid fa-angles-up-down"></i>
-            </button>
-          </th>
-         
-        </tr>
-
-        </thead>
-        <tbody>
-          <tr v-for="(application, index) in computedFilteredApplications" :key="application.application_id">
-
-            <td>{{ index + 1 }}</td>
-                          <td>
+  </div>
+<!-- ...ส่วนอื่นๆของtemplate... -->
+<div class="column is-full container">
+  <draggable class="draggable-list card_list" :list="computedFilteredApplications" group="shared-group" @change="handleDrag">
+    <div v-for="(application, index) in computedFilteredApplications" :key="application.application_id" class="box draggable-item">
+      <!-- Content of draggable card -->
+        {{ index + 1 }}       
                 <router-link :to="'/company/' + application.user_id">
                   <img :src="imagePath(application.profile_image)" alt="Company Logo" class="CompanyLogo">
                   <p>{{ application.company_name }}</p>
               </router-link>
-            </td>
-             <td>{{ application.job_title }}</td>
-             <td>{{ application.job_type}}</td>
-            <td>{{ application.firstName }} {{ application.lastName }}</td>
+           
+            {{ application.job_title }}
+             {{ application.job_type}}
+            {{ application.firstName }} {{ application.lastName }}
             
-            <td>{{ formatDate(application.applied_datetime)}}</td>
-            <td class="pl-5 pt-5 pb-1">
+           {{ formatDate(application.applied_datetime)}}
+          
                 <span :class="{
                 'tag': true, 
                 'is-success':application.application_status === 'approve',
@@ -153,16 +97,15 @@
                 'is-danger':application.application_status === 'declined',
                  }"> 
                 {{ application.application_status }} </span>
-              </td>
-      
-          </tr>
-        </tbody>
-      </table>
     </div>
-  </div>
+  </draggable>
+</div>
+<!-- ...ส่วนอื่นๆของtemplate... -->
 
+    </div>
 
   <div class="columns">
+
     <div class="column">
       <div class="is-flex is-align-items-center">
         <p class="is-size-7 has-text-grey-light">แสดง</p>
@@ -236,10 +179,10 @@ import axios from "axios";
 //import Swal from "sweetalert2";
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx'
-
+import draggable from 'vuedraggable';
 export default {
   components: {
-
+    draggable
   },
 data() {
 
@@ -260,6 +203,28 @@ data() {
     sortOrder: 'desc',
 
     searchText:'',
+
+
+    showAll: false,
+      categories: [
+        { name: 'Software', items: [] , visible: false},
+        { name: 'Web App', items: [] , visible: false},
+        { name: 'Mobile App', items: [] , visible: false},
+        { name: 'Network/System', items: [], visible: false },
+        { name: 'IOT', items: [] , visible: false},
+        { name: 'Security', items: [], visible: false },
+        { name: 'Cloud', items: [] , visible: false},
+        { name: 'DevOps', items: [] , visible: false},
+        { name: 'Testing/Quality Assurance/Performance', items: [], visible: false },
+        { name: 'Game', items: [], visible: false },
+        { name: 'System/Business Analyst', items: [] , visible: false},
+        { name: '3D', items: [] },
+        { name: 'BI/Data Analytics/Data Science/Machine Learning/AI/Chatbot/Credit Risk Analysis', items: [] , visible: false},
+        { name: 'Data Engineer', items: [], visible: false },
+        { name: 'Consultant', items: [], visible: false },
+        { name: 'ด้าน บัญชี RPA, Retail Support, Trainee, Operation Support, Audit, Business Process Improvement', items: [], visible: false },
+      ],
+  
   };
 },
 computed: {
@@ -324,6 +289,36 @@ mounted() {
   this.getApplicationList()
 },
 methods: {
+   handleDrop(event) {
+      // สมมติว่ามีการใช้ ID หรือประเภทเพื่อระบุกลุ่มที่เหมาะสม
+      let application = this.computedFilteredApplications[event.oldIndex];
+      let targetCategory = this.categories[event.newIndex];
+      targetCategory.items.push(application);
+      // ถ้าคุณต้องการลบรายการจาก `computedFilteredApplications` หลังจากการวาง
+      this.removeFromFilteredApplications(application.application_id);
+    },
+    handleDrag(event) {
+    if (event.added) {
+      const newItem = event.added.element;
+      const newCategory = this.categories.find(category => category.name === event.to.dataset.category);
+      if (newCategory) {
+        newCategory.items.push(newItem);
+        // ลบจาก `computedFilteredApplications` ถ้าจำเป็น
+        this.removeFromFilteredApplications(newItem.application_id);
+      }
+    }
+  },
+
+  removeFromFilteredApplications(applicationId) {
+    this.applications = this.applications.filter(app => app.application_id !== applicationId);
+  },
+ addToCategory(application, categoryName) {
+      const category = this.categories.find(c => c.name === categoryName);
+      if (category) {
+        category.items.push(application);
+      }
+    },
+
    exportToCSV() {
       const data = this.computedPaginatedApplications;
       const csv = Papa.unparse(data);
@@ -348,25 +343,6 @@ methods: {
     this.$router.push("/reportDetail/" + reportId);
   },
 
-  openNewGroupModal() {
-    this.isGroupModalActive = true; // เปิด modal
-  },
-  closeNewGroupModal() {
-    this.isGroupModalActive = false; // ปิด modal
-  },
-  createNewGroup() {
-    // ส่งข้อมูลไปยัง backend
-    axios.post('/api/groups', { name: this.newGroupName })
-      .then(response => {
-        // หลังจากสร้างกลุ่มใหม่สำเร็จ
-        this.groups.push(response.data); // เพิ่มกลุ่มใหม่ไปยัง array groups
-        this.closeNewGroupModal(); // ปิด modal
-      })
-      .catch(error => {
-        console.error('Error creating new group:', error);
-        // แสดงข้อผิดพลาดหรือการแจ้งเตือนที่เหมาะสม
-      });
-  },
   getApplicationList(){
     const token = localStorage.getItem("token");
     const config = {
@@ -418,6 +394,17 @@ methods: {
   }
 },
 
+ toggleAllCategories() {
+      this.showAll = !this.showAll;
+  
+    },
+    toggleCategory(categoryName) {
+      const category = this.categories.find(c => c.name === categoryName);
+      if (category) {
+        category.visible = !category.visible;
+      }
+    },
+
 },
 filters: {
   capitalize(value) {
@@ -440,9 +427,7 @@ border: 1px solid rgb(240, 240, 240);
 border-radius: 5px;
 transition: width 0.3s ease-in-out;
 }
-.CompanyLogo:hover{
-width: 80px;
-}
+
 
 .filter_search{
   margin-top: 20px;
@@ -453,5 +438,26 @@ width: 80px;
  padding: 1rem;
  margin-top: 1rem;
  background-color: #eaeaea;
+}
+
+.draggable-list {
+  background: #3f51b5;
+  color: #fff;
+
+  min-height: 10vh;
+
+}
+.list-item {
+
+
+  cursor: pointer;
+  font-size: 16px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.card_list{
+  padding: 1rem;
+  background-color: #dedede;
 }
 </style>

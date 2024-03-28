@@ -347,21 +347,6 @@ router.delete("/deleteJob/:job_id", isLoggedIn, async (req, res) => {
   }
 });
 
-//ดึงรายละเอียดของงานตามjob_id ที่ส่งมา
-router.get("/getJobDetails/:job_id", isLoggedIn, async (req, res) => {
-  try {
-    const { job_id } = req.params;
-    const [jobDetails] = await pool.query("SELECT * FROM jobs WHERE job_id = ?", [job_id]);
-    if (jobDetails.length === 0) {
-      return res.status(404).json({ message: "Job not found" });
-    }
-  //ส่งรายละเอียดกลับไป
-    res.status(200).json(jobDetails[0]);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
 
 router.get('/getRecruiterReviews/:companyId', async (req, res) => {
   const { companyId } = req.params;
@@ -568,12 +553,14 @@ router.get('/getAnotherJobs/:companyId', async (req, res) => {
   }
 });
 
+
+
 // job details
 router.get('/getJobDetail/:jobId', async (req, res) => {
   try {
     const jobId = req.params.jobId;
     const [results] = await pool.query(`
-        SELECT j.*, c.*
+        SELECT j.*,c.*, c.description AS company_description, j.description AS job_description
         FROM jobs j
         JOIN companies c ON j.user_id = c.user_id
         WHERE j.job_id = ?

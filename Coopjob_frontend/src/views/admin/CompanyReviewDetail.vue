@@ -4,9 +4,11 @@
         <sideMenu></sideMenu>
         <div class="column is-9">
           <div class="student-details card mt-4">
+           <router-link :to="'/CompanyRating'" >
             <button class="button is-dark go-back-button">
                 <i class="fa-solid fa-left-long"></i> 
               </button>
+            </router-link>
             <h1 class="title">รายละเอียดของบริษัท</h1>
             <div class="details">
             <router-link :to="'/company/' + company.user_id">

@@ -4,9 +4,11 @@
         <sideMenu></sideMenu>
         <div class="column is-4">
           <div class="report-details card mt-4">
+          <router-link :to="'/reportList'" >
           <button class="button is-dark go-back-button">
-                          <i class="fa-solid fa-left-long"></i> 
-                        </button>
+            <i class="fa-solid fa-left-long"></i> 
+           </button>
+           </router-link>
               <h1 class="title">รายละเอียดคำร้องเรียน</h1>
               <div class="details">
               <h1>#{{ report.report_id }}</h1>
@@ -16,11 +18,7 @@
                 <p><strong>คำอธิบาย:</strong> {{ report.report_description }}</p>
               </div>
             </div>
-
-
-
         </div>
-
               <!-- Right Column: Job Summary and Apply Button -->
       <div class="column is-5 mt-4">
                    <div class="job-card card mt-4">

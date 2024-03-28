@@ -261,6 +261,13 @@ const routes = [
     name: 'Admin-CompanyRatingDetail',
     component: () => import('../views/admin/CompanyReviewDetail.vue')
   },
+
+    {
+    path: '/draggable-list',
+    name: 'Admin-draggable-list',
+    component: () => import('../components/admin/draggable-list.vue')
+  },
+
 ]
 
 const router = new VueRouter({
