@@ -1,0 +1,10 @@
+เพิ่ม role admin ในตาราง users
+เพิ่ม email ในตาราง admin
+
+
+user:63070078@kmitl.ac.th
+pass:Ploystudent1@gmail.com
+
+CompanyFortest@gmail.com
+
+Admin1@gmail.com
