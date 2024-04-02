@@ -33,9 +33,7 @@
                 <i class="fa-solid fa-file-xls"></i>
               </button>
              </div>
-              <div class="filter_search select is-small">
-
-            </div>
+       
             <div class="filter_search select is-small">
               <select v-model="selectedStatus">
                 <option value="">สถานะ</option>
