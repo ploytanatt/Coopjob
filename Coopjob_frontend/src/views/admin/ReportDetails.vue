@@ -56,18 +56,14 @@
             <hr>
          
             <div class="job-card-body mt-3">
-              <div class="control">
-                <label class="radio">
-                <input type="radio" name="foobar" checked />
-                  Ban Company
-                </label>
-                <label class="radio">
-                  <input type="radio" name="foobar" checked />
-                  Reject Case
-                </label>
+              <div class="radio-buttons">
+                <input type="radio" id="ban" value="ban" v-model="selectedAction">
+                <label for="ban">Ban Company</label>
+                <input type="radio" id="reject" value="reject" v-model="selectedAction">
+                <label for="reject">Reject Case</label>
               </div>
-             <button class="button is-success is-small mt-2 mr-2">ยืนยัน</button>
-             <button class="button is-dark is-small mt-2">ยกเลิก</button>
+              <button class="button is-success is-small mt-2 mr-2" @click="confirmAction">ยืนยัน</button>
+            
             </div>
             
             
@@ -190,30 +186,57 @@ export default {
         this.rejectCase();
       }
     },
-    banCompany() {
-      const companyId = this.report.company_id;
-      axios.put(`/api/companies/${companyId}/status`, { status: 'close' })
-        .then(response => {
-          Swal.fire('สำเร็จ', 'บริษัทถูกแบนสำเร็จ', 'success');
-           console.log(response)
-        })
-        .catch(error => {
-          Swal.fire('ผิดพลาด', 'ไม่สามารถแบนบริษัทได้', 'error');
-           console.log(error)
+     async banCompany() {
+        const companyId = this.report.user_id;
+        const reportId = this.report.report_id;
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, ban it!'
         });
+
+        if (result.isConfirmed) {
+            axios.put(`http://localhost:3000/admin/closeCompany`, { companyId , reportId})
+                .then(response => {
+                    Swal.fire('Banned!', 'The company has been banned.', 'success');
+                    console.log(response);
+                })
+                .catch(error => {
+                    Swal.fire('Error!', 'The company could not be banned.', 'error');
+                    console.log(error);
+                });
+        }
     },
-    rejectCase() {
-      const reportId = this.report.report_id;
-      axios.put(`/api/reports/${reportId}/status`, { report_status: 'rejected' })
-        .then(response => {
-          Swal.fire('สำเร็จ', 'คำร้องเรียนถูกปฏิเสธสำเร็จ', 'success');
-          console.log(response)
-        })
-        .catch(error => {
-          Swal.fire('ผิดพลาด', 'ไม่สามารถปฏิเสธคำร้องเรียนได้', 'error');
-          console.log(error)
+
+    async rejectCase() {
+        const reportId = this.report.report_id;
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, reject it!'
         });
+
+        if (result.isConfirmed) {
+            axios.put(`http://localhost:3000/admin/rejectReport`, { reportId })
+                .then(response => {
+                    Swal.fire('Rejected!', 'The case has been rejected.', 'success');
+                    console.log(response);
+                })
+                .catch(error => {
+                    Swal.fire('Error!', 'The case could not be rejected.', 'error');
+                    console.log(error);
+                });
+        }
     },
+
   setFilter(filter) {
       this.currentFilter = filter
   },

@@ -493,5 +493,62 @@ const { application_id, category_id } = req.query;
     }
 });
 
+router.put('/closeCompany', async (req, res) => {
+    const { companyId, reportId } = req.body;
+
+    try {
+        // Begin transaction
+        await pool.query('START TRANSACTION');
+
+        // Update the company status
+        const updateCompanyStatus = await pool.query(
+            'UPDATE companies SET status = "close" WHERE user_id = ?',
+            [companyId]
+        );
+        // Update the report status, assuming reportId is related to this company and action
+        const updateReportStatus = await pool.query(
+            'UPDATE report_company SET report_status = ? WHERE report_id = ?',
+            ['banned', reportId]
+        );
+
+        // Check if the report was successfully updated
+        if (updateReportStatus.affectedRows === 0) {
+            await pool.query('ROLLBACK');
+            return res.status(404).json({ message: 'Report not found or already updated.' });
+        }
+
+        // If everything is fine, commit the transaction
+        await pool.query('COMMIT');
+
+        res.json({ message: 'Company has been successfully banned and report updated.' });
+    } catch (error) {
+        // Rollback transaction in case of any error
+        await pool.query('ROLLBACK');
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
+router.put('/rejectReport', async (req, res) => {
+    const { reportId } = req.body; 
+
+    try {
+        const [result] = await pool.query(
+            'UPDATE report_company SET report_status = ? WHERE report_id = ?',
+            ['rejected', reportId]
+        );
+
+        if (result.affectedRows) {
+            res.json({ message: 'Report case has been successfully rejected.' });
+        } else {
+            res.status(404).json({ message: 'Report not found.' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 
 module.exports = router;
