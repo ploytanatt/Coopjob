@@ -9,39 +9,36 @@
               ผลการสมัครของนักศึกษา
                 </h1>
             </div>
-                    </div>
-                </section>
-                <section class="info-tiles mt-4">
-                    <div class="tile is-ancestor has-text-centered">
-                        <div class="tile is-parent is-2">
-                            <article class="tile is-child box" style="background-color: #9BB0C1;">
-                                <p class="title">{{ totalInternCount}} </p>
-                                <p class="subtitle">ฝึกงาน</p>
-                            </article>
-                        </div>
-                        <div class="tile is-parent is-2">
-                            <article class="tile is-child box " style="background-color: #A8CD9F;">
-                                <p class="title">{{ totalCoopCount}}</p>
-                                <p class="subtitle">สหกิจศึกษา</p>
-                            </article>
-                        </div>
-                    </div>
-                </section>
+          </div>
+        </section>
+        <section class="info-tiles mt-4">
+            <div class="tile is-ancestor has-text-centered">
+                <div class="tile is-parent is-2">
+                    <article class="tile is-child box" style="background-color: #9BB0C1;">
+                        <p class="title">{{ totalInternCount}} </p>
+                        <p class="subtitle">ฝึกงาน</p>
+                    </article>
+                </div>
+                <div class="tile is-parent is-2">
+                    <article class="tile is-child box " style="background-color: #A8CD9F;">
+                        <p class="title">{{ totalCoopCount}}</p>
+                        <p class="subtitle">สหกิจศึกษา</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+        <div>
 
-  <div>
-  <router-link :to="'/draggable-list'">
-   <button class="button">จัดกลุ่ม</button>
-  </router-link>
-   
-    <!-- โมดัลสำหรับการสร้างกลุ่มใหม่ -->
-
-
-
-
-  </div>
+          <!-- โมดัลสำหรับการสร้างกลุ่มใหม่ -->
+        </div>
             <div class="field is-horizontal  ">
         <div class="field-body filter_searchbox field is-grouped  is-grouped-right ">
+        
             <div class="filter_search  ">
+          <router-link :to="'/draggable-list'">
+        <button class="button mr-3">จัดการหมวดหมู่งาน</button>
+        </router-link>
+
               <button class="button is-success mr-3" @click="exportToCSV">
                 <i class="fa-solid fa-file-csv"></i>
               </button>

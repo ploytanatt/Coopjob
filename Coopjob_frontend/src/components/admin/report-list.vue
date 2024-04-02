@@ -22,7 +22,7 @@
                         </div>
                         <div class="tile is-parent is-2">
                             <article class="tile is-child box " style="background-color: #9BCF53;">
-                                <p class="title">{{ reportLists[0].processed_report}}</p>
+                                <p class="title">{{ reportLists[0].processed_report  }}</p>
                                 <p class="subtitle">ตรวจสอบแล้ว</p>
                             </article>
                         </div>
@@ -172,12 +172,8 @@
   </div>
     
         </div>
-
-
     </div>
   </div>
-
-
 </template>
 <script>
 import axios from "axios";
@@ -204,7 +200,7 @@ computed: {
   computedFilteredReports() {
     let filtered = this.reportLists;
 
-    // Filter ปีการศึกษา
+    // Filter สถานะ
     if (this.selectedStatus) {
       filtered = filtered.filter(
         report => report.report_status === this.selectedStatus
@@ -213,8 +209,8 @@ computed: {
 
     // Filter by search text
     if (this.searchText) {
-      filtered = filtered.filter(พำยนพะ =>
-        พำยนพะ.firstName.toLowerCase().includes(this.searchText.toLowerCase())
+      filtered = filtered.filter(report =>
+        report.firstName.toLowerCase().includes(this.searchText.toLowerCase())
       );
     }
 

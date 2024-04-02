@@ -35,7 +35,7 @@
               <button class="button mr-2 heart is-liked" @click="unfavThisJob(job.job_id)" v-if="isJobLiked">
                 <i class="fa fa-heart"></i>
               </button>
-              <button class="button is-success mr-2" @click="applyToJob(job.job_id)">
+              <button class="button is-success mr-2" @click="confirmApplyJob(job.job_id)">
                 Apply
               </button>
               <button @click="showReportModal(job.job_id)" class="button is-danger">
@@ -242,6 +242,22 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+    },
+    confirmApplyJob(jobId) {
+      Swal.fire({
+        title: "ยืนยันการสมัครงาน",
+        text: "คุณต้องการสมัครงานนี้หรือไม่?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ยืนยัน",
+        cancelButtonText: "ยกเลิก",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.applyToJob(jobId);
+        }
+      });
     },
     applyToJob(jobId) {
       const token = localStorage.getItem("token");

@@ -1,18 +1,14 @@
 <template>
     <div class="">
-      
       <div class="columns">
-        
         <sideMenu></sideMenu>
         <div class="column">
          <applicationList></applicationList>
         </div>
       </div>
-
-    
     </div>
 </template>
-  
+
 <script>
 import sideMenu from '@/components/admin/side-menu.vue';
 import applicationList from '../../components/admin/application-list.vue';

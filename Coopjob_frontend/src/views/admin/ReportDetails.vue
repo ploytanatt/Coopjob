@@ -83,6 +83,7 @@
 <script>
 import axios from 'axios';
 import sideMenu from '@/components/admin/side-menu.vue';
+import Swal from "sweetalert2";
 export default {
     components:{
         sideMenu
@@ -99,6 +100,7 @@ export default {
     sortKey: 'job_title',
     sortOrder: 'desc',
     searchText:'',
+     selectedAction: ''
     };
   },
   created() {
@@ -180,6 +182,38 @@ export default {
     formatDate(date) {
     return new Date(date).toLocaleDateString()
   },
+
+  confirmAction() {
+      if (this.selectedAction === 'ban') {
+        this.banCompany();
+      } else if (this.selectedAction === 'reject') {
+        this.rejectCase();
+      }
+    },
+    banCompany() {
+      const companyId = this.report.company_id;
+      axios.put(`/api/companies/${companyId}/status`, { status: 'close' })
+        .then(response => {
+          Swal.fire('สำเร็จ', 'บริษัทถูกแบนสำเร็จ', 'success');
+           console.log(response)
+        })
+        .catch(error => {
+          Swal.fire('ผิดพลาด', 'ไม่สามารถแบนบริษัทได้', 'error');
+           console.log(error)
+        });
+    },
+    rejectCase() {
+      const reportId = this.report.report_id;
+      axios.put(`/api/reports/${reportId}/status`, { report_status: 'rejected' })
+        .then(response => {
+          Swal.fire('สำเร็จ', 'คำร้องเรียนถูกปฏิเสธสำเร็จ', 'success');
+          console.log(response)
+        })
+        .catch(error => {
+          Swal.fire('ผิดพลาด', 'ไม่สามารถปฏิเสธคำร้องเรียนได้', 'error');
+          console.log(error)
+        });
+    },
   setFilter(filter) {
       this.currentFilter = filter
   },

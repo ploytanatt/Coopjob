@@ -199,10 +199,10 @@ export default {
       };
       const jobId = this.$route.params.jobId;
       axios
-        .get(`http://localhost:3000/recruiter/getJobDetails/${jobId}`, config)
+        .get(`http://localhost:3000/recruiter/getJobDetail/${jobId}`, config)
         .then((res) => {
-          this.jobs = res.data;
-          const job = res.data; 
+          this.jobs = res.data[0];
+          const job = res.data[0]; 
           this.position_type = JSON.parse(job.position_type);
           this.benefit = JSON.parse(job.benefit);
           this.specification = JSON.parse(job.specification);

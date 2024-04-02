@@ -33,6 +33,9 @@
                 <i class="fa-solid fa-file-xls"></i>
               </button>
              </div>
+              <div class="filter_search select is-small">
+
+            </div>
             <div class="filter_search select is-small">
               <select v-model="selectedStatus">
                 <option value="">สถานะ</option>
@@ -146,8 +149,6 @@
               <i class="fa-solid fa-angle-left"></i>
             </a>
           </li>
-          
-          <!-- Dynamically generate page numbers -->
           <li v-for="page in totalPages" :key="page">
             <a class="pagination-link has-background-white" :class="{'is-current has-background-info': page === currentPage}" @click="goToPage(page)">
               {{ page }}
@@ -186,6 +187,8 @@ data() {
     without_applications:[],
     currentFilter: 'all',
     selectedStatus:'',
+
+
     itemsPerPage: 10,
     currentPage: 1,
     sortKey: 'job_title',
@@ -197,6 +200,7 @@ data() {
 computed: {
   computedFilteredApplications() {
     let filtered = this.companyLists;
+
 
     // Filter สถานะบริษัท
     if (this.selectedStatus) {

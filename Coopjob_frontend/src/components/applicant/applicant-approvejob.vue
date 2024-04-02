@@ -111,16 +111,10 @@
                         <p v-if="$v.benefitForm.job_position.$error" class="help is-danger">โปรดกรอกตำแหน่ง</p>
                         </div>
 
-                        <div class="field">
-                        <label class="label">คำอธิบาย</label>
-                        <div class="control">
-                            <textarea class="textarea" v-model="$v.benefitForm.description.$model"></textarea>
-                        </div>
-                        <p v-if="$v.benefitForm.description.$error" class="help is-danger">โปรดกรอกคำอธิบาย</p>
-                        </div>
+                        
 
                         <div class="field">
-                        <label class="label">ค่าตอบแทน</label>
+                        <label class="label">ค่าตอบแทนที่ได้รับจริง</label>
                         <div class="control">
                             <div class="field has-addons">
                             <div class="control">
@@ -135,11 +129,19 @@
                         </div>
 
                         <div class="field">
-                        <label class="label">สวัสดิการ</label>
+                        <label class="label">สวัสดิการที่ได้รับจริง</label>
                         <div class="control">
                             <input class="input" type="text" v-model="$v.benefitForm.benefit.$model" />
                         </div>
                         <p v-if="$v.benefitForm.benefit.$error" class="help is-danger">โปรดกรอกข้อมูลสวัสดิการ</p>
+                        </div>
+
+                        <div class="field">
+                        <label class="label">คำอธิบายเพิ่มเติม</label>
+                        <div class="control">
+                            <textarea class="textarea" v-model="benefitForm.description"></textarea>
+                        </div>
+                        
                         </div>
                     </section>
                     <footer class="modal-card-foot">
@@ -291,10 +293,13 @@ export default {
                 },
             };
             axios
-                .get("http://localhost:3000/application/getJobApplications", config)
+                .get("http://localhost:3000/application/getJobApprovedApplication", config)
                 .then((response) => {
+
                     this.applications = response.data;
-                    this.job_title = response.data.job_title
+                    this.benefitForm.company_name = this.applications[0].company_name
+                    this.benefitForm.job_position = this.applications[0].job_title
+                    this.job_title = this.applications[0].job_title
                 })
                 .catch((error) => {
                     console.error(error);
@@ -428,8 +433,6 @@ export default {
                 benefit: this.benefitForm.benefit,
                 job_id: this.selectedJobId,
                 };
-
-
                 axios
                 .post("http://localhost:3000/application/addBenefitReport", data, config)
                 .then((res) => {
@@ -508,7 +511,6 @@ validations: {
   benefitForm: { //benefit
     company_name: { required },
     job_position: { required },
-    description: { required },
     salary: { required },
     benefit: { required }
   },
@@ -525,7 +527,6 @@ validations: {
 };
 </script>
 <style scoped>
-/* สีเหลืองสำหรับดาวที่ถูกเลือก */
 .yellow {
     color: yellow;
 }
@@ -548,11 +549,11 @@ transition: width 0.3s ease-in-out;
   transform: scale(1.5);
 }
 .stars .fa {
-  color: #ccc; /* Default star color */
+  color: #ccc;
 }
 
 .stars .fa.is-rated {
-  color: gold; /* Active star color (when rated) */
+  color: gold;
 }
 .rating-text{
     color: rgba(255, 217, 0, 0.908);

@@ -92,6 +92,27 @@ router.get('/getJobApplications', isLoggedIn, async (req, res) => {
   }
 });
 
+// Get job applications for a specific user with additional details //แสดงรายการงานที่สมัคร
+router.get('/getJobApprovedApplication', isLoggedIn, async (req, res) => {
+  const userId = req.user.user_id;
+  try {
+    const [results] = await pool.query(`
+        SELECT ja.*, j.*, c.*
+        FROM applications ja
+        INNER JOIN jobs j ON ja.job_id = j.job_id
+        LEFT JOIN companies c ON j.user_id = c.user_id
+        WHERE ja.student_id = ? AND ja.application_status = 'approve'
+    `, [userId]);
+
+    console.log("getJobApplications complete");
+
+    res.json(results);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
+  }
+});
+
 //ยกเลิกการสมัครงาน
 router.put('/cancelJob/:applicationId', isLoggedIn, async (req, res) => {
   const { application_status } = req.body;

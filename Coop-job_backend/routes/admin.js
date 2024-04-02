@@ -255,7 +255,7 @@ router.get('/ApplicationList', async (req, res) => {
 router.get('/BenefitList', async (req, res) => {
     try {
         const [results] = await pool.query(`
-            SELECT br.*, j.user_id, j.job_title, s.firstName, s.lastName,s.studentID, j.job_type, c.company_name, c.profile_image
+            SELECT br.*, j.user_id, j.job_title, s.firstName, s.lastName,s.studentID,s.academic_year, j.job_type, c.company_name, c.profile_image
             FROM benefit_reports br
             LEFT JOIN students s ON br.user_id = s.user_id
             LEFT JOIN jobs j ON br.job_id = j.job_id
@@ -382,4 +382,116 @@ router.get('/Allusers', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+//category
+router.get('/getcategories', async(req, res) => {
+    try{
+        const [results] = await pool.query('SELECT * FROM categories');
+        res.json(results);
+    } catch (error){
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+router.get('/application_categories', async(req, res) => {
+    try{
+        const [results] = await pool.query('SELECT * FROM application_categories');
+        res.json(results);
+    } catch (error){
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+router.get('/unassignedApplications', async (req, res) => {
+    try {
+        // ดึงเฉพาะรายการ applications ที่ไม่มี category_id
+        const [results] = await pool.query(`
+            SELECT a.*, s.firstName, s.lastName, j.job_title,  j.job_type
+            FROM applications a
+            LEFT JOIN application_categories ac ON a.application_id = ac.application_id
+            JOIN students s ON a.student_id = s.user_id
+            JOIN jobs j ON a.job_id = j.job_id
+            WHERE ac.category_id IS NULL AND a.application_status = 'approve'
+        `);
+        res.json(results);
+    } catch (error) {
+        console.error('Error fetching unassigned applications:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.get('/assignedApplicationCategories', async (req, res) => {
+    try {
+        // ดึงข้อมูลทั้งหมดจากตาราง application_categories ที่มี category_id
+                const [results] = await pool.query(`
+           SELECT 
+            a.*, 
+            ac.category_id,
+            c.name,
+            s.firstName, 
+            s.lastName, 
+            j.job_title,
+            j.job_type
+            FROM applications a
+            LEFT JOIN application_categories ac ON a.application_id = ac.application_id
+            JOIN students s ON a.student_id = s.user_id
+            JOIN jobs j ON a.job_id = j.job_id
+            JOIN categories c ON ac.category_id = c.category_id
+            WHERE ac.category_id IS NOT NULL AND a.application_status = 'approve'
+        `);
+        res.json(results);
+    } catch (error) {
+        console.error('Error fetching assigned application categories:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.put('/updateApplicationCategory', async (req, res) => {
+    const { application_id, category_id } = req.body;
+    if (!application_id || !category_id) {
+        return res.status(400).json({ message: 'Application ID and Category ID are required' });
+    }
+    try {
+        // ตรวจสอบว่ามีการสมัครงานนี้อยู่แล้วหรือไม่ในหมวดหมู่
+        const [existingEntry] = await pool.query(`
+            SELECT * FROM application_categories WHERE application_id = ? AND category_id = ?`,
+            [application_id, category_id]
+        );
+
+        if (existingEntry.length === 0) {
+            // ถ้าไม่มี, เพิ่มการสมัครงานใหม่เข้าไปในหมวดหมู่
+            await pool.query(`
+                INSERT INTO application_categories (application_id, category_id) VALUES (?, ?)`,
+                [application_id, category_id]
+            );
+        } else {
+            // ถ้ามีอยู่แล้ว, อัปเดตหมวดหมู่ที่มีอยู่
+            await pool.query(`
+                UPDATE application_categories SET category_id = ? WHERE application_id = ?`,
+                [category_id, application_id]
+            );
+        }
+        res.status({ message: 'Application category updated successfully' });
+    } catch (error) {
+        console.error('Error updating application category:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.delete('/removeApplicationCategory', async (req, res) => {
+  //  const { application_id2, category_id2 } = req.body;
+const { application_id, category_id } = req.query;
+
+    try {
+        await pool.query(
+            'DELETE FROM application_categories WHERE application_id = ? ',
+            [application_id, category_id]
+        );
+
+
+        res.json({ message: 'Application category removed successfully' });
+    } catch (error) {
+        console.error('Error removing application category:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
 module.exports = router;

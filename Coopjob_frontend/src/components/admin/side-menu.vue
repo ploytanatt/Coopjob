@@ -1,6 +1,5 @@
 <template>
     <div class="">
-   
           <aside class="menu">
             <p class="menu-label">General</p>
             <ul class="menu-list">
@@ -52,32 +51,9 @@
                 <span class="menu-text">รีวิวของบริษัท</span>
               </a>
             </li>
-            <!--
-            <p class="menu-label">setting</p>
-            <ul class="menu-list">
-                <li>
-              <a @click="gotoStudentList">
-                <i class="fa-regular fa-gear"></i>
-                <span class="menu-text">Account</span>
-              </a>
-            </li>
-            <li>
-              <a @click="gotoStudentList">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span class="menu-text">Sign Out</span>
-              </a>
-            </li>
-            </ul>
-
-            -->
           </ul>
           </aside>
-
-
       </div>
-
-    
- 
 </template>
 <script>
 //import overviewAdmin from '@/components/admin/overview-admin.vue'
@@ -136,11 +112,9 @@ export default {
                 this.$router.push('/AdminAccountSetting');
             }
         },
-        signOut(){
-           
+        signOut(){ 
         },
-    },
-
+    }
 }
 </script>
 <style scoped>
@@ -158,13 +132,13 @@ export default {
     color: wheat;
 }
 .menu-text {
-  margin-left: 0.5em; /* กำหนดระยะห่างของตัวหนังสือจากไอคอน */
+  margin-left: 0.5em;
 }
 
 a {
   color: #ffffff;
   padding: 1em 0.75em;
-  display: flex; /* ใช้ flexbox เพื่อจัดการ layout ภายใน <a> */
-  align-items: center; /* ทำให้ไอคอนและตัวหนังสืออยู่ในแนวเดียวกัน */
+  display: flex; 
+  align-items: center;
 }
 </style>

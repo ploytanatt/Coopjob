@@ -254,38 +254,99 @@ export default {
       }
     },
     acceptApplicant(applicationJob) {
+
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
+  };
+  const formData = new FormData();
+  const file = this.$refs.fileInput.files[0];
+  if (!file) {
+    Swal.fire({
+      title: "เกิดข้อผิดพลาด",
+      text: "กรุณาเลือกไฟล์ที่ต้องการอัพโหลด",
+      icon: "error",
+    });
+    return;
+  }
+    // แสดง SweetAlert การอัพโหลด
+  Swal.fire({
+        didOpen: () => {
+    Swal.showLoading() // แสดง spinner
+  },
+    title: 'กำลังประมวลผล...',
+    text: 'กรุณารอสักครู่ในขณะที่เรากำลังดำเนินการยืนยันการรับสมัคร',
+    allowOutsideClick: false,
+
+  });
+  formData.append('coopfile', file);
+  formData.append('application_status', 'approve');
+
+  axios.put(
+    `http://localhost:3000/application/acceptApplicant/${applicationJob}`,
+    formData,
+    config
+  )
+  .then((res) => {
+    // ปิด SweetAlert การโหลด
+    Swal.close();
+    Swal.fire({
+      title: "สำเร็จ",
+      text: res.data.message,
+      icon: "success",
+    });
+    this.showModal = false;
+    this.getApplication(this.applicationUserId);
+  })
+  .catch((error) => {
+    // ปิด SweetAlert การโหลด
+    Swal.close();
+    let errorMessage = "เกิดข้อผิดพลาดในการประมวลผล";
+    if (error.response && error.response.data && error.response.data.error) {
+      errorMessage = error.response.data.error;
+    }
+    Swal.fire({
+      title: "เกิดข้อผิดพลาด",
+      text: errorMessage,
+      icon: "error",
+    });
+  });
+},
+
+declineApplicant(applicationJob) {
+  Swal.fire({
+    title: 'คุณแน่ใจไหม?',
+    text: "คุณต้องการปฏิเสธผู้สมัครนี้หรือไม่?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'ใช่, ปฏิเสธเลย!',
+    cancelButtonText: 'ไม่, ยกเลิก'
+  }).then((result) => {
+    if (result.isConfirmed) {
       const token = localStorage.getItem("token");
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
         },
       };
-      const formData = new FormData();
-      const file = this.$refs.fileInput.files[0];
-      if (!file) {
-        Swal.fire({
-          title: "Error",
-          text: "Please select a file to upload.",
-          icon: "error",
-        });
-        return;
-      }
-      formData.append('coopfile', file); 
-      formData.append('application_status', 'approve'); 
+      const application_status = "declined";
 
       axios.put(
-        `http://localhost:3000/application/acceptApplicant/${applicationJob}`,
-        formData,
+        `http://localhost:3000/application/declineApplicant/${applicationJob}`,
+        { application_status },
         config
       )
       .then((res) => {
-        Swal.fire({
-          title: "Success",
-          text: res.data.message,
-          icon: "success",
-        });
-        this.showModal = false;
+        Swal.fire(
+          'ปฏิเสธแล้ว!',
+          res.data.message,
+          'success'
+        );
         this.getApplication(this.applicationUserId);
       })
       .catch((error) => {
@@ -299,43 +360,9 @@ export default {
           icon: "error",
         });
       });
-    },
-
-      declineApplicant(applicationJob) {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      const application_status = "declined";
-      axios
-        .put(
-          `http://localhost:3000/application/declineApplicant/${applicationJob}`,
-          { application_status },
-          config
-        )
-        .then((res) => {
-          Swal.fire({
-          title: "Declined",
-          text: res.data.message,
-          icon: "success",
-        });
-          this.getApplication(this.applicationUserId);
-        })
-        .catch((error) => {
-        let errorMessage = "There was an error processing your request.";
-        if (error.response && error.response.data && error.response.data.error) {
-          errorMessage = error.response.data.error;
-        }
-        Swal.fire({
-          title: "Error",
-          text: errorMessage,
-          icon: "error",
-        });
-      });
-    },
-
+    }
+  });
+},
     downloadFile(url) {
       fetch(url)
         .then(response => response.blob())

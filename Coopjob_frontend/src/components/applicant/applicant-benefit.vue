@@ -32,15 +32,10 @@
               </div>
             </div>
 
-            <div class="field">
-              <label class="label">คำอธิบาย</label>
-              <div class="control">
-                <textarea class="textarea" v-model="description"></textarea>
-              </div>
-            </div>
+
 
             <div class="field">
-              <label class="label">ค่าตอบแทน</label>
+              <label class="label">ค่าตอบแทนที่ได้รับจริง</label>
               <div class="control">
                 <div class="field has-addons">
                   <div class="control">
@@ -54,12 +49,19 @@
             </div>
 
             <div class="field">
-              <label class="label">สวัสดิการ</label>
+              <label class="label">สวัสดิการที่ได้รับจริง</label>
               <div class="control">
                 <input class="input" type="text" v-model="benefit" />
               </div>
             </div>
           </div>
+
+          <div class="field">
+              <label class="label">คำอธิบาย</label>
+              <div class="control">
+                <textarea class="textarea" v-model="description"></textarea>
+              </div>
+            </div>
         </fieldset>
 
         <button class="button is-info is-small" v-if="!modify_benefit" @click="modify_benefit = true">

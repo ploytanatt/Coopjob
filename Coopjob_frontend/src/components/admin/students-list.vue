@@ -8,7 +8,6 @@
                 <h1 class="title">
                รายชื่อนักศึกษาทั้งหมด
                 </h1>
-                
             </div>
                     </div>
                 </section>

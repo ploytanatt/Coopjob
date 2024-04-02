@@ -57,7 +57,6 @@
                   </li>
                 </ul>
               </li>
-
             </ul>
             <li>
             </li>
@@ -77,9 +76,7 @@
             </li>
           </ul>
         </ul>
-        </aside>
-
-        
+        </aside>     
 </template>
 <script>
 export default {
@@ -135,7 +132,6 @@ export default {
       }
     },
     signOut() {
-      // logic for sign out
     }
   }
 }
@@ -152,20 +148,21 @@ export default {
 padding: 1rem;
   background-color: #363740;
   width: 250px;
-  height: 100vh;
+  min-height: 100lvh;
+
 }
 .menu-label{
   color: wheat;
 }
 .menu-text {
-margin-left: 0.5em; /* กำหนดระยะห่างของตัวหนังสือจากไอคอน */
+margin-left: 0.5em; 
 }
 .menu-list a {
   color: white;
   padding: 1em 0.75em;
   display: flex;
   align-items: center;
-  transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+  transition: background-color 0.3s, color 0.3s;
 }
 a {
 color: #ffffff;

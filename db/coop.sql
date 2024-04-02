@@ -72,6 +72,33 @@ INSERT INTO `admin` VALUES (1,'69',NULL,NULL,NULL,'Admin1@gmail.com');
 UNLOCK TABLES;
 
 --
+-- Table structure for table `application_categories`
+--
+
+DROP TABLE IF EXISTS `application_categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `application_categories` (
+  `application_id` int NOT NULL,
+  `category_id` int NOT NULL,
+  PRIMARY KEY (`application_id`,`category_id`),
+  KEY `category_id` (`category_id`),
+  CONSTRAINT `application_categories_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `applications` (`application_id`),
+  CONSTRAINT `application_categories_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `application_categories`
+--
+
+LOCK TABLES `application_categories` WRITE;
+/*!40000 ALTER TABLE `application_categories` DISABLE KEYS */;
+INSERT INTO `application_categories` VALUES (81,2);
+/*!40000 ALTER TABLE `application_categories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `applications`
 --
 
@@ -100,7 +127,7 @@ CREATE TABLE `applications` (
 
 LOCK TABLES `applications` WRITE;
 /*!40000 ALTER TABLE `applications` DISABLE KEYS */;
-INSERT INTO `applications` VALUES (73,80,68,'canceled','static\\coop302\\b549-coop302.pdf','2024-03-17 07:42:15'),(76,71,68,'canceled',NULL,'2024-03-13 11:06:41'),(77,75,68,'canceled',NULL,'2024-03-14 11:08:45'),(78,77,68,'canceled','static\\coop302\\27cf-coop302.pdf','2024-03-12 11:15:09'),(79,77,68,'canceled','static\\coop302\\860b-coop302.pdf','2024-03-18 11:17:53'),(80,78,68,'canceled','static\\coop302\\684a-coop302.pdf','2024-03-18 11:31:55'),(81,84,68,'canceled','static\\coop302\\22fc-coop302.pdf','2024-03-21 14:30:57'),(82,77,68,'canceled',NULL,'2024-03-27 19:41:52'),(83,32,68,'pending',NULL,'2024-03-28 11:21:00');
+INSERT INTO `applications` VALUES (73,80,68,'canceled','static\\coop302\\b549-coop302.pdf','2024-03-17 07:42:15'),(76,71,68,'canceled',NULL,'2024-03-13 11:06:41'),(77,75,68,'canceled',NULL,'2024-03-14 11:08:45'),(78,77,68,'canceled','static\\coop302\\27cf-coop302.pdf','2024-03-12 11:15:09'),(79,77,68,'canceled','static\\coop302\\860b-coop302.pdf','2024-03-18 11:17:53'),(80,78,68,'canceled','static\\coop302\\684a-coop302.pdf','2024-03-18 11:31:55'),(81,84,68,'approve','static\\coop302\\c68f-à¸à¸£à¸°à¸à¸²à¸¨à¸à¸²à¸£à¸²à¸à¸ªà¸­à¸à¸§à¸´à¸à¸²à¹à¸à¸£à¸à¸à¸²à¸ 2 IT (29-03-2024).pdf','2024-03-21 14:30:57'),(82,77,68,'canceled',NULL,'2024-03-27 19:41:52'),(83,32,68,'pending',NULL,'2024-03-28 11:21:00');
 /*!40000 ALTER TABLE `applications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -123,7 +150,7 @@ CREATE TABLE `benefit_reports` (
   `benefit_status` enum('pending','complete') DEFAULT 'pending',
   `company_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`benefit_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -132,7 +159,32 @@ CREATE TABLE `benefit_reports` (
 
 LOCK TABLES `benefit_reports` WRITE;
 /*!40000 ALTER TABLE `benefit_reports` DISABLE KEYS */;
+INSERT INTO `benefit_reports` VALUES (20,68,84,'111','111','2024-04-01 23:19:15','Junior iSec and Network Engineer','','complete',NULL);
 /*!40000 ALTER TABLE `benefit_reports` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `categories`
+--
+
+DROP TABLE IF EXISTS `categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `categories` (
+  `category_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`category_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='ตารางบันทึกหมวดหมู่ต่างๆ ของตำแหน่งงาน';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `categories`
+--
+
+LOCK TABLES `categories` WRITE;
+/*!40000 ALTER TABLE `categories` DISABLE KEYS */;
+INSERT INTO `categories` VALUES (1,'Software'),(2,'Web App'),(3,'Mobile App'),(4,'Network/System'),(5,'IOT'),(6,'Security'),(7,'Cloud'),(8,'DevOps'),(9,'Testing/Quality Assurance/Performance'),(10,'Game'),(11,'System/Business Analyst'),(12,'3D'),(13,'BI/Data Analytics/Data Science/Machine Learning/AI/Chatbot/Credit Risk Analysis'),(14,'Data Engineer'),(15,'Content/Digital Marketing'),(16,'Consultant'),(17,'อื่นๆ');
+/*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -195,7 +247,7 @@ CREATE TABLE `favorite_jobs` (
   KEY `fav_job_id_idx` (`job_id`),
   CONSTRAINT `fav_job_id` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`job_id`),
   CONSTRAINT `fav_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=152 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=153 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -204,7 +256,7 @@ CREATE TABLE `favorite_jobs` (
 
 LOCK TABLES `favorite_jobs` WRITE;
 /*!40000 ALTER TABLE `favorite_jobs` DISABLE KEYS */;
-INSERT INTO `favorite_jobs` VALUES (1,63,32),(145,66,77),(151,68,71);
+INSERT INTO `favorite_jobs` VALUES (1,63,32),(145,66,77),(152,68,77);
 /*!40000 ALTER TABLE `favorite_jobs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -277,7 +329,7 @@ CREATE TABLE `jobs` (
 
 LOCK TABLES `jobs` WRITE;
 /*!40000 ALTER TABLE `jobs` DISABLE KEYS */;
-INSERT INTO `jobs` VALUES (32,62,'sfdsf','internship','Junior Frontend','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',33,'3',300,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',3,'2024-01-10','open','form',NULL,'[{\"title\":\"Front-end Developer\"}]'),(33,62,'asdasdas','internship','Junior Frontend','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','Graphic Designer',3,'2',330,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',222,'2024-01-10','open','form',NULL,'[{\"title\":\"Front-end Developer\"}]'),(71,65,'ssssssssss','internship','Junior Frontend','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','Graphic Designer',2,'2',400,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',22,'2024-01-18','open','form',NULL,'[{\"title\":\"Front-end Developer\"}]'),(75,65,NULL,'cooperative','Junior Frontend','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','Graphic Designer',2,'2.5',250,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',1,'2024-01-18','open','upload','static\\uploads\\job-upload-b6bd-88423311_2653218664911246_1011963624299692032_n.png','[{\"title\":\"Front-end Developer\"}]'),(77,66,'-2','internship','Graphic Designer  1','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online\n-ถ่ายภาพนิ่งและวิดีโอ และตัดต่อสำหรับลง Social Media / Website\n-งานอื่นๆ ตามที่ได้รับมอบหมาย','Graphic Designer',6,'2.5',400,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',1,'2024-01-28','close','form',NULL,'[{\"title\":\"Graphic Designer \"},{\"title\":\"design\"}]'),(78,66,NULL,'cooperative','3D','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',2,'2.5',450,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',1,'2024-01-28','open','upload','static\\uploads\\job-upload-2d67-à¸§à¸´à¹à¸à¸à¸´à¸¥.jpg','[{\"title\":\"Front-end Developer\"}]'),(79,67,'พพพพ','cooperative','Junior Frontend','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',1,'11',400,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',2,'2024-02-16','open','form',NULL,'[{\"title\":\"Front-end Developer\"}]'),(80,66,'fullstack','cooperative','Fullstack','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',2,'2',350,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',222,'2024-03-06','close','form',NULL,'[{\"title\":\"Web Developer\"}]'),(83,66,'asdad','internship','Junior iSec and Network Engineer','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',2,'2',500,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',2,'2024-03-19','open','form',NULL,'[{\"title\":\"Web Developer\"}]'),(84,66,'sss','internship','Junior iSec and Network Engineer','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',1,'1',400,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',1,'2024-03-19','open','form',NULL,'[{\"title\":\"Software Developer\"}]'),(86,66,'test','internship','Junior iSec and Network Engineer','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',1,'2',100,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',1,'2024-03-27','open','form',NULL,'[{\"title\":\"Front-end Developer\"}]'),(88,64,'test','internship','Junior iSec and Network Engineer','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',1,'2',100,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',1,'2024-03-27','open','form',NULL,'[{\"title\":\"Front-end Developer\"}]');
+INSERT INTO `jobs` VALUES (32,62,'sfdsf','internship','Junior Frontend','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',33,'3',300,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',3,'2024-01-10','open','form',NULL,'[{\"title\":\"Front-end Developer\"}]'),(33,62,'asdasdas','internship','Junior Frontend','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','Graphic Designer',3,'2',330,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',222,'2024-01-10','open','form',NULL,'[{\"title\":\"Front-end Developer\"}]'),(71,65,'ssssssssss','internship','Junior Frontend','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','Graphic Designer',2,'2',400,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',22,'2024-01-18','open','form',NULL,'[{\"title\":\"Front-end Developer\"}]'),(75,65,NULL,'cooperative','Junior Frontend','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','Graphic Designer',2,'2.5',250,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',1,'2024-01-18','open','upload','static\\uploads\\job-upload-b6bd-88423311_2653218664911246_1011963624299692032_n.png','[{\"title\":\"Front-end Developer\"}]'),(77,66,'','internship','','เราเป็นบริษัท ที่ให้บริการด้าน SEO และ การตลาดออนไลน์ ได้แก่ SEO, Google AdWords, Social Media ต่างๆ และ อื่นๆ (SEO & Digital Marketing Agency) ให้บริการลูกค้าทั่วโลก ทั้งในประเทศและต่างประเทศ','Graphic Designer',6,'2.5',400,'[{\"text\":\"1\"}]','[{\"text\":\"1\"}]',2,'2024-01-28','open','form',NULL,'[]'),(78,66,NULL,'cooperative','3D','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',2,'2.5',450,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',1,'2024-01-28','open','upload','static\\uploads\\job-upload-2d67-à¸§à¸´à¹à¸à¸à¸´à¸¥.jpg','[{\"title\":\"Front-end Developer\"}]'),(79,67,'พพพพ','cooperative','Junior Frontend','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',1,'11',400,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',2,'2024-02-16','open','form',NULL,'[{\"title\":\"Front-end Developer\"}]'),(80,66,'fullstack','cooperative','Fullstack','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',2,'2',350,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',222,'2024-03-06','close','form',NULL,'[{\"title\":\"Web Developer\"}]'),(83,66,'asdad','internship','Junior iSec and Network Engineer','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',2,'2',500,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',2,'2024-03-19','open','form',NULL,'[{\"title\":\"Web Developer\"}]'),(84,66,'sss','internship','Junior iSec and Network Engineer','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',1,'1',400,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',1,'2024-03-19','open','form',NULL,'[{\"title\":\"Software Developer\"}]'),(88,64,'test','internship','Junior iSec and Network Engineer','-ออกแบบสื่อประชาสัมพันธ์ และสื่อมัลติมีเดีย สำหรับลง Website , Line , FB , FB Live , เพจ , Youtube , Content Online','3D',1,'2',100,'[{\"text\":\"เสื้อฟอร์ม\"},{\"text\":\"สัมนาท่องเที่ยวปลายปี\"}]','[{\"text\":\"เพศ : ชาย-หญิง\"},{\"text\":\"ไม่จำกัดอายุ\"}]',1,'2024-03-27','open','form',NULL,'[{\"title\":\"Front-end Developer\"}]');
 /*!40000 ALTER TABLE `jobs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -297,7 +349,7 @@ CREATE TABLE `report_company` (
   `report_status` enum('pending','banned','rejected') DEFAULT 'pending',
   `job_id` int DEFAULT NULL,
   PRIMARY KEY (`report_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -306,6 +358,7 @@ CREATE TABLE `report_company` (
 
 LOCK TABLES `report_company` WRITE;
 /*!40000 ALTER TABLE `report_company` DISABLE KEYS */;
+INSERT INTO `report_company` VALUES (28,68,'company','bad','2024-04-02 15:35:48','pending',84);
 /*!40000 ALTER TABLE `report_company` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -422,4 +475,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-28 11:21:44
+-- Dump completed on 2024-04-03  3:06:24
