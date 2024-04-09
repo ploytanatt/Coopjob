@@ -7,7 +7,7 @@ const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password:password, // ใช้ environment variable หรือใส่ค่าเริ่มต้น
-  database: 'itjs',
+  database: 'coop',
   connectionLimit: 10,
 });
 

@@ -81,7 +81,7 @@ router.post('/signup', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const role = "recruiter";
-  const datePosted = new Date();
+    const datePosted = new Date();
     // เข้ารหัสรหัสผ่านก่อนเก็บในฐานข้อมูล
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -92,7 +92,7 @@ router.post('/signup', async (req, res) => {
     }
 
     // บันทึกผู้ใช้ในฐานข้อมูล
-    await pool.query('INSERT INTO users (email, password, created_at, role) VALUES (?, ?, ? )', [email, hashedPassword,datePosted, role]);
+    await pool.query('INSERT INTO users (email, password, created_at, role) VALUES (?, ?, ?,? )', [email, hashedPassword,datePosted, role]);
     console.log("User registered successfully")
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
