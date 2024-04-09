@@ -62,7 +62,7 @@ router.get('/studentApplications/:studentId', async (req, res) => {
                 SELECT ja.*, j.*, c.*
         FROM applications ja
         INNER JOIN jobs j ON ja.job_id = j.job_id
-        LEFT JOIN companies c ON j.user_id = c.user_id
+        LEFT JOIN companies c ON j.company_id = c.user_id
         WHERE ja.student_id = ?
         `, [studentId]);
     res.json(results); 
@@ -86,7 +86,7 @@ router.get('/companyList', async (req, res) => {
                 SUM(CASE WHEN a.application_status = 'approve' THEN 1 ELSE 0 END) AS approve_applications,
                 COALESCE(AVG(r.rating), 0) AS average_rating
             FROM companies c
-            LEFT JOIN jobs j ON c.user_id = j.user_id
+            LEFT JOIN jobs j ON c.user_id = j.company_id
             LEFT JOIN applications a ON j.job_id = a.job_id
             LEFT JOIN reviews r ON c.user_id = r.company_id
             GROUP BY c.user_id, c.company_name, c.profile_image, c.status;
@@ -132,7 +132,7 @@ router.get('/companyJobs/:companyId', async (req, res) => {
                 SUM(CASE WHEN a.application_status = 'approve' THEN 1 ELSE 0 END) AS approve_applications
             FROM jobs j
             LEFT JOIN applications a ON j.job_id = a.job_id
-            WHERE j.user_id = ?
+            WHERE j.company_id = ?
             GROUP BY j.job_id, j.job_title, j.salary, j.job_status, j.job_type
         `, [companyId]);
         res.json(results); 
@@ -161,7 +161,7 @@ router.get("/getAllJobs", async (req, res) => {
                 SUM(CASE WHEN a.application_status = 'approve' THEN 1 ELSE 0 END) AS approve_applications,
                 COALESCE(AVG(r.rating), 0) AS average_rating
             FROM companies c
-            LEFT JOIN jobs j ON c.user_id = j.user_id
+            LEFT JOIN jobs j ON c.user_id = j.company_id
             LEFT JOIN applications a ON j.job_id = a.job_id
             LEFT JOIN reviews r ON c.user_id = r.company_id
             GROUP BY c.user_id, j.job_id, c.company_name, c.profile_image, j.job_type, j.job_title, j.job_status, J.date_posted, j.salary;
@@ -212,11 +212,11 @@ router.get('/ReportDetail/:reportId', async (req, res) => {
     try {
         const { reportId } = req.params; // รับ studentId จาก URL parameter
         const [results] = await pool.query(`
-            SELECT rc.*, j.user_id, j.job_title, s.firstName, s.lastName, c.company_name, c.profile_image
+            SELECT rc.*, j.company_id, j.job_title, s.firstName, s.lastName, c.company_name, c.profile_image
             FROM report_company rc
             LEFT JOIN students s ON rc.user_id = s.user_id
             LEFT JOIN jobs j ON rc.job_id = j.job_id
-            LEFT JOIN companies c ON j.user_id = c.user_id
+            LEFT JOIN companies c ON j.company_id = c.user_id
             WHERE rc.report_id = ?
         `, [ reportId ]);
         if (results.length > 0) {
@@ -234,11 +234,11 @@ router.get('/ReportDetail/:reportId', async (req, res) => {
 router.get('/ApplicationList', async (req, res) => {
     try {
         const [results] = await pool.query(`
-            SELECT a.*, j.user_id, j.job_title, s.firstName, s.lastName, j.job_type, c.company_name, c.profile_image
+            SELECT a.*, j.company_id, j.job_title, s.firstName, s.lastName, j.job_type, c.company_name, c.profile_image
             FROM applications a
             LEFT JOIN students s ON a.student_id = s.user_id
             LEFT JOIN jobs j ON a.job_id = j.job_id
-            LEFT JOIN companies c ON j.user_id = c.user_id
+            LEFT JOIN companies c ON j.company_id = c.user_id
             
         `,);
         if (results.length > 0) {
@@ -255,11 +255,11 @@ router.get('/ApplicationList', async (req, res) => {
 router.get('/BenefitList', async (req, res) => {
     try {
         const [results] = await pool.query(`
-            SELECT br.*, j.user_id, j.job_title, s.firstName, s.lastName,s.studentID,s.academic_year, j.job_type, c.company_name, c.profile_image
+            SELECT br.*, j.company_id, j.job_title, s.firstName, s.lastName,s.studentID,s.academic_year, j.job_type, c.company_name, c.profile_image
             FROM benefit_reports br
             LEFT JOIN students s ON br.user_id = s.user_id
             LEFT JOIN jobs j ON br.job_id = j.job_id
-            LEFT JOIN companies c ON j.user_id = c.user_id
+            LEFT JOIN companies c ON j.company_id = c.user_id
             
         `,);
         if (results.length > 0) {
@@ -278,11 +278,11 @@ router.get('/BenefitDetail/:benefitId', async (req, res) => {
     try {
         const { benefitId } = req.params; // รับ studentId จาก URL parameter
         const [results] = await pool.query(`
-            SELECT br.*, j.user_id, j.job_title, s.firstName, s.lastName, s.studentID, c.company_name, c.profile_image
+            SELECT br.*, j.company_id, j.job_title, s.firstName, s.lastName, s.studentID, c.company_name, c.profile_image
             FROM benefit_reports br
             LEFT JOIN students s ON br.user_id = s.user_id
             LEFT JOIN jobs j ON br.job_id = j.job_id
-            LEFT JOIN companies c ON j.user_id = c.user_id
+            LEFT JOIN companies c ON j.company_id = c.user_id
             WHERE br.benefit_id = ?
         `, [ benefitId ]);
         if (results.length > 0) {
@@ -311,7 +311,7 @@ router.get('/companyReview', async (req, res) => {
                 SUM(CASE WHEN a.application_status = 'approve' THEN 1 ELSE 0 END) AS approve_applications,
                 COALESCE(AVG(r.rating), 0) AS average_rating
             FROM companies c
-            LEFT JOIN jobs j ON c.user_id = j.user_id
+            LEFT JOIN jobs j ON c.user_id = j.company_id
             LEFT JOIN applications a ON j.job_id = a.job_id
             LEFT JOIN reviews r ON c.user_id = r.company_id
             GROUP BY c.user_id, c.company_name, c.profile_image, c.status;
@@ -355,11 +355,11 @@ router.get('/getRecruiterReviews/:companyId', async (req, res) => {
 router.get('/ApproveApplicationList', async (req, res) => {
     try {
         const [results] = await pool.query(`
-            SELECT a.*, j.user_id, j.job_title, s.firstName, s.lastName, j.job_type, c.company_name, c.profile_image
+            SELECT a.*, j.company_id, j.job_title, s.firstName, s.lastName, j.job_type, c.company_name, c.profile_image
             FROM applications a
             LEFT JOIN students s ON a.student_id = s.user_id
             LEFT JOIN jobs j ON a.job_id = j.job_id
-            LEFT JOIN companies c ON j.user_id = c.user_id
+            LEFT JOIN companies c ON j.company_id = c.user_id
             WHERE a.application_status = "approve"
         `,);
         if (results.length > 0) {
