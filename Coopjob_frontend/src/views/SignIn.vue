@@ -35,7 +35,7 @@
             <template v-if="$v.applicantPassword.$error">
               <p class="help is-danger" v-if="!$v.applicantPassword.required">โปรดกรอกข้อมูลในช่องนี้</p>
               <p class="help is-danger" v-else-if="!$v.applicantPassword.minLength">รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัว</p>
-              <p class="help is-danger" v-else-if="!$v.applicantPassword.complex">รหัสผ่านต้องประกอบไปด้วยตัวพิมพ์เล็ก ตัวพิมพ์ใหญ่ และตัวเลข</p>
+              <p class="help is-danger" v-else-if="!$v.applicantPassword.complex">รหัสผ่านต้องประกอบไปด้วยตัวพิมพ์เล็ก และตัวพิมพ์ใหญ่</p>
             </template>
           </div>
           <div class="field">
@@ -63,7 +63,7 @@
             <template v-if="$v.recruiterPassword.$error">
               <p class="help is-danger" v-if="!$v.recruiterPassword.required">โปรดกรอกข้อมูลในช่องนี้</p>
               <p class="help is-danger" v-else-if="!$v.recruiterPassword.minLength">รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัว </p>
-              <p class="help is-danger" v-else-if="!$v.recruiterPassword.complex">รหัสผ่านต้องประกอบไปด้วยตัวพิมพ์เล็ก ตัวพิมพ์ใหญ่ และตัวเลข</p>
+              <p class="help is-danger" v-else-if="!$v.recruiterPassword.complex">รหัสผ่านต้องประกอบไปด้วยตัวพิมพ์เล็ก และตัวพิมพ์ใหญ่</p>
             </template>
           </div>
           <div class="field">
@@ -81,7 +81,7 @@ import { required, email, minLength } from "vuelidate/lib/validators";
 import axios from "@/plugins/axios";
 import Swal from "sweetalert2";
 function complexPassword(value) {
-  if (!(value.match(/[a-z]/) && value.match(/[A-Z]/) && value.match(/[0-9]/))) {
+  if (!(value.match(/[a-z]/) && value.match(/[A-Z]/))) {
     return false;
   }
   return true;
