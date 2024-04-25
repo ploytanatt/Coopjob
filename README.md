@@ -4,8 +4,8 @@ The main objective of this website is to centralize job postings from various co
 
 - **Backend:** Express.js
   <h2 align="center">Technologies Used </h2>
-<p align="center">
-  - **Frontend:**
+
+**Frontend:**
 <img src="https://img.shields.io/badge/-JavaScript-black?style=flat-square&logo=javascript"/>
 <img src="https://img.shields.io/badge/-Nodejs-black?style=flat-square&logo=Node.js"/>
 <img src="https://img.shields.io/badge/-Expressjs-black?style=flat-square&logo=Express.js"/>
