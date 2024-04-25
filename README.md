@@ -2,6 +2,7 @@
 The main objective of this website is to centralize job postings from various companies for students' consideration. It will also collect and store information regarding student applications and any issues they encounter during their cooperate.
 
 <h2 align="center">Technologies Used </h2>
+
 **Frontend:**
 <img src="https://img.shields.io/badge/-JavaScript-black?style=flat-square&logo=javascript"/>
 <img src="https://img.shields.io/badge/-Nodejs-black?style=flat-square&logo=Node.js"/>
