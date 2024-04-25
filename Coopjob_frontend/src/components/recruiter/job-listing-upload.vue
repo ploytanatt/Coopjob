@@ -97,8 +97,8 @@ export default {
     toggleJobStatus() {
     this.isJobOpen = !this.isJobOpen;
   },
-    openApplicaionList() {
-      this.viewApplicationlist = true;
+    openApplicaionList(jobId) {
+      this.$router.push("/getApplicationByJob/" + jobId);
     },
     getJobs() {
         const token = localStorage.getItem("token");

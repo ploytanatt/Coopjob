@@ -39,7 +39,7 @@ import { required, email, minLength } from "vuelidate/lib/validators";
 import axios from "@/plugins/axios";
 import Swal from "sweetalert2";
 function complexPassword(value) {
-  if (!(value.match(/[a-z]/) && value.match(/[A-Z]/) && value.match(/[0-9]/))) {
+  if (!(value.match(/[a-z]/) && value.match(/[A-Z]/) )) {
     return false;
   }
   return true;

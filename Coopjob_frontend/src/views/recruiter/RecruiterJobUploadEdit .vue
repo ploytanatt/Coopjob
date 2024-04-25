@@ -5,7 +5,7 @@
 
       <div class="field">
         <div v-if="isImage(jobs.job_upload_file)">
-  <img :src="imagePath(jobs.job_upload_file)" class="jobUpload">
+        <img :src="imagePath(jobs.job_upload_file)" class="jobUpload">
         </div>
         <div v-else-if="isPdf(jobs.job_upload_file)">
           <iframe :src="imagePath(jobs.job_upload_file)" class="preview-pdf" />
