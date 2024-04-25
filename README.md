@@ -16,7 +16,7 @@ cd Coopjob_backend
 npm install
 npm start
 ```
-3) You need to install MySQL Community Server and MySQL Workbench and import file from folder >> db >> coop.sql
+3) You need to install [MySQL Community Server](https://dev.mysql.com/downloads/mysql/) and [MySQL Workbench](https://www.mysql.com/products/workbench/) and import file from folder >> db >> coop.sql
 4) Go to the project folder >> Coopjob_backend >> config.js file and change the Connections according to your database connection and credentials.
 5) Go to the project folder >> Coopjob_backend create .env file and change the password of your database connection
 ```
