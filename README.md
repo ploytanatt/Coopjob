@@ -1,9 +1,7 @@
 # Coopjob 
 The main objective of this website is to centralize job postings from various companies for students' consideration. It will also collect and store information regarding student applications and any issues they encounter during their cooperate.
-### Technologies Used
 
-  <h2 align="center">Technologies Used </h2>
-
+<h2 align="center">Technologies Used </h2>
 **Frontend:**
 <img src="https://img.shields.io/badge/-JavaScript-black?style=flat-square&logo=javascript"/>
 <img src="https://img.shields.io/badge/-Nodejs-black?style=flat-square&logo=Node.js"/>
@@ -14,7 +12,7 @@ The main objective of this website is to centralize job postings from various co
 <img src="https://img.shields.io/badge/-Git-black?style=flat-square&logo=git"/>
 <img src="https://img.shields.io/badge/-GitHub-black?style=flat-square&logo=github"/>
 
-**Backend:** Express.js
+**Backend:**
 <img src="https://img.shields.io/badge/C-00599C?style=flat-square&logo=c&logoColor=white"/>
 <img src="https://img.shields.io/badge/-java-E34A86?style=flat-square&logo=java"/>
 <img src="https://img.shields.io/badge/-C++-00599C?style=flat-square&logo=c"/>
