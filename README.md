@@ -3,7 +3,7 @@ The main objective of this website is to centralize job postings from various co
 ### Technologies Used
 - **Frontend:** Vue.js ์
 - **Backend:** Express.js
-  <h2 align="center">Reach me on <img src="https://media.giphy.com/media/mGcNjsfWAjY5AEZNw6/giphy.gif" width="50"></h2>
+  <h2 align="center">Technologies Used </h2>
 <p align="center">
 <img src="https://img.shields.io/badge/-JavaScript-black?style=flat-square&logo=javascript"/>
 <img src="https://img.shields.io/badge/-Nodejs-black?style=flat-square&logo=Node.js"/>
