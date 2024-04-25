@@ -23,3 +23,6 @@ npm start
 DB_PASSWORD=
 ```
 6) webpack development server will start at: http://localhost:3000
+### Technologies Used
+- **Frontend:** Vue.js
+- **Backend:** Express.js
