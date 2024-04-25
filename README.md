@@ -14,7 +14,6 @@ The main objective of this website is to centralize job postings from various co
 <img src="https://img.shields.io/badge/-MySQL-black?style=flat-square&logo=mysql"/>
 <img src="https://img.shields.io/badge/-Git-black?style=flat-square&logo=git"/>
 <img src="https://img.shields.io/badge/-GitHub-black?style=flat-square&logo=github"/>
-</p>
 
 ### Follow the steps
 1) Clone the repository
