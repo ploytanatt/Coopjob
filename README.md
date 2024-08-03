@@ -1,6 +1,6 @@
 # Coopjob 
 The main objective of this website is to centralize job postings from various companies for students' consideration. It will also collect and store information regarding student applications and any issues they encounter during their cooperate.
-###demo please wait for response
+### demo please wait for response
 https://coopjob-frontend.vercel.app/
 ### Technologies Used
 **Frontend:**
